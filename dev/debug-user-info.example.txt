@@ -1,0 +1,12 @@
+// Temporary debug component - Add this to your Sidebar.tsx temporarily to see user data
+
+// Add this near the top of the Sidebar component, right after the drawer variable is defined:
+
+console.log('=== USER DEBUG INFO ===');
+console.log('User object:', user);
+console.log('User role:', user?.role);
+console.log('User email:', user?.email);
+console.log('User account_status:', user?.account_status);
+console.log('=== END DEBUG ===');
+
+// Then check your browser console to see what's being logged
