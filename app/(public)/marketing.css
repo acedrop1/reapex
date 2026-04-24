@@ -337,17 +337,112 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
   .scroll-reveal-section{grid-template-columns:1fr;padding:80px 24px}
   .stats-grid{grid-template-columns:repeat(2,1fr);gap:32px}
 }
-/* Hide shared layout nav/footer on marketing homepage */
+/* ===== OVERRIDE SHARED LAYOUT ON MARKETING PAGE ===== */
+
+/* Hide the partner's shared DualAudienceNavBar and PublicFooter */
+body.marketing-page [class*="DualAudience"],
+body.marketing-page [class*="NavBar"]:not(.mkt-nav),
+body.marketing-page [class*="PublicFooter"],
 body.marketing-page header.MuiAppBar-root,
 body.marketing-page .MuiAppBar-root,
-body.marketing-page footer:not(.mkt-footer),
-body.marketing-page > div > div > header {
+body.marketing-page .MuiToolbar-root {
   display: none !important;
 }
-/* Remove padding/margin from layout wrapper on marketing page */
+
+/* The layout has a Box with hardcoded bg #0a0a0a — override it */
+body.marketing-page {
+  background: var(--white) !important;
+}
+body.marketing-page > div,
+body.marketing-page > div > div,
+body.marketing-page > div > div > div {
+  background-color: transparent !important;
+  background: transparent !important;
+}
+
+/* Only the marketing-wrapper should set backgrounds */
+.marketing-wrapper {
+  background: var(--white);
+  color: var(--black);
+}
+
+/* Remove padding/margin from layout wrapper */
 body.marketing-page main {
   padding: 0 !important;
   margin: 0 !important;
+}
+
+/* ===== FIX TEXT COLORS IN LIGHT SECTIONS ===== */
+
+/* Light bg sections need dark text */
+.sec, .sec-off, .stats-bar, .testimonials-section {
+  color: var(--black) !important;
+}
+.sec .sec-title, .sec-off .sec-title, .stats-bar .sec-title {
+  color: var(--black) !important;
+}
+
+/* Dark bg sections need white text */
+.sec-dark, .sec-dark .sec-title {
+  color: var(--white) !important;
+}
+
+/* Team section */
+.team-name {
+  color: var(--black) !important;
+}
+.team-role {
+  color: var(--g500) !important;
+}
+
+/* Feature cards */
+.feature-card h3 {
+  color: var(--black) !important;
+}
+.feature-card p {
+  color: var(--g500) !important;
+}
+
+/* Calculator section on light bg */
+.sec-off .sec-title {
+  color: var(--black) !important;
+}
+.sec-off .sec-sub {
+  color: var(--g500) !important;
+}
+
+/* Stats */
+.stat-label {
+  color: var(--g500) !important;
+}
+.stat-number {
+  color: var(--gold) !important;
+}
+
+/* Testimonial cards */
+.testimonial-card {
+  color: var(--black) !important;
+}
+.testimonial-quote {
+  color: rgba(0,0,0,.65) !important;
+}
+
+/* Testimonials section titles */
+.testimonials-heading {
+  color: var(--black) !important;
+}
+.testimonials-subtitle {
+  color: var(--g500) !important;
+}
+
+/* Button text in light sections */
+.btn-outline-light {
+  color: var(--black) !important;
+}
+
+/* Hide shared footer */
+body.marketing-page footer:not(.mkt-footer) {
+  display: none !important;
 }
 
 @media(max-width:768px){

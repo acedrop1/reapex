@@ -505,7 +505,7 @@ export default function MarketingHomepage() {
   }
 
   return (
-    <>
+    <div className="marketing-wrapper">
       {/* PAGE LOADER */}
       <div className={`page-loader${loaderHidden ? ' hidden' : ''}`}>
         <div className="loader-logo">
@@ -964,6 +964,6 @@ export default function MarketingHomepage() {
           Partner With Us
         </Link>
       </div>
-    </>
+    </div>
   );
 }
