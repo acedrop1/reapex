@@ -1522,7 +1522,7 @@ export default function CRMPage() {
               flexDirection: 'column',
               '& .fc': {
                 color: '#FFFFFF',
-                fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
+                fontFamily: 'DM Sans, system-ui, -apple-system, sans-serif',
                 height: '100%',
               },
               '& .fc-toolbar': {

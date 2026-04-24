@@ -339,13 +339,13 @@ export default function CommissionMenuPage() {
               <Card
                 sx={{
                   backgroundColor: '#141414',
-                  border: '2px solid #3b82f6',
+                  border: '2px solid #d4af37',
                   borderRadius: 3,
                   height: '100%',
                   transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
                   '&:hover': {
                     transform: 'translateY(-8px)',
-                    boxShadow: '0 16px 48px rgba(59, 130, 246, 0.3)',
+                    boxShadow: '0 16px 48px rgba(212, 175, 55, 0.3)',
                   },
                 }}
               >
@@ -354,7 +354,7 @@ export default function CommissionMenuPage() {
                     variant="h4"
                     sx={{
                               fontWeight: 700,
-                      color: '#3b82f6',
+                      color: '#d4af37',
                       mb: 1,
                     }}
                   >
@@ -373,9 +373,9 @@ export default function CommissionMenuPage() {
                   <Box
                     sx={{
                       p: 3,
-                      backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                      backgroundColor: 'rgba(212, 175, 55, 0.1)',
                       borderRadius: 2,
-                      border: '1px solid rgba(59, 130, 246, 0.3)',
+                      border: '1px solid rgba(212, 175, 55, 0.3)',
                       mb: 3,
                     }}
                   >
@@ -383,7 +383,7 @@ export default function CommissionMenuPage() {
                       variant="h3"
                       sx={{
                                   fontWeight: 800,
-                        color: '#3b82f6',
+                        color: '#d4af37',
                         textAlign: 'center',
                         mb: 1,
                       }}
@@ -403,20 +403,20 @@ export default function CommissionMenuPage() {
 
                   <Box sx={{ mb: 3 }}>
                     <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2, mb: 2 }}>
-                      <Check size={20} weight="bold" color="#3b82f6" style={{ marginTop: '2px', flexShrink: 0 }} />
-                      <Typography variant="body2" sx={{ color: '#cccccc', fontFamily: 'Inter, sans-serif' }}>
+                      <Check size={20} weight="bold" color="#d4af37" style={{ marginTop: '2px', flexShrink: 0 }} />
+                      <Typography variant="body2" sx={{ color: '#cccccc', fontFamily: 'DM Sans, sans-serif' }}>
                         Opt in for brokerage-sourced leads
                       </Typography>
                     </Box>
                     <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2, mb: 2 }}>
-                      <Check size={20} weight="bold" color="#3b82f6" style={{ marginTop: '2px', flexShrink: 0 }} />
-                      <Typography variant="body2" sx={{ color: '#cccccc', fontFamily: 'Inter, sans-serif' }}>
+                      <Check size={20} weight="bold" color="#d4af37" style={{ marginTop: '2px', flexShrink: 0 }} />
+                      <Typography variant="body2" sx={{ color: '#cccccc', fontFamily: 'DM Sans, sans-serif' }}>
                         50/50 commission split on Accelerator leads
                       </Typography>
                     </Box>
                     <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
-                      <Check size={20} weight="bold" color="#3b82f6" style={{ marginTop: '2px', flexShrink: 0 }} />
-                      <Typography variant="body2" sx={{ color: '#cccccc', fontFamily: 'Inter, sans-serif', fontWeight: 600 }}>
+                      <Check size={20} weight="bold" color="#d4af37" style={{ marginTop: '2px', flexShrink: 0 }} />
+                      <Typography variant="body2" sx={{ color: '#cccccc', fontFamily: 'DM Sans, sans-serif', fontWeight: 600 }}>
                         Does not count toward your annual cap
                       </Typography>
                     </Box>
@@ -506,19 +506,19 @@ export default function CommissionMenuPage() {
                   <Box sx={{ mb: 3 }}>
                     <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2, mb: 2 }}>
                       <Check size={20} weight="bold" color="#16a34a" style={{ marginTop: '2px', flexShrink: 0 }} />
-                      <Typography variant="body2" sx={{ color: '#cccccc', fontFamily: 'Inter, sans-serif' }}>
+                      <Typography variant="body2" sx={{ color: '#cccccc', fontFamily: 'DM Sans, sans-serif' }}>
                         Unlimited agent count under team leader
                       </Typography>
                     </Box>
                     <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2, mb: 2 }}>
                       <Check size={20} weight="bold" color="#16a34a" style={{ marginTop: '2px', flexShrink: 0 }} />
-                      <Typography variant="body2" sx={{ color: '#cccccc', fontFamily: 'Inter, sans-serif' }}>
+                      <Typography variant="body2" sx={{ color: '#cccccc', fontFamily: 'DM Sans, sans-serif' }}>
                         $0 monthly fee
                       </Typography>
                     </Box>
                     <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
                       <Check size={20} weight="bold" color="#16a34a" style={{ marginTop: '2px', flexShrink: 0 }} />
-                      <Typography variant="body2" sx={{ color: '#cccccc', fontFamily: 'Inter, sans-serif' }}>
+                      <Typography variant="body2" sx={{ color: '#cccccc', fontFamily: 'DM Sans, sans-serif' }}>
                         $0 transaction fee
                       </Typography>
                     </Box>

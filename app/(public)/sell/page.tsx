@@ -64,7 +64,7 @@ export default function SellPage() {
 
   const distributionChannels = [
     { icon: Users, label: 'Agent Network', value: '200+ Agents', color: '#16a34a' },
-    { icon: ChartLine, label: 'Premium Portals', value: 'Top 10 Sites', color: '#8b5cf6' },
+    { icon: ChartLine, label: 'Premium Portals', value: 'Top 10 Sites', color: '#c49d2f' },
     { icon: TrendUp, label: 'Direct Buyers', value: 'VIP Database', color: '#d4af37' },
     { icon: ShareNetwork, label: 'Targeted Social', value: 'AI-Driven Ad Campaigns', color: '#E2C05A' },
   ];
@@ -286,7 +286,7 @@ export default function SellPage() {
             <Typography
               variant="h3"
               sx={{
-                fontFamily: 'Syne, DM Sans, sans-serif',
+                fontFamily: 'DM Sans, sans-serif',
                 fontWeight: 800,
                 color: '#ffffff',
                 mb: 2,
@@ -298,7 +298,7 @@ export default function SellPage() {
               variant="body1"
               sx={{
                 color: '#999999',
-                fontFamily: 'Inter, sans-serif',
+                fontFamily: 'DM Sans, sans-serif',
                 maxWidth: 700,
                 mx: 'auto',
               }}

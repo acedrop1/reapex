@@ -110,7 +110,7 @@ export function DualAudienceNavBar() {
                   textTransform: 'none',
                   fontWeight: 500,
                   fontSize: '0.9375rem',
-                  fontFamily: 'Inter, sans-serif',
+                  fontFamily: 'DM Sans, sans-serif',
                   position: 'relative',
                   '&:after': {
                     content: '""',
@@ -141,7 +141,7 @@ export function DualAudienceNavBar() {
                   textTransform: 'none',
                   fontWeight: 500,
                   fontSize: '0.9375rem',
-                  fontFamily: 'Inter, sans-serif',
+                  fontFamily: 'DM Sans, sans-serif',
                   position: 'relative',
                   '&:after': {
                     content: '""',
@@ -172,7 +172,7 @@ export function DualAudienceNavBar() {
                   textTransform: 'none',
                   fontWeight: 500,
                   fontSize: '0.9375rem',
-                  fontFamily: 'Inter, sans-serif',
+                  fontFamily: 'DM Sans, sans-serif',
                   position: 'relative',
                   '&:after': {
                     content: '""',
@@ -203,7 +203,7 @@ export function DualAudienceNavBar() {
                   textTransform: 'none',
                   fontWeight: 500,
                   fontSize: '0.9375rem',
-                  fontFamily: 'Inter, sans-serif',
+                  fontFamily: 'DM Sans, sans-serif',
                   position: 'relative',
                   '&:after': {
                     content: '""',
@@ -245,7 +245,7 @@ export function DualAudienceNavBar() {
                 textTransform: 'none',
                 fontWeight: 500,
                 fontSize: '0.9375rem',
-                fontFamily: 'Inter, sans-serif',
+                fontFamily: 'DM Sans, sans-serif',
                 px: 3,
                 py: 1,
                 borderRadius: 1,
@@ -275,7 +275,7 @@ export function DualAudienceNavBar() {
                   textTransform: 'none',
                   fontWeight: 700,
                   fontSize: '0.9375rem',
-                  fontFamily: 'Inter, sans-serif',
+                  fontFamily: 'DM Sans, sans-serif',
                   px: 4,
                   py: 1.25,
                   borderRadius: 1,

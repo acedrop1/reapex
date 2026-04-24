@@ -357,7 +357,7 @@ export default function RevenueShareTree() {
           variant="body2"
           sx={{
             color: '#cccccc',
-            fontFamily: 'Inter, sans-serif',
+            fontFamily: 'DM Sans, sans-serif',
             lineHeight: 1.8,
             textAlign: 'center',
           }}

@@ -129,7 +129,7 @@ export function AgentMegaMenu({ isOpen, onClose }: AgentMegaMenuProps) {
                           color: '#ffffff',
                           fontSize: '1rem',
                           fontWeight: 500,
-                          fontFamily: 'Inter, sans-serif',
+                          fontFamily: 'DM Sans, sans-serif',
                         }}
                       >
                         {item.label}
@@ -163,7 +163,7 @@ export function AgentMegaMenu({ isOpen, onClose }: AgentMegaMenuProps) {
                       textAlign: 'center',
                       fontWeight: 600,
                       fontSize: '1rem',
-                      fontFamily: 'Inter, sans-serif',
+                      fontFamily: 'DM Sans, sans-serif',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
@@ -206,7 +206,7 @@ export function AgentMegaMenu({ isOpen, onClose }: AgentMegaMenuProps) {
                       textAlign: 'center',
                       fontWeight: 700,
                       fontSize: '1rem',
-                      fontFamily: 'Inter, sans-serif',
+                      fontFamily: 'DM Sans, sans-serif',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',

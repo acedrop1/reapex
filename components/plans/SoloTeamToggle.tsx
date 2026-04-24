@@ -43,7 +43,7 @@ export default function SoloTeamToggle() {
           />
           <Typography
             sx={{
-              fontFamily: 'Inter, sans-serif',
+              fontFamily: 'DM Sans, sans-serif',
               fontWeight: 700,
               fontSize: '1rem',
               color: isSolo ? '#0a0a0a' : '#999999',
@@ -79,7 +79,7 @@ export default function SoloTeamToggle() {
           />
           <Typography
             sx={{
-              fontFamily: 'Inter, sans-serif',
+              fontFamily: 'DM Sans, sans-serif',
               fontWeight: 700,
               fontSize: '1rem',
               color: !isSolo ? '#0a0a0a' : '#999999',

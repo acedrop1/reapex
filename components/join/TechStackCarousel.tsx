@@ -12,7 +12,7 @@ const techStackSlides = [
     subtitle: 'All-in-One',
     description: 'Streamlined transaction management from contract to close with document and compliance management.',
     features: ['Secure Document Vault', 'Compliance Tracking', 'Transaction Command Center'],
-    color: '#3b82f6',
+    color: '#d4af37',
   },
   {
     icon: UsersThree,
@@ -20,7 +20,7 @@ const techStackSlides = [
     subtitle: 'Build Your Team',
     description: 'Collaborative platform for building and managing your real estate team with automated wealth-building tools',
     features: ['Unlimited Agents (No Monthly Fee)', 'Performance Tracking', 'Team Command Center'],
-    color: '#10b981',
+    color: '#16a34a',
   },
   {
     icon: TrendUp,
@@ -28,7 +28,7 @@ const techStackSlides = [
     subtitle: 'Grow Your Business',
     description: 'Lead generation tools with targeted advertising, landing pages, and conversion optimization.',
     features: ['Targeted Ad Manager', 'High-Converting Landing Pages', 'Instant CRM Sync'],
-    color: '#f59e0b',
+    color: '#e2c05a',
   },
   {
     icon: Globe,
@@ -36,7 +36,7 @@ const techStackSlides = [
     subtitle: 'Your Brand',
     description: 'A fully branded, mobile-first website designed to capture leads and showcase your authority.',
     features: ['Custom Branding Suite', 'SEO-Optimized Architecture', 'Mobile-First Design'],
-    color: '#ec4899',
+    color: '#c49d2f',
   },
   {
     icon: MegaphoneSimple,
@@ -44,7 +44,7 @@ const techStackSlides = [
     subtitle: 'AI-Powered',
     description: 'AI-driven content and campaigns that keep your brand visible 24/7.',
     features: ['Social Media Content Hub', 'Email Drip Campaigns', 'Performance Analytics'],
-    color: '#8b5cf6',
+    color: '#f0d98a',
   },
   {
     icon: Headset,

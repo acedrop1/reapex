@@ -133,7 +133,7 @@ export default function CommissionMenuCalculator() {
           variant="body1"
           sx={{
             color: '#999999',
-            fontFamily: 'Inter, sans-serif',
+            fontFamily: 'DM Sans, sans-serif',
           }}
         >
           See your earnings month-by-month with detailed breakdowns
@@ -302,7 +302,7 @@ export default function CommissionMenuCalculator() {
               mb: 4,
               '& .MuiTab-root': {
                 color: '#999999',
-                fontFamily: 'Inter, sans-serif',
+                fontFamily: 'DM Sans, sans-serif',
                 textTransform: 'none',
                 fontWeight: 600,
                 '&.Mui-selected': {

@@ -11,10 +11,11 @@ export function PublicFooter() {
     <Box
       component="footer"
       sx={{
-        backgroundColor: '#1a1a1a',
+        backgroundColor: '#0a0a0a',
         color: '#ffffff',
         py: 6,
-        mt: 8,
+        mt: 0,
+        borderTop: '1px solid rgba(212, 175, 55, 0.15)',
       }}
     >
       <Container maxWidth="xl">
@@ -43,13 +44,13 @@ export function PublicFooter() {
               Quick Links
             </Typography>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-              <Link href="/listings" sx={{ color: '#999999', textDecoration: 'none', '&:hover': { color: '#ffffff' } }}>
+              <Link href="/listings" sx={{ color: '#999999', textDecoration: 'none', '&:hover': { color: '#d4af37' } }}>
                 Buy or Rent
               </Link>
-              <Link href="/sell" sx={{ color: '#999999', textDecoration: 'none', '&:hover': { color: '#ffffff' } }}>
+              <Link href="/sell" sx={{ color: '#999999', textDecoration: 'none', '&:hover': { color: '#d4af37' } }}>
                 Sell
               </Link>
-              <Link href="/agents" sx={{ color: '#999999', textDecoration: 'none', '&:hover': { color: '#ffffff' } }}>
+              <Link href="/agents" sx={{ color: '#999999', textDecoration: 'none', '&:hover': { color: '#d4af37' } }}>
                 Our Agents
               </Link>
             </Box>
@@ -65,12 +66,12 @@ export function PublicFooter() {
                   color: '#999999',
                   textDecoration: 'none',
                   cursor: 'pointer',
-                  '&:hover': { color: '#ffffff' },
+                  '&:hover': { color: '#d4af37' },
                 }}
               >
                 Join Us
               </Typography>
-              <Link href="/contact" sx={{ color: '#999999', textDecoration: 'none', '&:hover': { color: '#ffffff' } }}>
+              <Link href="/contact" sx={{ color: '#999999', textDecoration: 'none', '&:hover': { color: '#d4af37' } }}>
                 Contact Us
               </Link>
             </Box>
@@ -88,7 +89,7 @@ export function PublicFooter() {
             </Typography>
           </Grid>
         </Grid>
-        <Box sx={{ borderTop: '1px solid #333333', mt: 4, pt: 4, textAlign: 'center' }}>
+        <Box sx={{ borderTop: '1px solid #2a2a2a', mt: 4, pt: 4, textAlign: 'center' }}>
           <Typography variant="body2" sx={{ color: '#999999' }}>
             © Reapex - All rights reserved
           </Typography>

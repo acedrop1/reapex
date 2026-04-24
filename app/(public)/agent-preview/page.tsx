@@ -56,8 +56,8 @@ export default function AgentPreviewPage() {
   const getStatusChip = (status: string) => {
     const statusConfig = {
       pending_contract: { label: 'Pending Contract', color: '#f59e0b' },
-      under_contract: { label: 'Under Contract', color: '#3b82f6' },
-      inspection: { label: 'Inspection', color: '#8b5cf6' },
+      under_contract: { label: 'Under Contract', color: '#d4af37' },
+      inspection: { label: 'Inspection', color: '#c49d2f' },
       closed: { label: 'Closed', color: '#16a34a' },
     };
 
@@ -367,7 +367,7 @@ export default function AgentPreviewPage() {
                   cursor: 'pointer',
                   transition: 'all 0.3s ease',
                   '&:hover': {
-                    borderColor: '#3b82f6',
+                    borderColor: '#d4af37',
                     transform: 'translateY(-4px)',
                     boxShadow: '0 8px 32px rgba(59, 130, 246, 0.3)',
                   },
@@ -381,7 +381,7 @@ export default function AgentPreviewPage() {
                       borderRadius: 2,
                     }}
                   >
-                    <TrendUp size={28} weight="duotone" color="#3b82f6" />
+                    <TrendUp size={28} weight="duotone" color="#d4af37" />
                   </Box>
                   <Box sx={{ flex: 1 }}>
                     <Typography
@@ -428,7 +428,7 @@ export default function AgentPreviewPage() {
                   cursor: 'pointer',
                   transition: 'all 0.3s ease',
                   '&:hover': {
-                    borderColor: '#8b5cf6',
+                    borderColor: '#c49d2f',
                     transform: 'translateY(-4px)',
                     boxShadow: '0 8px 32px rgba(139, 92, 246, 0.3)',
                   },
@@ -442,7 +442,7 @@ export default function AgentPreviewPage() {
                       borderRadius: 2,
                     }}
                   >
-                    <MegaphoneSimple size={28} weight="duotone" color="#8b5cf6" />
+                    <MegaphoneSimple size={28} weight="duotone" color="#c49d2f" />
                   </Box>
                   <Box sx={{ flex: 1 }}>
                     <Typography

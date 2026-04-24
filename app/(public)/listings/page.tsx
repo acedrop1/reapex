@@ -217,7 +217,7 @@ export default async function PublicListingsPage({
                     height: '56px',
                     backgroundColor: '#d4af37',
                     color: '#0a0a0a',
-                    fontFamily: 'Inter, sans-serif',
+                    fontFamily: 'DM Sans, sans-serif',
                     fontWeight: 700,
                     '&:hover': {
                       backgroundColor: '#c49d2f',
@@ -236,7 +236,7 @@ export default async function PublicListingsPage({
               variant="body1"
               sx={{
                 color: '#999999',
-                fontFamily: 'Inter, sans-serif',
+                fontFamily: 'DM Sans, sans-serif',
                 mb: 4,
               }}
             >
@@ -438,7 +438,7 @@ export default async function PublicListingsPage({
                 variant="body1"
                 sx={{
                   color: '#999999',
-                  fontFamily: 'Inter, sans-serif',
+                  fontFamily: 'DM Sans, sans-serif',
                 }}
               >
                 Try adjusting your search filters or check back later for new listings.
