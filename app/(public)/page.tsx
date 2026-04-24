@@ -1,15 +1,9 @@
 import { createServerComponentClient } from '@/lib/supabase/server';
-import { Box } from '@mui/material';
 import type { Metadata } from 'next';
 import Script from 'next/script';
-import AgentHeroSection from '@/components/home/AgentHeroSection';
-import IncomeCalculator from '@/components/home/IncomeCalculator';
-import CommissionTiersSummary from '@/components/home/CommissionTiersSummary';
-import ModelComparison from '@/components/home/ModelComparison';
-import AgentTestimonialsSection from '@/components/home/AgentTestimonialsSection';
-import FeaturedAgentsSection from '@/components/home/FeaturedAgentsSection';
-import AgentOnboardingFooter from '@/components/home/AgentOnboardingFooter';
+import MarketingHomepage from '@/components/home/MarketingHomepage';
 import { generateOrganizationSchema, generateWebSiteSchema } from '@/lib/seo/jsonLd';
+import './marketing.css';
 
 // Force dynamic rendering since we use cookies
 export const dynamic = 'force-dynamic';
@@ -126,30 +120,7 @@ export default async function HomePage() {
         }}
       />
 
-      {/* Agent-Focused Hero Section */}
-      <AgentHeroSection cities={cities} />
-
-      {/* Income Calculator Section */}
-      <Box id="income-calculator">
-        <IncomeCalculator />
-      </Box>
-
-      {/* Commission Menu Section */}
-      <CommissionTiersSummary />
-
-      {/* Old vs New Model Comparison */}
-      <Box id="plans">
-        <ModelComparison />
-      </Box>
-
-      {/* Agent Testimonials Section */}
-      <AgentTestimonialsSection />
-
-      {/* Featured Agents Section */}
-      <FeaturedAgentsSection agents={featuredAgents} />
-
-      {/* Agent Onboarding Footer */}
-      <AgentOnboardingFooter />
+      <MarketingHomepage />
     </>
   );
 }
