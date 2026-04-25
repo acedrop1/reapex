@@ -81,7 +81,7 @@ const getFileIcon = (fileName: string, size: number = 32) => {
         case 'mov':
         case 'avi':
         case 'mkv':
-            return <FileVideo {...iconProps} color="#9C27B0" />;
+            return <FileVideo {...iconProps} color="#c49d2f" />;
         case 'txt':
         case 'md':
             return <FileText {...iconProps} color="#4CAF50" />;

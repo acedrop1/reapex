@@ -177,16 +177,19 @@ export function Sidebar({ user }: { user: any }) {
           justifyContent: isCollapsed ? 'center' : 'flex-start',
           transition: 'all 200ms ease',
           '&.Mui-selected': {
-            backgroundColor: '#E2C05A',
-            color: '#ffffff',
+            backgroundColor: 'rgba(226, 192, 90, 0.12)',
+            color: '#E2C05A',
+            borderLeft: '3px solid #E2C05A',
+            borderRadius: '0 8px 8px 0',
             '&:hover': {
-              backgroundColor: '#D4B04A',
+              backgroundColor: 'rgba(226, 192, 90, 0.18)',
             },
             '& .MuiListItemIcon-root': {
-              color: '#ffffff',
+              color: '#E2C05A',
             },
             '& .MuiListItemText-primary': {
-              color: '#ffffff',
+              color: '#E2C05A',
+              fontWeight: 600,
             },
           },
           '&:hover': {

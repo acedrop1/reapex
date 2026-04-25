@@ -41,7 +41,7 @@ const getCategoryColor = (category: string) => {
     'Buyer Forms': '#E2C05A',
     'Transaction Forms': '#FF9800',
     'Compliance Forms': '#F44336',
-    'Brokerage Operations': '#9C27B0',
+    'Brokerage Operations': '#c49d2f',
     'Misc': '#607D8B',
   };
   return colors[category] || '#757575';

@@ -297,11 +297,11 @@ export default function CRMPage() {
       case 'task':
         return '#C4A43B'; // Blue for tasks
       case 'tour':
-        return '#00bcd4'; // Cyan for tour appointments
+        return '#E2C05A'; // Gold for tour appointments
       case 'transaction':
         return '#2e7d32'; // Green for transactions
       case 'deal':
-        return '#9c27b0'; // Purple for deals
+        return '#c49d2f'; // Dark gold for deals
       case 'custom':
         return '#ed6c02'; // Orange for brokerage events
       default:
@@ -521,7 +521,7 @@ export default function CRMPage() {
       case 'seller':
         return <Tag size={18} weight="duotone" color="#E2C05A" />;
       case 'landlord':
-        return <Buildings size={18} weight="duotone" color="#9C27B0" />;
+        return <Buildings size={18} weight="duotone" color="#c49d2f" />;
       case 'tenant':
         return <Key size={18} weight="duotone" color="#FF9800" />;
       case 'lead':
@@ -1466,9 +1466,9 @@ export default function CRMPage() {
                   label="Tours"
                   size="small"
                   sx={{
-                    backgroundColor: 'rgba(0, 188, 212, 0.15)',
-                    color: '#4DD0E1',
-                    border: '1px solid rgba(0, 188, 212, 0.3)',
+                    backgroundColor: 'rgba(226, 192, 90, 0.15)',
+                    color: '#E2C05A',
+                    border: '1px solid rgba(226, 192, 90, 0.3)',
                     fontWeight: 500,
                     fontSize: '0.7rem',
                   }}
@@ -1488,9 +1488,9 @@ export default function CRMPage() {
                   label="Deals"
                   size="small"
                   sx={{
-                    backgroundColor: 'rgba(156, 39, 176, 0.15)',
-                    color: '#BA68C8',
-                    border: '1px solid rgba(156, 39, 176, 0.3)',
+                    backgroundColor: 'rgba(196, 157, 47, 0.15)',
+                    color: '#c49d2f',
+                    border: '1px solid rgba(196, 157, 47, 0.3)',
                     fontWeight: 500,
                     fontSize: '0.7rem',
                   }}
@@ -1738,17 +1738,17 @@ export default function CRMPage() {
                                     typeColor = '#EDD48A';
                                     typeBg = 'rgba(226, 192, 90, 0.15)';
                                     typeLabel = 'Task';
-                                  } else if (event.backgroundColor === '#00bcd4' || event.source === 'tour') {
-                                    typeColor = '#4DD0E1';
-                                    typeBg = 'rgba(0, 188, 212, 0.15)';
+                                  } else if (event.backgroundColor === '#E2C05A' || event.source === 'tour') {
+                                    typeColor = '#E2C05A';
+                                    typeBg = 'rgba(226, 192, 90, 0.15)';
                                     typeLabel = 'Tour';
                                   } else if (event.backgroundColor === '#2e7d32' || event.source === 'transaction') {
                                     typeColor = '#66BB6A';
                                     typeBg = 'rgba(46, 125, 50, 0.15)';
                                     typeLabel = 'Transaction';
-                                  } else if (event.backgroundColor === '#9c27b0' || event.source === 'deal') {
-                                    typeColor = '#BA68C8';
-                                    typeBg = 'rgba(156, 39, 176, 0.15)';
+                                  } else if (event.backgroundColor === '#c49d2f' || event.source === 'deal') {
+                                    typeColor = '#c49d2f';
+                                    typeBg = 'rgba(196, 157, 47, 0.15)';
                                     typeLabel = 'Deal';
                                   } else if (event.backgroundColor === '#ed6c02' || event.source === 'custom') {
                                     typeColor = '#FF9800';

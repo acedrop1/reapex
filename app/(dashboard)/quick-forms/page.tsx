@@ -89,11 +89,11 @@ export default function QuickFormsPage() {
           // Let's reuse the color map logic conceptually or just defaults.
           const colorMap: Record<string, string> = {
             'listing': '#E2C05A',
-            'purchase': '#10B981',
-            'disclosure': '#FF6F00',
-            'condition': '#9C27B0',
-            'buyer': '#00BCD4',
-            'addendum': '#F44336'
+            'purchase': '#16a34a',
+            'disclosure': '#ffb020',
+            'condition': '#c49d2f',
+            'buyer': '#f0d98a',
+            'addendum': '#EF4444'
           };
           let color = '#E2C05A';
           for (const key in colorMap) {

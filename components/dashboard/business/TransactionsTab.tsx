@@ -718,9 +718,9 @@ export default function TransactionsTab({ userProfile }: TransactionsTabProps) {
                                                     label={(transaction.agency_type || 'seller').charAt(0).toUpperCase() + (transaction.agency_type || 'seller').slice(1)}
                                                     size="small"
                                                     sx={{
-                                                        backgroundColor: 'rgba(156, 39, 176, 0.1)',
-                                                        color: '#9C27B0',
-                                                        border: '1px solid #9C27B0',
+                                                        backgroundColor: 'rgba(196, 157, 47, 0.1)',
+                                                        color: '#c49d2f',
+                                                        border: '1px solid #c49d2f',
                                                     }}
                                                 />
                                                 <Typography variant="body2" sx={{ color: '#E2C05A', fontWeight: 600, fontSize: '0.9rem' }}>

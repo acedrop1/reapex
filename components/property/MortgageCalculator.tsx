@@ -75,11 +75,11 @@ export default function MortgageCalculator({ propertyPrice }: MortgageCalculator
     // Payment Breakdown for Donut Chart
     const breakdown = [
       { name: 'Principal & Interest', value: monthlyPI, color: '#d4af37' },
-      { name: 'Property Tax', value: monthlyTax, color: '#4a9eff' },
-      { name: 'Home Insurance', value: monthlyInsurance, color: '#ff6b6b' },
+      { name: 'Property Tax', value: monthlyTax, color: '#c49d2f' },
+      { name: 'Home Insurance', value: monthlyInsurance, color: '#f0d98a' },
     ];
     if (hoaFees > 0) {
-      breakdown.push({ name: 'HOA Fees', value: hoaFees, color: '#51cf66' });
+      breakdown.push({ name: 'HOA Fees', value: hoaFees, color: '#16a34a' });
     }
     setPaymentBreakdown(breakdown);
 

@@ -131,15 +131,15 @@ export default function CalendarPage() {
   const getEventColor = (source: string) => {
     switch (source) {
       case 'task':
-        return '#C4A43B'; // Blue for tasks
+        return '#E2C05A'; // Gold for tasks
       case 'tour':
-        return '#00bcd4'; // Cyan for tour appointments
+        return '#c49d2f'; // Dark gold for tour appointments
       case 'transaction':
-        return '#2e7d32'; // Green for transactions
+        return '#16a34a'; // Green for transactions
       case 'deal':
-        return '#9c27b0'; // Purple for deals
+        return '#f0d98a'; // Light gold for deals
       case 'custom':
-        return '#ed6c02'; // Orange for brokerage events
+        return '#ffb020'; // Amber for brokerage events
       default:
         return '#757575';
     }
@@ -277,23 +277,23 @@ export default function CalendarPage() {
                 </Typography>
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                    <Box sx={{ width: 20, height: 20, backgroundColor: '#C4A43B', borderRadius: '6px', mr: 1.5 }} />
+                    <Box sx={{ width: 20, height: 20, backgroundColor: '#E2C05A', borderRadius: '6px', mr: 1.5 }} />
                     <Typography variant="body2" sx={{ color: '#B0B0B0' }}>Tasks</Typography>
                   </Box>
                   <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                    <Box sx={{ width: 20, height: 20, backgroundColor: '#00bcd4', borderRadius: '6px', mr: 1.5 }} />
+                    <Box sx={{ width: 20, height: 20, backgroundColor: '#c49d2f', borderRadius: '6px', mr: 1.5 }} />
                     <Typography variant="body2" sx={{ color: '#B0B0B0' }}>Tour Appointments</Typography>
                   </Box>
                   <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                    <Box sx={{ width: 20, height: 20, backgroundColor: '#2e7d32', borderRadius: '6px', mr: 1.5 }} />
+                    <Box sx={{ width: 20, height: 20, backgroundColor: '#16a34a', borderRadius: '6px', mr: 1.5 }} />
                     <Typography variant="body2" sx={{ color: '#B0B0B0' }}>Transaction Dates</Typography>
                   </Box>
                   <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                    <Box sx={{ width: 20, height: 20, backgroundColor: '#9c27b0', borderRadius: '6px', mr: 1.5 }} />
+                    <Box sx={{ width: 20, height: 20, backgroundColor: '#f0d98a', borderRadius: '6px', mr: 1.5 }} />
                     <Typography variant="body2" sx={{ color: '#B0B0B0' }}>Deals</Typography>
                   </Box>
                   <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                    <Box sx={{ width: 20, height: 20, backgroundColor: '#ed6c02', borderRadius: '6px', mr: 1.5 }} />
+                    <Box sx={{ width: 20, height: 20, backgroundColor: '#ffb020', borderRadius: '6px', mr: 1.5 }} />
                     <Typography variant="body2" sx={{ color: '#B0B0B0' }}>Brokerage Events</Typography>
                   </Box>
                 </Box>

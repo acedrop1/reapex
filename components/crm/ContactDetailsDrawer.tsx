@@ -341,7 +341,7 @@ export default function ContactDetailsDrawer({
       case 'png':
       case 'gif':
       case 'webp':
-        return <FileImage size={20} weight="duotone" color="#9C27B0" />;
+        return <FileImage size={20} weight="duotone" color="#c49d2f" />;
       default:
         return <FileIcon size={20} weight="duotone" color="#808080" />;
     }

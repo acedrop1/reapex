@@ -67,7 +67,7 @@ export default function ResourceGrid({
         if (type === 'slides') return <FilePpt size={size} weight={weight} color="#FF6F00" />;
         if (type === 'spreadsheet') return <FileXls size={size} weight={weight} color="#1B5E20" />;
         if (type === 'link') return <LinkIcon size={size} weight={weight} color={item.color || "#E2C05A"} />;
-        if (type === 'template' || type === 'image') return <ImageIcon size={size} weight={weight} color="#9C27B0" />;
+        if (type === 'template' || type === 'image') return <ImageIcon size={size} weight={weight} color="#c49d2f" />;
         if (type === 'document') return <FileDoc size={size} weight={weight} color="#C4A43B" />;
 
         return <FileText size={size} weight={weight} color="#C4A43B" />;
@@ -84,7 +84,7 @@ export default function ResourceGrid({
         if (type === 'slides') return '#FF6F00';
         if (type === 'spreadsheet') return '#1B5E20';
         if (type === 'link') return '#E2C05A';
-        if (type === 'template' || type === 'image') return '#9C27B0';
+        if (type === 'template' || type === 'image') return '#c49d2f';
         if (type === 'document') return '#C4A43B';
 
         return '#C4A43B';

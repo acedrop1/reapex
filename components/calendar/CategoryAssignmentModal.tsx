@@ -57,9 +57,9 @@ interface CategoryAssignmentModalProps {
 
 const EVENT_CATEGORIES = [
   { value: 'tasks', label: 'Tasks & Appointments', color: '#C4A43B' },
-  { value: 'showings', label: 'Property Showings', color: '#00bcd4' },
+  { value: 'showings', label: 'Property Showings', color: '#E2C05A' },
   { value: 'transactions', label: 'Transaction Dates', color: '#2e7d32' },
-  { value: 'deals', label: 'Deal Milestones', color: '#9c27b0' },
+  { value: 'deals', label: 'Deal Milestones', color: '#c49d2f' },
   { value: 'company_events', label: 'Company Events', color: '#ed6c02' },
   { value: 'personal', label: 'Personal Events', color: '#757575' },
 ];

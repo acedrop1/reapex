@@ -517,9 +517,9 @@ export default function BrokerageDocumentsPage() {
                         size="small"
                         onClick={() => handleOpenAuditLog(doc)}
                         sx={{
-                          color: '#9C27B0',
+                          color: '#c49d2f',
                           '&:hover': {
-                            backgroundColor: 'rgba(156, 39, 176, 0.08)',
+                            backgroundColor: 'rgba(196, 157, 47, 0.08)',
                           },
                         }}
                         title="View Audit Log"

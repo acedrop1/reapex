@@ -328,9 +328,9 @@ export default function AdminTransactionsPage() {
                       label={(transaction.agency_type || 'seller').charAt(0).toUpperCase() + (transaction.agency_type || 'seller').slice(1)}
                       size="small"
                       sx={{
-                        backgroundColor: 'rgba(156, 39, 176, 0.1)',
-                        color: '#9C27B0',
-                        border: '1px solid #9C27B0',
+                        backgroundColor: 'rgba(226, 192, 90, 0.1)',
+                        color: '#E2C05A',
+                        border: '1px solid #E2C05A',
                       }}
                     />
                   </TableCell>
