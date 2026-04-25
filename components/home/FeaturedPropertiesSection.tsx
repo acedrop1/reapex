@@ -188,7 +188,7 @@ export function FeaturedPropertiesSection({ featuredListings }: FeaturedProperti
                         )}
                       </Box>
                     </Box>
-                    <Typography variant="h6" gutterBottom sx={{ fontWeight: 700, fontSize: '1.25rem' }}>
+                    <Typography variant="h6" gutterBottom sx={{ fontWeight: 700, fontSize: '1.25rem', fontFamily: '"JetBrains Mono", monospace' }}>
                       {listing.price_period
                         ? `$${listing.price.toLocaleString()}/${listing.price_period}`
                         : `$${listing.price.toLocaleString()}`}

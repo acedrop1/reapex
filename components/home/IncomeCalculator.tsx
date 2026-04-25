@@ -328,6 +328,7 @@ export default function IncomeCalculator() {
                       color: earningsDifference >= 0 ? '#16a34a' : '#dc2626',
                       fontSize: { xs: '2.5rem', md: '3.5rem' },
                       mb: 1,
+                      fontFamily: '"JetBrains Mono", monospace',
                     }}
                   >
                     {earningsDifference >= 0 ? '+' : ''}$<AnimatedCounter value={earningsDifference} />
@@ -351,7 +352,7 @@ export default function IncomeCalculator() {
                       <Typography variant="body2" sx={{ fontWeight: 600, color: '#dc2626' }}>
                         Current Brokerage
                       </Typography>
-                      <Typography variant="body2" sx={{ fontWeight: 700, color: '#dc2626' }}>
+                      <Typography variant="body2" sx={{ fontWeight: 700, color: '#dc2626', fontFamily: '"JetBrains Mono", monospace' }}>
                         ${currentEarnings.toLocaleString('en-US', { maximumFractionDigits: 0 })}
                       </Typography>
                     </Box>
@@ -387,7 +388,7 @@ export default function IncomeCalculator() {
                       <Typography variant="body2" sx={{ fontWeight: 600, color: '#16a34a' }}>
                         Reapex Pro Plan
                       </Typography>
-                      <Typography variant="body2" sx={{ fontWeight: 700, color: '#16a34a' }}>
+                      <Typography variant="body2" sx={{ fontWeight: 700, color: '#16a34a', fontFamily: '"JetBrains Mono", monospace' }}>
                         ${reapexEarnings.toLocaleString('en-US', { maximumFractionDigits: 0 })}
                       </Typography>
                     </Box>
@@ -432,7 +433,7 @@ export default function IncomeCalculator() {
                       <Typography variant="caption" color="text.secondary" gutterBottom>
                         Current Net Income
                       </Typography>
-                      <Typography variant="h6" sx={{ fontWeight: 700, color: '#dc2626' }}>
+                      <Typography variant="h6" sx={{ fontWeight: 700, color: '#dc2626', fontFamily: '"JetBrains Mono", monospace' }}>
                         ${currentEarnings.toLocaleString('en-US', { maximumFractionDigits: 0 })}
                       </Typography>
                     </Card>
@@ -448,7 +449,7 @@ export default function IncomeCalculator() {
                       <Typography variant="caption" color="text.secondary" gutterBottom>
                         Reapex Net Income
                       </Typography>
-                      <Typography variant="h6" sx={{ fontWeight: 700, color: '#16a34a' }}>
+                      <Typography variant="h6" sx={{ fontWeight: 700, color: '#16a34a', fontFamily: '"JetBrains Mono", monospace' }}>
                         ${reapexEarnings.toLocaleString('en-US', { maximumFractionDigits: 0 })}
                       </Typography>
                     </Card>

@@ -573,13 +573,13 @@ export default function CommissionPayoutsPage() {
                   </Typography>
                 </TableCell>
                 <TableCell>
-                  <Typography sx={{ color: '#E2C05A', fontWeight: 600 }}>
+                  <Typography sx={{ color: '#E2C05A', fontWeight: 600, fontFamily: '"JetBrains Mono", monospace' }}>
                     ${(transaction.final_commission_amount || transaction.gci || 0).toLocaleString()}
                   </Typography>
                 </TableCell>
                 <TableCell>
                   {transaction.agent_net_payout !== null ? (
-                    <Typography sx={{ color: '#E2C05A', fontWeight: 600 }}>
+                    <Typography sx={{ color: '#E2C05A', fontWeight: 600, fontFamily: '"JetBrains Mono", monospace' }}>
                       ${transaction.agent_net_payout.toLocaleString()}
                     </Typography>
                   ) : (
@@ -714,7 +714,7 @@ export default function CommissionPayoutsPage() {
                   <Typography sx={{ color: '#B0B0B0', fontSize: '12px', mb: 0.5 }}>
                     Gross Commission
                   </Typography>
-                  <Typography sx={{ color: '#FFFFFF', fontSize: '16px', fontWeight: 600 }}>
+                  <Typography sx={{ color: '#FFFFFF', fontSize: '16px', fontWeight: 600, fontFamily: '"JetBrains Mono", monospace' }}>
                     ${(selectedTransaction.final_commission_amount || selectedTransaction.gci || 0).toLocaleString()}
                   </Typography>
                 </Grid>
@@ -734,7 +734,7 @@ export default function CommissionPayoutsPage() {
                       }}
                     >
                       <Typography sx={{ color: '#FFFFFF' }}>{fee.name}</Typography>
-                      <Typography sx={{ color: '#F44336' }}>
+                      <Typography sx={{ color: '#F44336', fontFamily: '"JetBrains Mono", monospace' }}>
                         -${fee.amount.toLocaleString()}
                       </Typography>
                     </Box>
@@ -745,7 +745,7 @@ export default function CommissionPayoutsPage() {
                 <Typography sx={{ color: '#B0B0B0', fontSize: '12px', mb: 0.5 }}>
                   Agent Net Payout
                 </Typography>
-                <Typography sx={{ color: '#E2C05A', fontSize: '24px', fontWeight: 700 }}>
+                <Typography sx={{ color: '#E2C05A', fontSize: '24px', fontWeight: 700, fontFamily: '"JetBrains Mono", monospace' }}>
                   ${selectedTransaction.agent_net_payout?.toLocaleString() || 'N/A'}
                 </Typography>
               </Box>
@@ -1019,7 +1019,7 @@ export default function CommissionPayoutsPage() {
                       <Typography sx={{ color: '#FFFFFF', fontWeight: 500 }}>
                         {fee.name}
                       </Typography>
-                      <Typography sx={{ color: '#E2C05A', fontSize: '14px' }}>
+                      <Typography sx={{ color: '#E2C05A', fontSize: '14px', fontFamily: '"JetBrains Mono", monospace' }}>
                         ${fee.amount.toLocaleString()}
                       </Typography>
                     </Box>
@@ -1041,26 +1041,26 @@ export default function CommissionPayoutsPage() {
                 </Typography>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                   <Typography sx={{ color: '#FFFFFF' }}>Gross Commission:</Typography>
-                  <Typography sx={{ color: '#FFFFFF', fontWeight: 600 }}>
+                  <Typography sx={{ color: '#FFFFFF', fontWeight: 600, fontFamily: '"JetBrains Mono", monospace' }}>
                     ${(parseFloat(approvalForm.final_commission_amount) || 0).toLocaleString()}
                   </Typography>
                 </Box>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                   <Typography sx={{ color: '#FFFFFF' }}>Agent Split ({approvalForm.brokerage_split_percentage}%):</Typography>
-                  <Typography sx={{ color: '#FFFFFF', fontWeight: 600 }}>
+                  <Typography sx={{ color: '#FFFFFF', fontWeight: 600, fontFamily: '"JetBrains Mono", monospace' }}>
                     ${((parseFloat(approvalForm.final_commission_amount) || 0) * (parseFloat(approvalForm.brokerage_split_percentage) / 100)).toLocaleString()}
                   </Typography>
                 </Box>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                   <Typography sx={{ color: '#FFFFFF' }}>Total Fees:</Typography>
-                  <Typography sx={{ color: '#F44336', fontWeight: 600 }}>
+                  <Typography sx={{ color: '#F44336', fontWeight: 600, fontFamily: '"JetBrains Mono", monospace' }}>
                     -${calculateTotalFees().toLocaleString()}
                   </Typography>
                 </Box>
                 <Divider sx={{ my: 1, borderColor: '#2A2A2A' }} />
                 <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                   <Typography sx={{ color: '#FFFFFF', fontWeight: 700 }}>Agent Net Payout:</Typography>
-                  <Typography sx={{ color: '#E2C05A', fontWeight: 700, fontSize: '18px' }}>
+                  <Typography sx={{ color: '#E2C05A', fontWeight: 700, fontSize: '18px', fontFamily: '"JetBrains Mono", monospace' }}>
                     ${calculateNetPayout().toLocaleString()}
                   </Typography>
                 </Box>

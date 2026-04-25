@@ -260,7 +260,7 @@ export default function PayoutsTab() {
                         <Typography variant="caption" sx={{ color: '#B0B0B0', display: 'block', mb: 0.5 }}>
                           GCI
                         </Typography>
-                        <Typography variant="body2" sx={{ color: '#FFFFFF', fontWeight: 600 }}>
+                        <Typography variant="body2" sx={{ color: '#FFFFFF', fontWeight: 600, fontFamily: '"JetBrains Mono", monospace' }}>
                           ${transaction.final_commission_amount?.toLocaleString() || transaction.gci?.toLocaleString() || '0'}
                         </Typography>
                       </Box>
@@ -268,7 +268,7 @@ export default function PayoutsTab() {
                         <Typography variant="caption" sx={{ color: '#B0B0B0', display: 'block', mb: 0.5 }}>
                           Split
                         </Typography>
-                        <Typography variant="body2" sx={{ color: '#FFFFFF', fontWeight: 500 }}>
+                        <Typography variant="body2" sx={{ color: '#FFFFFF', fontWeight: 500, fontFamily: '"JetBrains Mono", monospace' }}>
                           {transaction.brokerage_split_percentage ? `${transaction.brokerage_split_percentage}%` : 'N/A'}
                         </Typography>
                       </Box>
@@ -276,7 +276,7 @@ export default function PayoutsTab() {
                         <Typography variant="caption" sx={{ color: '#B0B0B0', display: 'block', mb: 0.5 }}>
                           Fees
                         </Typography>
-                        <Typography variant="body2" sx={{ color: transaction.brokerage_fees && transaction.brokerage_fees.length > 0 ? '#F44336' : '#808080', fontWeight: 500 }}>
+                        <Typography variant="body2" sx={{ color: transaction.brokerage_fees && transaction.brokerage_fees.length > 0 ? '#F44336' : '#808080', fontWeight: 500, fontFamily: '"JetBrains Mono", monospace' }}>
                           {transaction.brokerage_fees && transaction.brokerage_fees.length > 0
                             ? `-$${calculateTotalFees(transaction.brokerage_fees).toLocaleString()}`
                             : '$0'}
@@ -286,7 +286,7 @@ export default function PayoutsTab() {
                         <Typography variant="caption" sx={{ color: '#B0B0B0', display: 'block', mb: 0.5 }}>
                           Net Payout
                         </Typography>
-                        <Typography variant="body2" sx={{ color: transaction.agent_net_payout !== null ? '#E2C05A' : '#808080', fontWeight: 700 }}>
+                        <Typography variant="body2" sx={{ color: transaction.agent_net_payout !== null ? '#E2C05A' : '#808080', fontWeight: 700, fontFamily: '"JetBrains Mono", monospace' }}>
                           {transaction.agent_net_payout !== null
                             ? `$${transaction.agent_net_payout.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
                             : 'Pending'}
@@ -362,13 +362,13 @@ export default function PayoutsTab() {
                       )}
                     </TableCell>
                     <TableCell align="right" sx={{ color: '#FFFFFF', borderBottom: '1px solid #2A2A2A' }}>
-                      <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                      <Typography variant="body2" sx={{ fontWeight: 600, fontFamily: '"JetBrains Mono", monospace' }}>
                         ${transaction.final_commission_amount?.toLocaleString() || transaction.gci?.toLocaleString() || '0'}
                       </Typography>
                     </TableCell>
                     <TableCell align="right" sx={{ color: '#FFFFFF', borderBottom: '1px solid #2A2A2A' }}>
                       {transaction.brokerage_split_percentage ? (
-                        <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                        <Typography variant="body2" sx={{ fontWeight: 500, fontFamily: '"JetBrains Mono", monospace' }}>
                           {transaction.brokerage_split_percentage}%
                         </Typography>
                       ) : (
@@ -379,18 +379,18 @@ export default function PayoutsTab() {
                     </TableCell>
                     <TableCell align="right" sx={{ color: '#F44336', borderBottom: '1px solid #2A2A2A' }}>
                       {transaction.brokerage_fees && transaction.brokerage_fees.length > 0 ? (
-                        <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                        <Typography variant="body2" sx={{ fontWeight: 500, fontFamily: '"JetBrains Mono", monospace' }}>
                           -${calculateTotalFees(transaction.brokerage_fees).toLocaleString()}
                         </Typography>
                       ) : (
-                        <Typography variant="body2" sx={{ color: '#808080' }}>
+                        <Typography variant="body2" sx={{ color: '#808080', fontFamily: '"JetBrains Mono", monospace' }}>
                           $0
                         </Typography>
                       )}
                     </TableCell>
                     <TableCell align="right" sx={{ color: '#E2C05A', borderBottom: '1px solid #2A2A2A' }}>
                       {transaction.agent_net_payout !== null ? (
-                        <Typography variant="body2" sx={{ fontWeight: 700, fontSize: '0.95rem' }}>
+                        <Typography variant="body2" sx={{ fontWeight: 700, fontSize: '0.95rem', fontFamily: '"JetBrains Mono", monospace' }}>
                           ${transaction.agent_net_payout.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                         </Typography>
                       ) : (
@@ -498,7 +498,7 @@ export default function PayoutsTab() {
                     </Typography>
                   </Grid>
                   <Grid item xs={4} sx={{ textAlign: 'right' }}>
-                    <Typography sx={{ color: '#FFFFFF', fontSize: '14px', fontWeight: 600 }}>
+                    <Typography sx={{ color: '#FFFFFF', fontSize: '14px', fontWeight: 600, fontFamily: '"JetBrains Mono", monospace' }}>
                       ${selectedTransaction.gci?.toLocaleString()}
                     </Typography>
                   </Grid>
@@ -511,7 +511,7 @@ export default function PayoutsTab() {
                         </Typography>
                       </Grid>
                       <Grid item xs={4} sx={{ textAlign: 'right' }}>
-                        <Typography sx={{ color: '#FFFFFF', fontSize: '14px', fontWeight: 600 }}>
+                        <Typography sx={{ color: '#FFFFFF', fontSize: '14px', fontWeight: 600, fontFamily: '"JetBrains Mono", monospace' }}>
                           ${selectedTransaction.final_commission_amount.toLocaleString()}
                         </Typography>
                       </Grid>
@@ -524,7 +524,7 @@ export default function PayoutsTab() {
                     </Typography>
                   </Grid>
                   <Grid item xs={4} sx={{ textAlign: 'right' }}>
-                    <Typography sx={{ color: '#E2C05A', fontSize: '14px', fontWeight: 600 }}>
+                    <Typography sx={{ color: '#E2C05A', fontSize: '14px', fontWeight: 600, fontFamily: '"JetBrains Mono", monospace' }}>
                       ${((selectedTransaction.final_commission_amount || selectedTransaction.gci) * (selectedTransaction.brokerage_split_percentage! / 100)).toLocaleString()}
                     </Typography>
                   </Grid>
@@ -544,7 +544,7 @@ export default function PayoutsTab() {
                           </Typography>
                         </Grid>
                         <Grid item xs={4} sx={{ textAlign: 'right' }}>
-                          <Typography sx={{ color: '#F44336', fontSize: '14px', fontWeight: 600 }}>
+                          <Typography sx={{ color: '#F44336', fontSize: '14px', fontWeight: 600, fontFamily: '"JetBrains Mono", monospace' }}>
                             -${fee.amount.toLocaleString()}
                           </Typography>
                         </Grid>
@@ -557,7 +557,7 @@ export default function PayoutsTab() {
                         </Typography>
                       </Grid>
                       <Grid item xs={4} sx={{ textAlign: 'right' }}>
-                        <Typography sx={{ color: '#F44336', fontSize: '14px', fontWeight: 600 }}>
+                        <Typography sx={{ color: '#F44336', fontSize: '14px', fontWeight: 600, fontFamily: '"JetBrains Mono", monospace' }}>
                           -${calculateTotalFees(selectedTransaction.brokerage_fees).toLocaleString()}
                         </Typography>
                       </Grid>
@@ -574,7 +574,7 @@ export default function PayoutsTab() {
                     </Typography>
                   </Grid>
                   <Grid item xs={4} sx={{ textAlign: 'right' }}>
-                    <Typography sx={{ color: '#E2C05A', fontSize: '20px', fontWeight: 700 }}>
+                    <Typography sx={{ color: '#E2C05A', fontSize: '20px', fontWeight: 700, fontFamily: '"JetBrains Mono", monospace' }}>
                       ${selectedTransaction.agent_net_payout?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </Typography>
                   </Grid>

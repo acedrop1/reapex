@@ -439,7 +439,7 @@ export default function DashboardPage() {
               Progress to {userPlan === 'pro' ? 'No' : '$' + (capAmount / 1000).toFixed(0) + 'K'} Cap
             </Typography>
             <Box sx={{ flex: 1 }} />
-            <Typography variant="h6" sx={{ fontWeight: 700, color: '#FFFFFF', fontSize: '1.1rem' }}>
+            <Typography variant="h6" sx={{ fontWeight: 700, color: '#FFFFFF', fontSize: '1.1rem', fontFamily: '"JetBrains Mono", monospace' }}>
               {userPlan === 'pro' ? (
                 `$${(currentProgress / 1000).toFixed(1)}K`
               ) : (
@@ -639,7 +639,7 @@ export default function DashboardPage() {
                         </Typography>
 
                         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                          <Typography variant="body2" sx={{ color: '#E2C05A', fontWeight: 600, fontSize: '0.75rem' }}>
+                          <Typography variant="body2" sx={{ color: '#E2C05A', fontWeight: 600, fontSize: '0.75rem', fontFamily: '"JetBrains Mono", monospace' }}>
                             ${transaction.sale_price?.toLocaleString()}
                           </Typography>
                           <Chip
@@ -877,7 +877,7 @@ export default function DashboardPage() {
                         <Typography variant="caption" sx={{ color: '#808080', display: 'block', mb: 0.3, fontSize: '0.6rem', lineHeight: 1.1 }} noWrap>
                           {listing.property_city}
                         </Typography>
-                        <Typography variant="body2" sx={{ fontWeight: 600, color: '#E2C05A', fontSize: '0.75rem', lineHeight: 1.1 }}>
+                        <Typography variant="body2" sx={{ fontWeight: 600, color: '#E2C05A', fontSize: '0.75rem', lineHeight: 1.1, fontFamily: '"JetBrains Mono", monospace' }}>
                           ${listing.price?.toLocaleString()}
                         </Typography>
                       </Box>

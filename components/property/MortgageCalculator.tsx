@@ -152,7 +152,7 @@ export default function MortgageCalculator({ propertyPrice }: MortgageCalculator
         <Typography variant="body2" gutterBottom sx={{ color: '#999999' }}>
           Estimated Monthly Payment
         </Typography>
-        <Typography variant="h3" sx={{ fontWeight: 700, color: '#d4af37' }}>
+        <Typography variant="h3" sx={{ fontWeight: 700, color: '#d4af37', fontFamily: '"JetBrains Mono", monospace' }}>
           ${monthlyPayment.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
         </Typography>
         <Typography variant="caption" sx={{ color: '#999999' }}>
@@ -166,7 +166,7 @@ export default function MortgageCalculator({ propertyPrice }: MortgageCalculator
           <Typography variant="body2" sx={{ color: '#999999' }}>
             Down Payment
           </Typography>
-          <Typography variant="h6" sx={{ fontWeight: 600, color: '#ffffff' }}>
+          <Typography variant="h6" sx={{ fontWeight: 600, color: '#ffffff', fontFamily: '"JetBrains Mono", monospace' }}>
             ${downPayment.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
           </Typography>
         </Grid>
@@ -174,7 +174,7 @@ export default function MortgageCalculator({ propertyPrice }: MortgageCalculator
           <Typography variant="body2" sx={{ color: '#999999' }}>
             Loan Amount
           </Typography>
-          <Typography variant="h6" sx={{ fontWeight: 600, color: '#ffffff' }}>
+          <Typography variant="h6" sx={{ fontWeight: 600, color: '#ffffff', fontFamily: '"JetBrains Mono", monospace' }}>
             ${loanAmount.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
           </Typography>
         </Grid>
@@ -479,7 +479,7 @@ export default function MortgageCalculator({ propertyPrice }: MortgageCalculator
                     <Typography variant="caption" sx={{ display: 'block', color: '#999999' }}>
                       {item.name}
                     </Typography>
-                    <Typography variant="body2" sx={{ fontWeight: 600, color: '#ffffff' }}>
+                    <Typography variant="body2" sx={{ fontWeight: 600, color: '#ffffff', fontFamily: '"JetBrains Mono", monospace' }}>
                       ${Math.round(item.value).toLocaleString()}
                     </Typography>
                   </Box>

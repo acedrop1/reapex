@@ -395,7 +395,7 @@ export default async function CityListingsPage({
                             )}
                           </Box>
                         </Box>
-                        <Typography variant="h5" gutterBottom sx={{ fontWeight: 700 }}>
+                        <Typography variant="h5" gutterBottom sx={{ fontWeight: 700, fontFamily: '"JetBrains Mono", monospace' }}>
                           {listing.price_period
                             ? `$${listing.price.toLocaleString()}/${listing.price_period}`
                             : `$${listing.price.toLocaleString()}`}

@@ -162,7 +162,7 @@ export default function ListingsTab() {
                                         />
                                     )}
                                     <CardContent>
-                                        <Typography variant="h6" sx={{ color: '#FFFFFF', fontWeight: 600, mb: 1 }}>
+                                        <Typography variant="h6" sx={{ color: '#FFFFFF', fontWeight: 600, mb: 1, fontFamily: '"JetBrains Mono", monospace' }}>
                                             ${listing.price?.toLocaleString()}
                                         </Typography>
                                         <Typography variant="body2" sx={{ color: '#B0B0B0', mb: 1 }}>

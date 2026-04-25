@@ -342,7 +342,7 @@ export default function AdminListingsPage() {
                     </Typography>
                   </TableCell>
                   <TableCell sx={dashboardStyles.table}>
-                    <Typography variant="body2" sx={{ color: '#FFFFFF' }}>
+                    <Typography variant="body2" sx={{ color: '#FFFFFF', fontFamily: '"JetBrains Mono", monospace' }}>
                       ${listing.price?.toLocaleString() || '0'}
                     </Typography>
                     {listing.price_period && (

@@ -301,6 +301,7 @@ export default async function PublicListingsPage({
                                     fontWeight: 700,
                           color: '#ffffff',
                           mb: 2,
+                          fontFamily: '"JetBrains Mono", monospace',
                         }}
                       >
                         {listing.price_period

@@ -140,7 +140,7 @@ export default async function ListingDetailPage({
                 />
               )}
             </Box>
-            <Typography variant="h3" sx={{ fontWeight: 700, color: '#ffffff', mb: 1 }}>
+            <Typography variant="h3" sx={{ fontWeight: 700, color: '#ffffff', mb: 1, fontFamily: '"JetBrains Mono", monospace' }}>
               {listing.price_period
                 ? `$${listing.price.toLocaleString()}/${listing.price_period}`
                 : `$${listing.price.toLocaleString()}`}

@@ -346,12 +346,12 @@ export default function AdminTransactionsPage() {
                     />
                   </TableCell>
                   <TableCell align="right">
-                    <Typography variant="body2" sx={{ color: '#FFFFFF' }}>
+                    <Typography variant="body2" sx={{ color: '#FFFFFF', fontFamily: '"JetBrains Mono", monospace' }}>
                       ${transaction.gci.toLocaleString()}
                     </Typography>
                   </TableCell>
                   <TableCell align="right">
-                    <Typography variant="body2" sx={{ color: '#FFFFFF' }}>
+                    <Typography variant="body2" sx={{ color: '#FFFFFF', fontFamily: '"JetBrains Mono", monospace' }}>
                       ${transaction.agent_commission.toLocaleString()}
                     </Typography>
                   </TableCell>

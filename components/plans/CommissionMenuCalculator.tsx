@@ -285,6 +285,7 @@ export default function CommissionMenuCalculator() {
                 sx={{
                       fontWeight: 800,
                   color: yearlyComparison.difference >= 0 ? '#16a34a' : '#dc2626',
+                  fontFamily: '"JetBrains Mono", monospace',
                 }}
               >
                 {yearlyComparison.difference >= 0 ? '+' : ''}$<AnimatedCounter value={yearlyComparison.difference || 0} />
@@ -374,7 +375,7 @@ export default function CommissionMenuCalculator() {
                     <Typography variant="caption" sx={{ color: '#999999', display: 'block', mb: 1 }}>
                       Current Brokerage
                     </Typography>
-                    <Typography variant="h4" sx={{ color: '#999999', fontWeight: 700 }}>
+                    <Typography variant="h4" sx={{ color: '#999999', fontWeight: 700, fontFamily: '"JetBrains Mono", monospace' }}>
                       ${yearlyComparison.current?.toLocaleString()}
                     </Typography>
                   </Card>
@@ -384,7 +385,7 @@ export default function CommissionMenuCalculator() {
                     <Typography variant="caption" sx={{ color: '#d4af37', display: 'block', mb: 1 }}>
                       Reapex (Growth Plan)
                     </Typography>
-                    <Typography variant="h4" sx={{ color: '#d4af37', fontWeight: 700 }}>
+                    <Typography variant="h4" sx={{ color: '#d4af37', fontWeight: 700, fontFamily: '"JetBrains Mono", monospace' }}>
                       ${yearlyComparison.reapex?.toLocaleString()}
                     </Typography>
                   </Card>

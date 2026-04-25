@@ -723,7 +723,7 @@ export default function TransactionsTab({ userProfile }: TransactionsTabProps) {
                                                         border: '1px solid #c49d2f',
                                                     }}
                                                 />
-                                                <Typography variant="body2" sx={{ color: '#E2C05A', fontWeight: 600, fontSize: '0.9rem' }}>
+                                                <Typography variant="body2" sx={{ color: '#E2C05A', fontWeight: 600, fontSize: '0.9rem', fontFamily: '"JetBrains Mono", monospace' }}>
                                                     ${(transaction.sale_price || transaction.listing_price || 0).toLocaleString()}
                                                 </Typography>
                                             </Box>

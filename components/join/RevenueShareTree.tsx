@@ -166,6 +166,7 @@ export default function RevenueShareTree() {
                     sx={{
                       color: '#16a34a',
                       fontWeight: 600,
+                      fontFamily: '"JetBrains Mono", monospace',
                           }}
                   >
                     +${node.monthlyIncome}/mo
@@ -244,6 +245,7 @@ export default function RevenueShareTree() {
                       color: '#16a34a',
                       fontWeight: 600,
                       fontSize: '0.7rem',
+                      fontFamily: '"JetBrains Mono", monospace',
                           }}
                   >
                     +${node.monthlyIncome}/mo
@@ -296,6 +298,7 @@ export default function RevenueShareTree() {
               sx={{
                 fontWeight: 800,
                 color: '#16a34a',
+                fontFamily: '"JetBrains Mono", monospace',
               }}
             >
               ${totalMonthlyIncome.toLocaleString()}
@@ -335,6 +338,7 @@ export default function RevenueShareTree() {
               sx={{
                 fontWeight: 800,
                 color: '#d4af37',
+                fontFamily: '"JetBrains Mono", monospace',
               }}
             >
               ${totalAnnualIncome.toLocaleString()}
