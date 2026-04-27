@@ -22,7 +22,6 @@ import {
   InputAdornment,
   Autocomplete,
   Chip,
-  CircularProgress,
 } from '@mui/material';
 import {
   ArrowLeft,
@@ -34,7 +33,6 @@ import {
   LinkedinLogo,
   XLogo,
   GlobeHemisphereWest,
-  CreditCard,
   CheckCircle,
   Upload,
   X as CloseIcon,
@@ -45,10 +43,7 @@ import {
 import { dashboardStyles } from '@/lib/theme/dashboardStyles';
 import { createClient } from '@/lib/supabase/client';
 import Image from 'next/image';
-import { Elements } from '@stripe/react-stripe-js';
-import { loadStripe } from '@stripe/stripe-js';
 import { AGENT_SPECIALTIES } from '@/lib/constants';
-import PaymentMethodManager from '@/components/stripe/PaymentMethodManager';
 
 
 interface OnboardingWizardProps {
@@ -82,12 +77,9 @@ interface FormData {
 
   // Step 4: Plan Selection
   selected_plan: 'launch' | 'growth' | 'pro' | '';
-
-  // Step 5: Payment Info
-  payment_method_id?: string;
 }
 
-const TOTAL_STEPS = 6; // 0-5: Welcome, Profile, Bio, Contact, Plan, Payment
+const TOTAL_STEPS = 5; // 0-4: Welcome, Profile, Bio, Contact, Plan
 
 const stepTitles = [
   'Welcome',
@@ -95,7 +87,6 @@ const stepTitles = [
   'Bio',
   'Contact Info',
   'Choose Plan',
-  'Payment Info',
 ];
 
 export default function OnboardingWizard({ open, onClose, onComplete }: OnboardingWizardProps) {
@@ -117,31 +108,11 @@ export default function OnboardingWizard({ open, onClose, onComplete }: Onboardi
     website: '',
     phone_visible: true,
     selected_plan: '',
-    payment_method_id: '',
   });
-  const [stripeClientSecret, setStripeClientSecret] = useState('');
-  const [stripePromise] = useState(() => loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!));
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
-  const [clientSecret, setClientSecret] = useState<string | null>(null);
-
-  // Initialize clientSecret when reaching payment step
-  if (currentStep === 5 && !clientSecret) {
-    const fetchClientSecret = async () => {
-      try {
-        const res = await fetch('/api/stripe/create-setup-intent', { method: 'POST' });
-        const data = await res.json();
-        if (data.clientSecret) {
-          setClientSecret(data.clientSecret);
-        }
-      } catch (err) {
-        console.error('Failed to fetch client secret', err);
-      }
-    };
-    fetchClientSecret();
-  }
 
   // Phone formatting
   const formatPhoneNumber = (value: string) => {
@@ -154,32 +125,6 @@ export default function OnboardingWizard({ open, onClose, onComplete }: Onboardi
       return formatted;
     }
     return value;
-  };
-
-  // Card number formatting
-  const formatCardNumber = (value: string) => {
-    const cleaned = value.replace(/\D/g, '');
-    const match = cleaned.match(/(\d{1,4})/g);
-    return match ? match.join(' ').substring(0, 19) : '';
-  };
-
-  // Expiry date formatting
-  const formatExpiryDate = (value: string) => {
-    const cleaned = value.replace(/\D/g, '');
-    if (cleaned.length >= 2) {
-      return `${cleaned.substring(0, 2)}/${cleaned.substring(2, 4)}`;
-    }
-    return cleaned;
-  };
-
-  // Detect card type
-  const getCardType = (number: string): string => {
-    const cleaned = number.replace(/\D/g, '');
-    if (/^4/.test(cleaned)) return 'visa';
-    if (/^5[1-5]/.test(cleaned)) return 'mastercard';
-    if (/^3[47]/.test(cleaned)) return 'amex';
-    if (/^6(?:011|5)/.test(cleaned)) return 'discover';
-    return 'unknown';
   };
 
   const handleAvatarChange = (file: File) => {
@@ -237,13 +182,6 @@ export default function OnboardingWizard({ open, onClose, onComplete }: Onboardi
           newErrors.plan = 'Please select a plan';
         }
         break;
-      case 5:
-        // Payment validation handled by Stripe Elements
-        if (formData.selected_plan !== 'launch' && !formData.payment_method_id) {
-          // We can't easily validate specific fields here, but we will validate on "Next/Submit"
-          // Actually, for the last step (submit), we rely on stripe.confirmSetup
-        }
-        break;
     }
 
     setErrors(newErrors);
@@ -252,14 +190,6 @@ export default function OnboardingWizard({ open, onClose, onComplete }: Onboardi
 
   const handleNext = () => {
     if (validateStep(currentStep)) {
-      if (currentStep + 1 === 5) { // If moving TO the payment step (index 5)
-        // Fetch Client Secret
-        fetch('/api/stripe/create-setup-intent', { method: 'POST' })
-          .then(res => res.json())
-          .then(data => {
-            if (data.clientSecret) setStripeClientSecret(data.clientSecret);
-          });
-      }
       setCurrentStep((prev) => Math.min(prev + 1, TOTAL_STEPS - 1));
     }
   };
@@ -286,7 +216,6 @@ export default function OnboardingWizard({ open, onClose, onComplete }: Onboardi
             specialties: formData.specialties,
             years_experience: formData.years_experience,
             languages: formData.languages,
-            payment_method_id: formData.payment_method_id
           },
         }),
       });
@@ -336,8 +265,6 @@ export default function OnboardingWizard({ open, onClose, onComplete }: Onboardi
 
 
   const progressPercentage = ((currentStep + 1) / TOTAL_STEPS) * 100;
-  // const cardType = getCardType(formData.card_number); // Unused
-
 
   // Constants for languages
   const LANGUAGES = [
@@ -875,46 +802,6 @@ export default function OnboardingWizard({ open, onClose, onComplete }: Onboardi
           </Box>
         );
 
-      case 5:
-        // Payment Info
-        // Options for Element appearance
-        // Options for Element appearance - UNUSED now that we use PaymentMethodManager
-        // const options = { ... }
-
-
-        return (
-          <Box>
-            <Typography variant="h6" sx={{ mb: 3, fontWeight: 600 }}>
-              Payment Information
-            </Typography>
-
-            <Typography variant="body2" sx={{ mb: 3, color: '#B0B0B0' }}>
-              Please enter your payment details securely below. This card will be used for your monthly subscription.
-            </Typography>
-
-            {clientSecret ? (
-              <PaymentMethodManager
-                clientSecret={clientSecret}
-                onSelect={(paymentMethodId) => {
-                  setFormData(prev => ({ ...prev, payment_method_id: paymentMethodId }));
-                }}
-              />
-            ) : (
-              <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
-                <CircularProgress size={32} sx={{ color: '#E2C05A' }} />
-              </Box>
-            )}
-
-            {
-              errors.submit && (
-                <Alert severity="error" sx={{ mt: 2 }}>
-                  {errors.submit}
-                </Alert>
-              )
-            }
-          </Box >
-        );
-
       default:
         return null;
     }
@@ -989,17 +876,17 @@ export default function OnboardingWizard({ open, onClose, onComplete }: Onboardi
             <Button
               variant="contained"
               onClick={handleSubmit}
-              disabled={submitting || (currentStep === 5 && !formData.payment_method_id)}
+              disabled={submitting}
               endIcon={!submitting && <CheckCircle size={20} weight="fill" />}
               sx={{
                 borderRadius: '8px',
                 px: 4,
                 py: 1.5,
-                backgroundColor: formData.payment_method_id ? '#4CAF50' : '#E2C05A',
+                backgroundColor: '#E2C05A',
                 fontWeight: 600,
                 boxShadow: '0 4px 12px rgba(226, 192, 90, 0.4)',
                 '&:hover': {
-                  backgroundColor: formData.payment_method_id ? '#43A047' : '#D4B04A',
+                  backgroundColor: '#D4B04A',
                   transform: 'translateY(-1px)',
                   boxShadow: '0 6px 16px rgba(226, 192, 90, 0.5)',
                 },
