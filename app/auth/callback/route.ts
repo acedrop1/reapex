@@ -39,7 +39,13 @@ export async function GET(request: Request) {
             const email = data.user.email;
 
             // Check if email is from allowed domain
-            if (!email || !email.endsWith('@re-apex.com')) {
+            // In dev, allow additional domains via ALLOWED_EMAIL_DOMAINS env var
+            const allowedDomains = ['@re-apex.com'];
+            const extraDomains = process.env.ALLOWED_EMAIL_DOMAINS?.split(',').map(d => d.trim()).filter(Boolean);
+            if (extraDomains) allowedDomains.push(...extraDomains);
+
+            const isAllowed = email && allowedDomains.some(domain => email.endsWith(domain));
+            if (!isAllowed) {
                 await supabase.auth.signOut();
                 return NextResponse.redirect(`${origin}/login?error=Invalid domain. Only @re-apex.com emails are allowed.`);
             }
