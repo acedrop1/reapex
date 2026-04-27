@@ -1,13 +1,10 @@
 import { createClient } from '@/lib/supabase/server';
 import { NextResponse } from 'next/server';
-import Stripe from 'stripe';
+import { getStripe } from '@/lib/stripe';
 import { safeParseUrl } from '@/lib/utils/errorHandler';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-    apiVersion: '2025-11-17.clover',
-});
-
 export async function GET(req: Request) {
+    const stripe = getStripe();
     try {
         const supabase = await createClient();
         const { data: { user } } = await supabase.auth.getUser();

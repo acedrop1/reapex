@@ -33,12 +33,9 @@ interface HeaderProps {
 }
 
 export function Header({ user }: HeaderProps) {
-  const pathname = usePathname();
   const [notificationsAnchorEl, setNotificationsAnchorEl] = useState<null | HTMLElement>(null);
   const router = useRouter();
   const { drawerWidth, toggleMobile } = useSidebar();
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const queryClient = useQueryClient();
   const supabase = createClient();
 

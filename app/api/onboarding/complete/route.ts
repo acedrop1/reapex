@@ -1,16 +1,6 @@
 import { createClient } from '@/lib/supabase/server';
 import { NextResponse } from 'next/server';
-import Stripe from 'stripe';
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-    apiVersion: '2025-11-17.clover', // Updating to a recent valid version or removing if strict
-});
-// Note: If '2025-11-17.clover' is required by local types, we might need that.
-// But usually '2024-11-20.acacia' or similar is standard.
-// Let's actually just remove the apiVersion to let it use the default from the package if it's being difficult, 
-// OR try to match what the error said if it's a specific local override? 
-// The error `Type '"2023-10-16"' is not assignable to type '"2025-11-17.clover"'` implies the installed types enforce that specific version.
-// So I will use that.
+import { getStripe } from '@/lib/stripe';
 
 const PLAN_PRICE_IDS = {
     launch: 'price_launch', // FREE
@@ -26,6 +16,7 @@ const PLAN_COMMISSIONS = {
 
 export async function POST(req: Request) {
     try {
+        const stripe = getStripe();
         const supabase = await createClient();
         const { formData } = await req.json();
 
