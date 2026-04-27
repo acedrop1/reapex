@@ -511,14 +511,35 @@ export function Sidebar({ user }: { user: any }) {
               >
                 {user?.full_name || 'Agent'}
               </Typography>
-              <Typography
-                sx={{
-                  fontSize: '11px',
-                  color: '#666666',
-                }}
-              >
-                {getPlanLabel(user?.subscription_plan)}
-              </Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
+                <Typography
+                  sx={{
+                    fontSize: '11px',
+                    color: '#666666',
+                  }}
+                >
+                  {getPlanLabel(user?.subscription_plan)}
+                </Typography>
+                {isAdmin(user?.role) && (
+                  <Box
+                    sx={{
+                      fontSize: '9px',
+                      fontWeight: 700,
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.5px',
+                      color: '#E2C05A',
+                      backgroundColor: 'rgba(226, 192, 90, 0.12)',
+                      border: '1px solid rgba(226, 192, 90, 0.2)',
+                      borderRadius: '4px',
+                      px: 0.75,
+                      py: 0.15,
+                      lineHeight: 1.4,
+                    }}
+                  >
+                    Admin
+                  </Box>
+                )}
+              </Box>
             </Box>
           )}
           {!isCollapsed && (
