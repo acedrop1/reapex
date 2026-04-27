@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import {
   Drawer,
   List,
@@ -15,31 +14,26 @@ import {
   useMediaQuery,
   IconButton,
   Tooltip,
-  Divider,
   Badge,
 } from '@mui/material';
 import { isAdmin } from '@/lib/utils/auth';
 import {
   SquaresFour,
   Users,
-  Receipt,
   FileText,
-  Megaphone,
-  GraduationCap,
   CurrencyDollar,
-  Headset,
   CaretLeft,
   CaretRight,
   ClipboardText,
   House,
-  UserList,
   UserGear,
   BellRinging,
   Folder,
-  SignOut,
   Star,
-  LinkSimple,
-  UserCircle,
+  SignOut,
+  CheckSquare,
+  BookOpen,
+  Question,
 } from '@phosphor-icons/react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
@@ -48,15 +42,35 @@ import { useSidebar } from '@/components/providers/SidebarProvider';
 import { useQuery } from '@tanstack/react-query';
 import { createClient } from '@/lib/supabase/client';
 
-const regularMenuItems: Array<{ text: string; icon: any; href: string; external?: boolean }> = [
-  { text: 'Dashboard', icon: SquaresFour, href: '/dashboard' },
-  { text: 'My Business', icon: CurrencyDollar, href: '/dashboard/business' },
-  { text: 'CRM', icon: Users, href: '/crm' },
-  { text: 'Agent Profile', icon: UserCircle, href: '/dashboard/profile' },
-  { text: 'Resources', icon: LinkSimple, href: '/dashboard/external-links' },
-  { text: 'Forms & Compliance', icon: FileText, href: '/dashboard/forms' },
-  { text: 'Marketing', icon: Megaphone, href: '/dashboard/marketing' },
-  { text: 'Training', icon: GraduationCap, href: '/dashboard/training' },
+interface NavSection {
+  label: string;
+  items: Array<{ text: string; icon: any; href: string; external?: boolean; badge?: boolean }>;
+}
+
+const agentNavSections: NavSection[] = [
+  {
+    label: 'Main',
+    items: [
+      { text: 'Dashboard', icon: SquaresFour, href: '/dashboard' },
+      { text: 'Leads & Contacts', icon: Users, href: '/crm' },
+      { text: 'Transactions', icon: FileText, href: '/transactions' },
+    ],
+  },
+  {
+    label: 'Resources',
+    items: [
+      { text: 'Forms & Compliance', icon: CheckSquare, href: '/dashboard/forms' },
+      { text: 'Marketing & Branding', icon: Star, href: '/dashboard/marketing' },
+      { text: 'Training & Knowledge', icon: BookOpen, href: '/dashboard/training' },
+    ],
+  },
+  {
+    label: 'Business',
+    items: [
+      { text: 'My Business', icon: CurrencyDollar, href: '/dashboard/business' },
+      { text: 'Support & Brokerage', icon: Question, href: '/dashboard/support' },
+    ],
+  },
 ];
 
 const adminMenuItems: Array<{ text: string; icon: any; href: string; adminOnlyStrict?: boolean }> = [
@@ -85,7 +99,7 @@ export function Sidebar({ user }: { user: any }) {
     queryKey: ['pending-applications-count'],
     queryFn: async () => {
       if (!isAdmin(user?.role)) return 0;
-      const { count} = await supabase
+      const { count } = await supabase
         .from('agent_applications')
         .select('*', { count: 'exact', head: true })
         .eq('status', 'pending')
@@ -93,10 +107,10 @@ export function Sidebar({ user }: { user: any }) {
       return count || 0;
     },
     enabled: isAdmin(user?.role),
-    refetchInterval: 30000, // Refresh every 30 seconds
+    refetchInterval: 30000,
   });
 
-  // Fetch pending reviews count (unapproved reviews)
+  // Fetch pending reviews count
   const { data: pendingReviewsCount } = useQuery({
     queryKey: ['pending-reviews-count'],
     queryFn: async () => {
@@ -108,7 +122,7 @@ export function Sidebar({ user }: { user: any }) {
       return count || 0;
     },
     enabled: isAdmin(user?.role),
-    refetchInterval: 30000, // Refresh every 30 seconds
+    refetchInterval: 30000,
   });
 
   // Fetch unassigned sell requests count
@@ -124,7 +138,7 @@ export function Sidebar({ user }: { user: any }) {
       return count || 0;
     },
     enabled: isAdmin(user?.role),
-    refetchInterval: 30000, // Refresh every 30 seconds
+    refetchInterval: 30000,
   });
 
   const handleDrawerToggle = () => {
@@ -141,46 +155,75 @@ export function Sidebar({ user }: { user: any }) {
     router.refresh();
   };
 
-  const renderMenuItem = (item: { text: string; icon: any; href: string; external?: boolean }) => {
+  const getInitials = (name: string | null) => {
+    if (!name) return '?';
+    return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+  };
+
+  const getPlanLabel = (plan: string | null) => {
+    switch (plan) {
+      case 'pro': return 'Pro Plan';
+      case 'growth': return 'Growth Plan';
+      case 'launch': return 'Launch Plan';
+      default: return 'Agent';
+    }
+  };
+
+  const isActive = (href: string) => {
+    if (href === '/dashboard') return pathname === '/dashboard';
+    return pathname === href || pathname.startsWith(href + '/');
+  };
+
+  const getBadgeCount = (text: string) => {
+    if (text === 'Applications') return pendingCount || 0;
+    if (text === 'Pending Reviews') return pendingReviewsCount || 0;
+    if (text === 'Sell Requests') return unassignedSellRequestsCount || 0;
+    return 0;
+  };
+
+  const showAdminSection = user && isAdmin(user.role);
+
+  const renderNavItem = (item: { text: string; icon: any; href: string; external?: boolean }) => {
     const Icon = item.icon;
-
-    // Determine if item is active
-    let isActive = false;
-
-    // For Dashboard, only match exact path. For others, match path and children
-    isActive = !item.external && (item.href === '/dashboard'
-        ? pathname === '/dashboard'
-        : pathname === item.href || pathname.startsWith(item.href + '/'));
-
-    // Check if this item should show a badge
-    const showBadge = (item.text === 'Applications' && pendingCount && pendingCount > 0) ||
-                      (item.text === 'Pending Reviews' && pendingReviewsCount && pendingReviewsCount > 0) ||
-                      (item.text === 'Sell Requests' && unassignedSellRequestsCount && unassignedSellRequestsCount > 0);
-
-    // Determine which count to show in the badge
-    const badgeCount = item.text === 'Applications' ? pendingCount :
-                       item.text === 'Pending Reviews' ? pendingReviewsCount :
-                       item.text === 'Sell Requests' ? unassignedSellRequestsCount : 0;
+    const active = !item.external && isActive(item.href);
+    const badgeCount = getBadgeCount(item.text);
 
     const listItemButton = (
       <ListItemButton
         component={item.external ? 'a' : Link}
         href={item.href}
         {...(item.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-        selected={isActive}
+        selected={active}
         sx={{
           px: isCollapsed ? 0 : 1.5,
           py: 1,
           mx: isCollapsed ? 0 : 1,
-          color: '#B0B0B0',
+          color: 'var(--text-2, #aaaaaa)',
           borderRadius: '8px',
           justifyContent: isCollapsed ? 'center' : 'flex-start',
-          transition: 'all 200ms ease',
+          transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+          position: 'relative',
+          overflow: 'hidden',
+          border: '1px solid transparent',
+          mb: '1px',
+          '&::before': {
+            content: '""',
+            position: 'absolute',
+            left: 0,
+            top: 0,
+            bottom: 0,
+            width: 0,
+            background: '#E2C05A',
+            borderRadius: '0 4px 4px 0',
+            transition: 'width 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+          },
           '&.Mui-selected': {
             backgroundColor: 'rgba(226, 192, 90, 0.12)',
             color: '#E2C05A',
-            borderLeft: '3px solid #E2C05A',
-            borderRadius: '0 8px 8px 0',
+            borderColor: 'rgba(226, 192, 90, 0.1)',
+            '&::before': {
+              width: '3px',
+            },
             '&:hover': {
               backgroundColor: 'rgba(226, 192, 90, 0.18)',
             },
@@ -193,8 +236,9 @@ export function Sidebar({ user }: { user: any }) {
             },
           },
           '&:hover': {
-            backgroundColor: '#1A1A1A',
+            backgroundColor: 'rgba(255, 255, 255, 0.04)',
             color: '#FFFFFF',
+            transform: 'translateX(3px)',
             '& .MuiListItemIcon-root': {
               color: '#FFFFFF',
             },
@@ -203,20 +247,20 @@ export function Sidebar({ user }: { user: any }) {
             },
           },
           '& .MuiListItemIcon-root': {
-            color: '#B0B0B0',
+            color: 'var(--text-2, #aaaaaa)',
             minWidth: isCollapsed ? 'auto' : 36,
             justifyContent: 'center',
           },
           '& .MuiListItemText-primary': {
-            color: '#B0B0B0',
+            color: 'var(--text-2, #aaaaaa)',
             fontWeight: 500,
-            fontSize: '13px',
+            fontSize: '13.5px',
             whiteSpace: 'nowrap',
           },
         }}
       >
         <ListItemIcon>
-          {showBadge ? (
+          {badgeCount > 0 ? (
             <Badge
               badgeContent={badgeCount}
               color="error"
@@ -230,10 +274,10 @@ export function Sidebar({ user }: { user: any }) {
                 }
               }}
             >
-              <Icon size={24} weight="duotone" />
+              <Icon size={17} weight="regular" />
             </Badge>
           ) : (
-            <Icon size={24} weight="duotone" />
+            <Icon size={17} weight="regular" />
           )}
         </ListItemIcon>
         {!isCollapsed && <ListItemText primary={item.text} />}
@@ -253,11 +297,26 @@ export function Sidebar({ user }: { user: any }) {
     );
   };
 
-  const showAdminSection = user && isAdmin(user.role);
-
   const drawer = (
-    <Box sx={{ backgroundColor: '#0F0F0F', height: '100%', position: 'relative', display: 'flex', flexDirection: 'column' }}>
-      {/* Expand button when collapsed - centered on sidebar edge */}
+    <Box sx={{
+      backgroundColor: '#080808',
+      height: '100%',
+      position: 'relative',
+      display: 'flex',
+      flexDirection: 'column',
+      '&::after': {
+        content: '""',
+        position: 'absolute',
+        top: '20%',
+        right: '-60px',
+        width: '120px',
+        height: '300px',
+        background: 'radial-gradient(ellipse, rgba(226,192,90,.04) 0%, transparent 70%)',
+        pointerEvents: 'none',
+        zIndex: 0,
+      },
+    }}>
+      {/* Expand button when collapsed */}
       {isCollapsed && !isMobile && (
         <IconButton
           onClick={handleToggleCollapse}
@@ -267,12 +326,12 @@ export function Sidebar({ user }: { user: any }) {
             right: -16,
             top: '50%',
             transform: 'translateY(-50%)',
-            backgroundColor: '#0F0F0F',
-            border: '1px solid #2A2A2A',
-            color: '#B0B0B0',
+            backgroundColor: '#080808',
+            border: '1px solid rgba(226, 192, 90, 0.08)',
+            color: '#aaaaaa',
             zIndex: 1500,
             '&:hover': {
-              backgroundColor: '#1A1A1A',
+              backgroundColor: '#111111',
               color: '#FFFFFF',
             },
           }}
@@ -282,10 +341,10 @@ export function Sidebar({ user }: { user: any }) {
       )}
 
       <Toolbar sx={{
-        borderBottom: '1px solid #2A2A2A',
-        minHeight: '64px !important',
+        borderBottom: '1px solid rgba(226, 192, 90, 0.08)',
+        minHeight: '60px !important',
         justifyContent: isCollapsed ? 'center' : 'space-between',
-        px: isCollapsed ? 0 : 2,
+        px: isCollapsed ? 0 : 2.5,
         position: 'relative',
       }}>
         {isCollapsed ? (
@@ -304,10 +363,10 @@ export function Sidebar({ user }: { user: any }) {
                 sx={{
                   position: 'absolute',
                   right: 8,
-                  color: '#B0B0B0',
+                  color: '#aaaaaa',
                   '&:hover': {
                     color: '#FFFFFF',
-                    backgroundColor: '#1A1A1A',
+                    backgroundColor: 'rgba(255,255,255,0.04)',
                   },
                 }}
               >
@@ -318,90 +377,192 @@ export function Sidebar({ user }: { user: any }) {
         )}
       </Toolbar>
 
-      <List sx={{ pt: 1, px: 0, flexGrow: 1, overflow: 'auto' }}>
-        {/* Regular Menu Items */}
-        {regularMenuItems.map(renderMenuItem)}
+      <Box sx={{ pt: 1.5, px: 1, flexGrow: 1, overflow: 'auto' }}>
+        {/* Agent Navigation Sections */}
+        {agentNavSections.map((section) => (
+          <Box key={section.label}>
+            {!isCollapsed && (
+              <Typography
+                sx={{
+                  fontSize: '10px',
+                  fontWeight: 700,
+                  textTransform: 'uppercase',
+                  letterSpacing: '1.5px',
+                  color: '#666666',
+                  px: 1.5,
+                  pt: 1.75,
+                  pb: 0.75,
+                }}
+              >
+                {section.label}
+              </Typography>
+            )}
+            {isCollapsed && section.label !== 'Main' && (
+              <Box sx={{ mx: 1, my: 1, borderTop: '1px solid rgba(226, 192, 90, 0.08)' }} />
+            )}
+            <List sx={{ p: 0 }}>
+              {section.items.map(renderNavItem)}
+            </List>
+          </Box>
+        ))}
 
         {/* Admin Settings Section */}
         {showAdminSection && (
-          <>
-            <Divider sx={{ my: 2, mx: 1, borderColor: '#2A2A2A', position: 'relative' }}>
-              {!isCollapsed && (
-                <Typography
-                  variant="caption"
-                  sx={{
-                    position: 'absolute',
-                    top: '50%',
-                    left: '50%',
-                    transform: 'translate(-50%, -50%)',
-                    backgroundColor: '#0F0F0F',
-                    px: 1.5,
-                    color: '#808080',
-                    fontSize: '11px',
-                    fontWeight: 600,
-                    letterSpacing: '0.5px',
-                    textTransform: 'uppercase',
-                  }}
-                >
-                  Admin Settings
-                </Typography>
-              )}
-            </Divider>
-
-            {adminMenuItems
-              .filter(item => {
-                // Admin-only strict items (only for admins, not brokers)
-                if (item.adminOnlyStrict) {
-                  return isAdmin(user.role);
-                }
-                return true;
-              })
-              .map(renderMenuItem)}
-          </>
+          <Box>
+            {!isCollapsed ? (
+              <Typography
+                sx={{
+                  fontSize: '10px',
+                  fontWeight: 700,
+                  textTransform: 'uppercase',
+                  letterSpacing: '1.5px',
+                  color: '#666666',
+                  px: 1.5,
+                  pt: 2,
+                  pb: 0.75,
+                }}
+              >
+                Admin
+              </Typography>
+            ) : (
+              <Box sx={{ mx: 1, my: 1, borderTop: '1px solid rgba(226, 192, 90, 0.08)' }} />
+            )}
+            <List sx={{ p: 0 }}>
+              {adminMenuItems
+                .filter(item => {
+                  if (item.adminOnlyStrict) {
+                    return isAdmin(user.role);
+                  }
+                  return true;
+                })
+                .map(renderNavItem)}
+            </List>
+          </Box>
         )}
-      </List>
+      </Box>
 
-      {/* Logout Section at Bottom */}
+      {/* User Profile Footer */}
       <Box
         sx={{
-          borderTop: '1px solid #2A2A2A',
-          p: isCollapsed ? 1 : 2,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: isCollapsed ? 'center' : 'space-between',
-          gap: 1,
+          borderTop: '1px solid rgba(226, 192, 90, 0.08)',
+          p: isCollapsed ? 1 : 1.75,
         }}
       >
-        {!isCollapsed && user?.full_name && (
-          <Typography
-            variant="body2"
-            sx={{
-              color: '#B0B0B0',
-              fontWeight: 500,
-              fontSize: '13px',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              whiteSpace: 'nowrap',
-            }}
-          >
-            {user.full_name}
-          </Typography>
-        )}
-        <Tooltip title="Logout" placement="top" arrow>
-          <IconButton
-            onClick={handleLogout}
-            sx={{
-              color: '#B0B0B0',
-              '&:hover': {
-                color: '#FFFFFF',
-                backgroundColor: '#1A1A1A',
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 1.3,
+            p: isCollapsed ? 0.5 : '9px 12px',
+            borderRadius: '8px',
+            cursor: 'pointer',
+            justifyContent: isCollapsed ? 'center' : 'flex-start',
+            transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+            '&:hover': {
+              backgroundColor: 'rgba(255, 255, 255, 0.04)',
+              transform: 'translateX(2px)',
+              '& .user-avatar': {
+                transform: 'scale(1.08)',
               },
+            },
+          }}
+        >
+          {/* Avatar */}
+          <Box
+            className="user-avatar"
+            sx={{
+              width: 34,
+              height: 34,
+              borderRadius: '8px',
+              background: 'linear-gradient(135deg, #E2C05A, #c4a43e)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontWeight: 700,
+              fontSize: '13px',
+              color: '#FFFFFF',
+              flexShrink: 0,
+              transition: 'transform 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+              overflow: 'hidden',
             }}
-            aria-label="logout"
           >
-            <SignOut size={20} weight="duotone" />
-          </IconButton>
-        </Tooltip>
+            {user?.headshot_url ? (
+              <Box
+                component="img"
+                src={user.headshot_url}
+                alt={user.full_name || ''}
+                sx={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              />
+            ) : (
+              getInitials(user?.full_name)
+            )}
+          </Box>
+          {!isCollapsed && (
+            <Box sx={{ flex: 1, overflow: 'hidden' }}>
+              <Typography
+                sx={{
+                  fontSize: '13px',
+                  fontWeight: 600,
+                  color: '#FFFFFF',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                {user?.full_name || 'Agent'}
+              </Typography>
+              <Typography
+                sx={{
+                  fontSize: '11px',
+                  color: '#666666',
+                }}
+              >
+                {getPlanLabel(user?.subscription_plan)}
+              </Typography>
+            </Box>
+          )}
+          {!isCollapsed && (
+            <Tooltip title="Logout" placement="top" arrow>
+              <IconButton
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleLogout();
+                }}
+                size="small"
+                sx={{
+                  color: '#666666',
+                  '&:hover': {
+                    color: '#FFFFFF',
+                    backgroundColor: 'rgba(255, 255, 255, 0.04)',
+                  },
+                }}
+                aria-label="logout"
+              >
+                <SignOut size={16} weight="regular" />
+              </IconButton>
+            </Tooltip>
+          )}
+        </Box>
+        {isCollapsed && (
+          <Tooltip title="Logout" placement="right" arrow>
+            <IconButton
+              onClick={handleLogout}
+              size="small"
+              sx={{
+                mt: 0.5,
+                color: '#666666',
+                width: '100%',
+                '&:hover': {
+                  color: '#FFFFFF',
+                  backgroundColor: 'rgba(255, 255, 255, 0.04)',
+                },
+              }}
+              aria-label="logout"
+            >
+              <SignOut size={16} weight="regular" />
+            </IconButton>
+          </Tooltip>
+        )}
       </Box>
     </Box>
   );
@@ -417,13 +578,13 @@ export function Sidebar({ user }: { user: any }) {
           open={mobileOpen}
           onClose={handleDrawerToggle}
           ModalProps={{
-            keepMounted: true, // Better open performance on mobile.
+            keepMounted: true,
           }}
           sx={{
             display: { xs: 'block', md: 'none' },
             '& .MuiDrawer-paper': {
               boxSizing: 'border-box',
-              width: drawerWidth,
+              width: 256,
             },
           }}
         >
@@ -437,8 +598,8 @@ export function Sidebar({ user }: { user: any }) {
             '& .MuiDrawer-paper': {
               boxSizing: 'border-box',
               width: drawerWidth,
-              borderRight: '1px solid #2A2A2A',
-              backgroundColor: '#0F0F0F',
+              borderRight: '1px solid rgba(226, 192, 90, 0.08)',
+              backgroundColor: '#080808',
               overflow: 'visible',
             },
           }}
@@ -450,4 +611,3 @@ export function Sidebar({ user }: { user: any }) {
     </Box>
   );
 }
-

@@ -1,50 +1,36 @@
 'use client';
 
-import { AppBar, Toolbar, Typography, IconButton, Box, useMediaQuery, useTheme, Badge, Popover, List as MuiList, ListItem, ListItemText, Button } from '@mui/material';
-import { Bell, UserList, List } from '@phosphor-icons/react';
+import {
+  AppBar,
+  Toolbar,
+  Typography,
+  IconButton,
+  Box,
+  Popover,
+  List as MuiList,
+  ListItem,
+  ListItemText,
+  Button,
+  InputBase,
+} from '@mui/material';
+import {
+  Bell,
+  List,
+  MagnifyingGlass,
+  Gear,
+  Sun,
+} from '@phosphor-icons/react';
 import { useState } from 'react';
-import { useRouter, usePathname } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { createClient } from '@/lib/supabase/client';
 import { User } from '@/types/database';
 import { useSidebar } from '@/components/providers/SidebarProvider';
 import { formatDistanceToNow } from 'date-fns';
-import { isAdmin } from '@/lib/utils/auth';
 
 interface HeaderProps {
   user: User | null;
 }
-
-// Map pathname to page title
-const getPageTitle = (pathname: string): string => {
-  const pathMap: Record<string, string> = {
-    '/dashboard': 'Dashboard',
-    '/dashboard/crm': 'Leads & Contacts',
-    '/dashboard/transactions': 'Transactions',
-    '/dashboard/forms': 'Forms & Compliance',
-    '/dashboard/marketing': 'Marketing & Branding',
-    '/dashboard/training': 'Training & Compliance',
-    '/dashboard/business': 'My Business',
-    '/dashboard/support': 'Support & Brokerage',
-    '/admin/applications': 'Agent Applications',
-    '/admin/brokerage-documents': 'Brokerage Documents',
-    '/profile': 'My Profile',
-  };
-
-  // Check exact match first
-  if (pathMap[pathname]) {
-    return pathMap[pathname];
-  }
-
-  // Check if pathname starts with any of the mapped paths
-  for (const [path, title] of Object.entries(pathMap)) {
-    if (pathname.startsWith(path + '/')) {
-      return title;
-    }
-  }
-
-  return 'Dashboard';
-};
 
 export function Header({ user }: HeaderProps) {
   const pathname = usePathname();
@@ -113,177 +99,269 @@ export function Header({ user }: HeaderProps) {
     },
   });
 
-  // Fetch pending agent applications count (admin and admin_agent)
-  const { data: pendingApplicationsCount = 0 } = useQuery({
-    queryKey: ['pending-applications-count'],
-    queryFn: async () => {
-      const { count, error } = await supabase
-        .from('agent_applications')
-        .select('*', { count: 'exact', head: true })
-        .in('status', ['pending', 'reviewing']);
-
-      if (error) throw error;
-      return count || 0;
-    },
-    enabled: isAdmin(user?.role),
-  });
-
-  const unreadCount = notifications.filter(n => !n.read).length;
-  const pageTitle = getPageTitle(pathname);
+  const unreadCount = notifications.filter((n: any) => !n.read).length;
 
   return (
     <AppBar
       position="fixed"
       elevation={0}
       sx={{
-        backgroundColor: '#0A0A0A',
-        borderBottom: '1px solid #2A2A2A',
+        backgroundColor: 'rgba(0, 0, 0, 0.92)',
+        backdropFilter: 'blur(16px)',
+        WebkitBackdropFilter: 'blur(16px)',
+        borderBottom: '1px solid rgba(226, 192, 90, 0.08)',
         top: 0,
         left: { xs: 0, md: `${drawerWidth}px` },
         right: 0,
         width: { xs: '100%', md: `calc(100% - ${drawerWidth}px)` },
         zIndex: 1100,
-        transition: 'left 0.3s ease, width 0.3s ease',
+        transition: 'left 0.3s cubic-bezier(0.16, 1, 0.3, 1), width 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
       }}
     >
-      <Toolbar>
-        {/* Mobile Hamburger Menu */}
-        <IconButton
-          onClick={toggleMobile}
-          sx={{
-            mr: 2,
-            color: '#FFFFFF',
-            display: { xs: 'flex', md: 'none' },
-            '&:hover': {
-              backgroundColor: '#1A1A1A',
-            },
-          }}
-          aria-label="open menu"
-        >
-          <List size={24} weight="bold" />
-        </IconButton>
-
-        <Typography variant="h6" component="div" sx={{ flexGrow: 1, color: '#FFFFFF', fontWeight: 600 }}>
-          {pageTitle}
-        </Typography>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          {/* Notifications Bell Icon */}
+      <Toolbar sx={{ height: '60px', minHeight: '60px !important', px: { xs: 2, md: 3.5 } }}>
+        {/* Left side */}
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flex: 1 }}>
+          {/* Mobile Hamburger Menu */}
           <IconButton
-            size="large"
-            onClick={handleNotificationsOpen}
-            sx={{ ml: 0, color: '#B0B0B0', '&:hover': { color: '#FFFFFF', backgroundColor: '#1A1A1A' } }}
-            aria-label="notifications"
+            onClick={toggleMobile}
+            sx={{
+              display: { xs: 'flex', md: 'none' },
+              width: 34,
+              height: 34,
+              borderRadius: '8px',
+              backgroundColor: '#111111',
+              border: '1px solid rgba(226, 192, 90, 0.08)',
+              color: '#FFFFFF',
+              '&:hover': {
+                borderColor: 'rgba(226, 192, 90, 0.2)',
+              },
+            }}
+            aria-label="open menu"
           >
-            <Badge
-              badgeContent={unreadCount}
-              color="error"
-              sx={{
-                '& .MuiBadge-badge': {
-                  backgroundColor: '#EF4444',
-                  color: '#FFFFFF',
-                  fontWeight: 600,
-                }
-              }}
-            >
-              <Bell size={24} weight="duotone" />
-            </Badge>
+            <List size={18} weight="bold" />
           </IconButton>
 
-          {/* Notifications Popover */}
-          <Popover
-            open={Boolean(notificationsAnchorEl)}
-            anchorEl={notificationsAnchorEl}
-            onClose={handleNotificationsClose}
-            anchorOrigin={{
-              vertical: 'bottom',
-              horizontal: 'right',
-            }}
-            transformOrigin={{
-              vertical: 'top',
-              horizontal: 'right',
-            }}
+          {/* Search Bar */}
+          <Box
             sx={{
-              '& .MuiPopover-paper': {
-                backgroundColor: '#1A1A1A',
-                border: '1px solid #2A2A2A',
-                minWidth: 320,
-                maxWidth: 400,
-              }
+              display: 'flex',
+              alignItems: 'center',
+              gap: 1,
+              backgroundColor: '#111111',
+              border: '1px solid rgba(226, 192, 90, 0.08)',
+              borderRadius: '8px',
+              px: 1.75,
+              py: 0.875,
+              width: { xs: '100%', sm: 280 },
+              maxWidth: 280,
+              transition: 'border-color 0.3s ease, box-shadow 0.3s ease',
+              '&:focus-within': {
+                borderColor: '#E2C05A',
+                boxShadow: '0 0 0 3px rgba(226, 192, 90, 0.08)',
+              },
             }}
           >
-            <Box sx={{ p: 2, borderBottom: '1px solid #2A2A2A' }}>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <Typography variant="h6" sx={{ fontWeight: 600, color: '#FFFFFF' }}>
-                  Notifications
-                </Typography>
-                {unreadCount > 0 && (
-                  <Button
-                    size="small"
-                    onClick={() => markAllAsReadMutation.mutate()}
-                    sx={{ textTransform: 'none', color: '#E2C05A' }}
-                  >
-                    Mark all as read
-                  </Button>
-                )}
-              </Box>
-            </Box>
-            <MuiList sx={{ maxHeight: 400, overflow: 'auto' }}>
-              {notifications.length === 0 ? (
-                <ListItem>
-                  <ListItemText
-                    primary="No notifications"
-                    sx={{ color: '#808080' }}
-                  />
-                </ListItem>
-              ) : (
-                notifications.map((notification) => (
-                  <ListItem
-                    key={notification.id}
-                    sx={{
-                      backgroundColor: notification.read ? 'transparent' : 'rgba(226, 192, 90, 0.08)',
-                      borderBottom: '1px solid #2A2A2A',
-                      cursor: 'pointer',
-                      '&:hover': {
-                        backgroundColor: 'rgba(226, 192, 90, 0.12)',
-                      }
-                    }}
-                    onClick={() => {
-                      if (!notification.read) {
-                        markAsReadMutation.mutate(notification.id);
-                      }
-                      if (notification.link) {
-                        router.push(notification.link);
-                        handleNotificationsClose();
-                      }
-                    }}
-                  >
-                    <ListItemText
-                      primary={notification.title}
-                      secondary={
-                        <Box>
-                          <Typography variant="body2" sx={{ color: '#B0B0B0' }}>
-                            {notification.message}
-                          </Typography>
-                          <Typography variant="caption" sx={{ color: '#808080' }}>
-                            {formatDistanceToNow(new Date(notification.created_at), { addSuffix: true })}
-                          </Typography>
-                        </Box>
-                      }
-                      sx={{
-                        '& .MuiListItemText-primary': {
-                          color: '#FFFFFF',
-                          fontWeight: notification.read ? 400 : 600,
-                        }
-                      }}
-                    />
-                  </ListItem>
-                ))
-              )}
-            </MuiList>
-          </Popover>
+            <MagnifyingGlass size={15} color="#666666" style={{ flexShrink: 0 }} />
+            <InputBase
+              placeholder="Search..."
+              sx={{
+                flex: 1,
+                color: '#FFFFFF',
+                fontSize: '13px',
+                fontFamily: "'DM Sans', sans-serif",
+                '& input::placeholder': {
+                  color: '#666666',
+                  opacity: 1,
+                },
+              }}
+            />
+          </Box>
+        </Box>
+
+        {/* Right side */}
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25 }}>
+          {/* Theme Toggle (placeholder) */}
+          <IconButton
+            sx={{
+              width: 34,
+              height: 34,
+              borderRadius: '8px',
+              backgroundColor: '#111111',
+              border: '1px solid rgba(226, 192, 90, 0.08)',
+              color: '#aaaaaa',
+              transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+              '&:hover': {
+                borderColor: 'rgba(226, 192, 90, 0.2)',
+                transform: 'translateY(-2px)',
+                boxShadow: '0 4px 16px rgba(226, 192, 90, 0.08)',
+              },
+              '& svg': { width: 15, height: 15 },
+            }}
+          >
+            <Sun size={15} />
+          </IconButton>
+
+          {/* Notifications Bell with Gold Dot */}
+          <IconButton
+            onClick={handleNotificationsOpen}
+            sx={{
+              width: 34,
+              height: 34,
+              borderRadius: '8px',
+              backgroundColor: '#111111',
+              border: '1px solid rgba(226, 192, 90, 0.08)',
+              color: '#aaaaaa',
+              position: 'relative',
+              transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+              '&:hover': {
+                borderColor: 'rgba(226, 192, 90, 0.2)',
+                transform: 'translateY(-2px)',
+                boxShadow: '0 4px 16px rgba(226, 192, 90, 0.08)',
+              },
+            }}
+            aria-label="notifications"
+          >
+            <Bell size={15} />
+            {unreadCount > 0 && (
+              <Box
+                sx={{
+                  width: 7,
+                  height: 7,
+                  borderRadius: '50%',
+                  backgroundColor: '#E2C05A',
+                  position: 'absolute',
+                  top: 5,
+                  right: 5,
+                  border: '2px solid #000000',
+                  animation: 'notifPulse 2s ease-in-out infinite',
+                  '@keyframes notifPulse': {
+                    '0%, 100%': { boxShadow: '0 0 0 0 rgba(226, 192, 90, 0.4)' },
+                    '50%': { boxShadow: '0 0 0 6px rgba(226, 192, 90, 0)' },
+                  },
+                }}
+              />
+            )}
+          </IconButton>
+
+          {/* Settings Gear */}
+          <IconButton
+            onClick={() => router.push('/dashboard/profile')}
+            sx={{
+              width: 34,
+              height: 34,
+              borderRadius: '8px',
+              backgroundColor: '#111111',
+              border: '1px solid rgba(226, 192, 90, 0.08)',
+              color: '#aaaaaa',
+              transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+              '&:hover': {
+                borderColor: 'rgba(226, 192, 90, 0.2)',
+                transform: 'translateY(-2px)',
+                boxShadow: '0 4px 16px rgba(226, 192, 90, 0.08)',
+              },
+            }}
+          >
+            <Gear size={15} />
+          </IconButton>
         </Box>
       </Toolbar>
+
+      {/* Notifications Popover */}
+      <Popover
+        open={Boolean(notificationsAnchorEl)}
+        anchorEl={notificationsAnchorEl}
+        onClose={handleNotificationsClose}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'right',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'right',
+        }}
+        sx={{
+          '& .MuiPopover-paper': {
+            backgroundColor: '#111111',
+            border: '1px solid rgba(226, 192, 90, 0.08)',
+            borderRadius: '12px',
+            minWidth: 320,
+            maxWidth: 400,
+            mt: 1,
+          }
+        }}
+      >
+        <Box sx={{ p: 2, borderBottom: '1px solid rgba(226, 192, 90, 0.08)' }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Typography sx={{ fontWeight: 700, color: '#FFFFFF', fontSize: '14px' }}>
+              Notifications
+            </Typography>
+            {unreadCount > 0 && (
+              <Button
+                size="small"
+                onClick={() => markAllAsReadMutation.mutate()}
+                sx={{ textTransform: 'none', color: '#E2C05A', fontSize: '12px' }}
+              >
+                Mark all as read
+              </Button>
+            )}
+          </Box>
+        </Box>
+        <MuiList sx={{ maxHeight: 400, overflow: 'auto' }}>
+          {notifications.length === 0 ? (
+            <ListItem>
+              <ListItemText
+                primary="No notifications"
+                sx={{ '& .MuiListItemText-primary': { color: '#666666', fontSize: '13px' } }}
+              />
+            </ListItem>
+          ) : (
+            notifications.map((notification: any) => (
+              <ListItem
+                key={notification.id}
+                sx={{
+                  backgroundColor: notification.read ? 'transparent' : 'rgba(226, 192, 90, 0.06)',
+                  borderBottom: '1px solid rgba(255, 255, 255, 0.025)',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                  '&:hover': {
+                    backgroundColor: 'rgba(226, 192, 90, 0.08)',
+                  }
+                }}
+                onClick={() => {
+                  if (!notification.read) {
+                    markAsReadMutation.mutate(notification.id);
+                  }
+                  if (notification.link) {
+                    router.push(notification.link);
+                    handleNotificationsClose();
+                  }
+                }}
+              >
+                <ListItemText
+                  primary={notification.title}
+                  secondary={
+                    <Box>
+                      <Typography variant="body2" sx={{ color: '#aaaaaa', fontSize: '12px' }}>
+                        {notification.message}
+                      </Typography>
+                      <Typography variant="caption" sx={{ color: '#666666', fontSize: '11px' }}>
+                        {formatDistanceToNow(new Date(notification.created_at), { addSuffix: true })}
+                      </Typography>
+                    </Box>
+                  }
+                  sx={{
+                    '& .MuiListItemText-primary': {
+                      color: '#FFFFFF',
+                      fontWeight: notification.read ? 400 : 600,
+                      fontSize: '13px',
+                    }
+                  }}
+                />
+              </ListItem>
+            ))
+          )}
+        </MuiList>
+      </Popover>
     </AppBar>
   );
 }
-

@@ -1,123 +1,86 @@
-import { createServerComponentClient } from '@/lib/supabase/server';
-import { redirect } from 'next/navigation';
-import { Container, Typography, Box, Grid, Card, CardContent, Button } from '@mui/material';
+'use client';
 
-export default async function SupportPage() {
-  const supabase = await createServerComponentClient();
+import { Box, Typography } from '@mui/material';
 
-  // Use getUser() instead of getSession() for server-side security
-  const { data: { user }, error } = await supabase.auth.getUser();
+const ActionCard = ({ title, subtitle }: { title: string; subtitle: string }) => (
+  <Box
+    component="a"
+    href="#"
+    onClick={(e: React.MouseEvent) => e.preventDefault()}
+    sx={{
+      display: 'flex', alignItems: 'center', gap: 2, p: 2.5,
+      background: '#111111', border: '1px solid rgba(226, 192, 90, 0.08)', borderRadius: '12px',
+      textDecoration: 'none', transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)', cursor: 'pointer',
+      '&:hover': { borderColor: 'rgba(226, 192, 90, 0.2)', transform: 'translateY(-3px)', boxShadow: '0 8px 24px rgba(0,0,0,0.2)' },
+    }}
+  >
+    <Box sx={{ width: 40, height: 40, borderRadius: '10px', background: 'rgba(226,192,90,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#E2C05A', fontSize: '18px', flexShrink: 0 }}>
+      💬
+    </Box>
+    <Box>
+      <Typography sx={{ fontSize: '14px', fontWeight: 600, color: '#FFFFFF' }}>{title}</Typography>
+      <Typography sx={{ fontSize: '12px', color: '#aaaaaa' }}>{subtitle}</Typography>
+    </Box>
+  </Box>
+);
 
-  if (error || !user) {
-    redirect('/login');
-  }
+const QuickLink = ({ label }: { label: string }) => (
+  <Box
+    component="a"
+    href="#"
+    onClick={(e: React.MouseEvent) => e.preventDefault()}
+    sx={{
+      display: 'flex', alignItems: 'center', gap: 1.1,
+      p: '12px 14px', borderRadius: '8px', background: '#1a1a1a',
+      border: '1px solid rgba(226, 192, 90, 0.08)', fontSize: '12px', fontWeight: 600,
+      color: '#FFFFFF', textDecoration: 'none', cursor: 'pointer',
+      transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
+      '&:hover': { borderColor: 'rgba(226, 192, 90, 0.2)', background: '#181818', transform: 'translateY(-3px)', boxShadow: '0 8px 24px rgba(0,0,0,0.2)' },
+    }}
+  >
+    <Box sx={{ width: 15, height: 15, borderRadius: '50%', background: 'rgba(226,192,90,0.2)', flexShrink: 0 }} />
+    {label}
+  </Box>
+);
 
+export default function SupportPage() {
   return (
-    <Container maxWidth="xl" sx={{ py: 4 }}>
-      <Typography variant="h4" sx={{ mb: 4, fontWeight: 700 }}>
-        Support & Brokerage
-      </Typography>
+    <Box sx={{ p: { xs: 2, md: '24px 28px' }, fontFamily: "'DM Sans', sans-serif" }}>
+      <Box sx={{ mb: 2.5 }}>
+        <Typography sx={{ fontSize: '20px', fontWeight: 800, letterSpacing: '-0.5px', color: '#FFFFFF' }}>Support & Brokerage</Typography>
+      </Box>
 
-      <Grid container spacing={3}>
-        {/* Get Help */}
-        <Grid item xs={12} md={6}>
-          <Card sx={{ height: '100%', border: '1px solid #e0e0e0', borderRadius: 0 }}>
-            <CardContent sx={{ p: 4 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-                <Typography variant="h5" sx={{ fontWeight: 600 }}>
-                  Get Help
-                </Typography>
-              </Box>
+      {/* Support Actions */}
+      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 2, mb: 2 }}>
+        <ActionCard title="Submit Support Ticket" subtitle="Get help from the operations team" />
+        <ActionCard title="Ask a Broker Question" subtitle="Direct line to your managing broker" />
+      </Box>
 
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                <Button
-                  variant="contained"
-                  sx={{
-                    backgroundColor: '#1a1a1a',
-                    color: '#ffffff',
-                    py: 1.5,
-                    borderRadius: 0,
-                    '&:hover': { backgroundColor: '#333333' },
-                  }}
-                >
-                  Submit Support Ticket
-                </Button>
-                <Button
-                  variant="outlined"
-                  sx={{
-                    borderColor: '#1a1a1a',
-                    color: '#1a1a1a',
-                    py: 1.5,
-                    borderRadius: 0,
-                  }}
-                >
-                  Ask a Broker Question
-                </Button>
-              </Box>
-            </CardContent>
-          </Card>
-        </Grid>
+      {/* Our People */}
+      <Box sx={{ background: '#111111', border: '1px solid rgba(226, 192, 90, 0.08)', borderRadius: '12px', overflow: 'hidden', mb: 2 }}>
+        <Box sx={{ p: '16px 20px', borderBottom: '1px solid rgba(226, 192, 90, 0.08)' }}>
+          <Typography sx={{ fontSize: '14px', fontWeight: 700, color: '#FFFFFF' }}>Our People</Typography>
+        </Box>
+        <Box sx={{ p: '16px 20px' }}>
+          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 1 }}>
+            <QuickLink label="Company Directory" />
+            <QuickLink label="Preferred Vendor List" />
+          </Box>
+        </Box>
+      </Box>
 
-        {/* Our People */}
-        <Grid item xs={12} md={6}>
-          <Card sx={{ height: '100%', border: '1px solid #e0e0e0', borderRadius: 0 }}>
-            <CardContent sx={{ p: 4 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-                <Typography variant="h5" sx={{ fontWeight: 600 }}>
-                  Our People
-                </Typography>
-              </Box>
-
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 2, fontStyle: 'italic' }}>
-                Company directory and preferred vendor list coming soon.
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-
-        {/* Office Resources */}
-        <Grid item xs={12}>
-          <Card sx={{ border: '1px solid #e0e0e0', borderRadius: 0 }}>
-            <CardContent sx={{ p: 4 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-                <Typography variant="h5" sx={{ fontWeight: 600 }}>
-                  Office Resources
-                </Typography>
-              </Box>
-
-              <Grid container spacing={2}>
-                <Grid item xs={12} md={4}>
-                  <Button
-                    variant="outlined"
-                    fullWidth
-                    sx={{ borderRadius: 0, borderColor: '#1a1a1a', color: '#1a1a1a', py: 1.5 }}
-                  >
-                    Book Conference Room
-                  </Button>
-                </Grid>
-                <Grid item xs={12} md={4}>
-                  <Button
-                    variant="outlined"
-                    fullWidth
-                    sx={{ borderRadius: 0, borderColor: '#1a1a1a', color: '#1a1a1a', py: 1.5 }}
-                  >
-                    Wi-Fi Setup
-                  </Button>
-                </Grid>
-                <Grid item xs={12} md={4}>
-                  <Button
-                    variant="outlined"
-                    fullWidth
-                    sx={{ borderRadius: 0, borderColor: '#1a1a1a', color: '#1a1a1a', py: 1.5 }}
-                  >
-                    Printer Instructions
-                  </Button>
-                </Grid>
-              </Grid>
-            </CardContent>
-          </Card>
-        </Grid>
-      </Grid>
-    </Container>
+      {/* Office Resources */}
+      <Box sx={{ background: '#111111', border: '1px solid rgba(226, 192, 90, 0.08)', borderRadius: '12px', overflow: 'hidden' }}>
+        <Box sx={{ p: '16px 20px', borderBottom: '1px solid rgba(226, 192, 90, 0.08)' }}>
+          <Typography sx={{ fontSize: '14px', fontWeight: 700, color: '#FFFFFF' }}>Office Resources</Typography>
+        </Box>
+        <Box sx={{ p: '16px 20px' }}>
+          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 1 }}>
+            <QuickLink label="Book Conference Room" />
+            <QuickLink label="Wi-Fi / Printer Setup" />
+          </Box>
+        </Box>
+      </Box>
+    </Box>
   );
 }

@@ -46,7 +46,7 @@ export default async function DashboardLayout({
 
   return (
     <SidebarProvider>
-      <Box sx={{ display: 'flex', minHeight: '100vh', backgroundColor: '#0A0A0A' }}>
+      <Box sx={{ display: 'flex', minHeight: '100vh', backgroundColor: '#000000' }}>
         <Sidebar user={user} />
         <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
           <Header user={user} />
@@ -54,8 +54,8 @@ export default async function DashboardLayout({
             component="main"
             sx={{
               flexGrow: 1,
-              backgroundColor: '#0A0A0A',
-              pt: '64px',
+              backgroundColor: '#000000',
+              pt: '60px',
               minHeight: '100vh',
               overflowY: 'auto',
               WebkitOverflowScrolling: 'touch',
