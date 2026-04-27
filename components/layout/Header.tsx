@@ -21,18 +21,49 @@ import {
   Sun,
 } from '@phosphor-icons/react';
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { createClient } from '@/lib/supabase/client';
 import { User } from '@/types/database';
 import { useSidebar } from '@/components/providers/SidebarProvider';
 import { formatDistanceToNow } from 'date-fns';
+import { isAdmin } from '@/lib/utils/auth';
 
 interface HeaderProps {
   user: User | null;
 }
 
+// Map pathname to page title
+const getPageTitle = (pathname: string): string => {
+  const pathMap: Record<string, string> = {
+    '/dashboard': 'Dashboard',
+    '/crm': 'Leads & Contacts',
+    '/transactions': 'Transactions',
+    '/dashboard/forms': 'Forms & Compliance',
+    '/dashboard/marketing': 'Marketing & Branding',
+    '/dashboard/training': 'Training & Knowledge',
+    '/dashboard/business': 'My Business',
+    '/dashboard/support': 'Support & Brokerage',
+    '/dashboard/profile': 'My Profile',
+    '/admin/applications': 'Agent Applications',
+    '/admin/brokerage-documents': 'Brokerage Documents',
+    '/admin/users': 'User Management',
+    '/admin/announcements': 'Announcements',
+    '/admin/sell-requests': 'Sell Requests',
+    '/admin/reviews': 'Reviews',
+  };
+
+  if (pathMap[pathname]) return pathMap[pathname];
+
+  for (const [path, title] of Object.entries(pathMap)) {
+    if (pathname.startsWith(path + '/')) return title;
+  }
+
+  return 'Dashboard';
+};
+
 export function Header({ user }: HeaderProps) {
+  const pathname = usePathname();
   const [notificationsAnchorEl, setNotificationsAnchorEl] = useState<null | HTMLElement>(null);
   const router = useRouter();
   const { drawerWidth, toggleMobile } = useSidebar();
@@ -96,7 +127,23 @@ export function Header({ user }: HeaderProps) {
     },
   });
 
+  // Fetch pending agent applications count (admin only)
+  const { data: pendingApplicationsCount = 0 } = useQuery({
+    queryKey: ['pending-applications-count'],
+    queryFn: async () => {
+      const { count, error } = await supabase
+        .from('agent_applications')
+        .select('*', { count: 'exact', head: true })
+        .in('status', ['pending', 'reviewing']);
+
+      if (error) throw error;
+      return count || 0;
+    },
+    enabled: isAdmin(user?.role),
+  });
+
   const unreadCount = notifications.filter((n: any) => !n.read).length;
+  const pageTitle = getPageTitle(pathname);
 
   return (
     <AppBar
@@ -138,6 +185,18 @@ export function Header({ user }: HeaderProps) {
             <List size={18} weight="bold" />
           </IconButton>
 
+          {/* Page Title */}
+          <Typography sx={{
+            fontSize: '15px',
+            fontWeight: 700,
+            color: '#FFFFFF',
+            fontFamily: "'DM Sans', sans-serif",
+            letterSpacing: '-0.3px',
+            display: { xs: 'none', sm: 'block' },
+          }}>
+            {pageTitle}
+          </Typography>
+
           {/* Search Bar */}
           <Box
             sx={{
@@ -149,8 +208,9 @@ export function Header({ user }: HeaderProps) {
               borderRadius: '8px',
               px: 1.75,
               py: 0.875,
-              width: { xs: '100%', sm: 280 },
-              maxWidth: 280,
+              width: { xs: '100%', sm: 220 },
+              maxWidth: 220,
+              ml: 'auto',
               transition: 'border-color 0.3s ease, box-shadow 0.3s ease',
               '&:focus-within': {
                 borderColor: '#E2C05A',
@@ -176,7 +236,34 @@ export function Header({ user }: HeaderProps) {
         </Box>
 
         {/* Right side */}
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25, ml: 2 }}>
+          {/* Admin Pending Applications Badge */}
+          {isAdmin(user?.role) && pendingApplicationsCount > 0 && (
+            <Box
+              onClick={() => router.push('/admin/applications')}
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 0.75,
+                px: 1.5,
+                py: 0.5,
+                borderRadius: '8px',
+                backgroundColor: 'rgba(226, 192, 90, 0.08)',
+                border: '1px solid rgba(226, 192, 90, 0.15)',
+                cursor: 'pointer',
+                transition: 'all 0.3s ease',
+                '&:hover': {
+                  backgroundColor: 'rgba(226, 192, 90, 0.15)',
+                  borderColor: 'rgba(226, 192, 90, 0.3)',
+                },
+              }}
+            >
+              <Typography sx={{ fontSize: '11px', fontWeight: 600, color: '#E2C05A', fontFamily: "'DM Sans', sans-serif" }}>
+                {pendingApplicationsCount} Pending
+              </Typography>
+            </Box>
+          )}
+
           {/* Theme Toggle (placeholder) */}
           <IconButton
             sx={{
