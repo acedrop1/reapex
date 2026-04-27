@@ -72,8 +72,8 @@ export default function DashboardPage() {
   const [selectedEvent, setSelectedEvent] = useState<any>(null);
   const [calendarView, setCalendarView] = useState<'week' | 'month'>('month');
   const [listingScroll, setListingScroll] = useState(0);
-  const [currentMonth, setCurrentMonth] = useState(0); // January (0-indexed)
-  const [currentYear, setCurrentYear] = useState(2025);
+  const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
+  const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
   const [onboardingOpen, setOnboardingOpen] = useState(false);
 
   const theme = useTheme();

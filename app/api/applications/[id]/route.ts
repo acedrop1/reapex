@@ -8,7 +8,7 @@ export async function PATCH(
 ) {
   try {
     const body = await request.json();
-    const { status, notes } = body;
+    const { status, notes, archived } = body;
 
     const supabase = await createClient();
 
@@ -36,6 +36,7 @@ export async function PATCH(
     const updateData: any = {};
     if (status) updateData.status = status;
     if (notes !== undefined) updateData.notes = notes;
+    if (archived !== undefined) updateData.archived = archived;
     if (status && status !== 'pending') {
       updateData.reviewed_by = user.id;
       updateData.reviewed_at = new Date().toISOString();

@@ -83,7 +83,7 @@ export default function TransactionsPage() {
           }}>
             + Start New Transaction
           </Box>
-          <Box component="a" href="#" onClick={(e: React.MouseEvent) => e.preventDefault()} sx={{
+          <Box component="a" href="https://www.zipformplus.com" target="_blank" rel="noopener noreferrer" sx={{
             display: 'inline-flex', px: 2.25, py: 1, borderRadius: '8px',
             fontSize: '13px', fontWeight: 600, background: 'transparent',
             border: '1px solid rgba(226, 192, 90, 0.2)', color: '#E2C05A',

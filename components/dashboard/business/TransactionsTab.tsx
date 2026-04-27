@@ -980,13 +980,6 @@ export default function TransactionsTab({ userProfile }: TransactionsTabProps) {
                     </DialogActions>
                 </Dialog>
 
-                {/* Commission Modal */}
-                <CommissionStatementModal
-                    open={openCommissionModal}
-                    onClose={() => setOpenCommissionModal(false)}
-                    transaction={selectedListing}
-                />
-
                 {/* Close Transaction Modal */}
                 <Dialog
                     open={openCloseModal}

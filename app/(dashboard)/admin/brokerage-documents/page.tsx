@@ -228,7 +228,7 @@ export default function BrokerageDocumentsPage() {
     setFormData({
       title: '',
       description: '',
-      category: 'Training',
+      category: 'Templates',
       is_visible: true,
     });
     setSelectedFile(null);
@@ -241,7 +241,7 @@ export default function BrokerageDocumentsPage() {
     setFormData({
       title: '',
       description: '',
-      category: 'Training',
+      category: 'Templates',
       is_visible: true,
     });
     setSelectedFile(null);
@@ -266,7 +266,7 @@ export default function BrokerageDocumentsPage() {
     setFormData({
       title: '',
       description: '',
-      category: 'Training',
+      category: 'Templates',
       is_visible: true,
     });
     setError(null);

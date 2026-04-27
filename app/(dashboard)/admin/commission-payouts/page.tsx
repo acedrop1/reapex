@@ -607,18 +607,7 @@ export default function CommissionPayoutsPage() {
                           if (transaction.commission_status === 'pending_approval') {
                             handleOpenApprovalDialog(transaction);
                           } else {
-                            // Assuming handleViewTransaction exists or reusing approval dialog in read-only mode if logic permits.
-                            // Previous logic used handleViewTransaction. Let's assume it's available or use handleOpenApprovalDialog
-                            // But wait, handleViewTransaction IS NOT defined in the snippets I saw?
-                            // Let's verify. I saw handleViewTransaction in "View Details" logic in the code summary but not in recent reads?
-                            // Actually, let's use handleTransactionClick logic if applicable.
-                            // Safest bet: reuse handleOpenApprovalDialog for now, or if we define selection logic.
-                            // Actually, the previous code had 'handleViewTransaction' used in my memory or implied.
-                            // Let's assume handleViewTransaction is NOT there and use handleOpenApprovalDialog (which likely handles edit/view based on user role/status or I check the dialog open)
-                            // Or better, checking lines 320+ of the file...
-                            // The snippet shows `handleOpenApprovalDialog`. 
-                            // I will use `handleOpenApprovalDialog` for now and assume it handles display.
-                            handleOpenApprovalDialog(transaction);
+                            handleViewTransaction(transaction);
                           }
                         }}
                         sx={{ color: '#E2C05A' }}
