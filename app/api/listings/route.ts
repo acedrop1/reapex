@@ -71,6 +71,7 @@ export async function POST(request: Request) {
       images,
       cover_image,
       features,
+      listing_url,
       status,
     } = body;
 
@@ -104,6 +105,7 @@ export async function POST(request: Request) {
         images: images || [],
         cover_image: cover_image || null,
         features: features || [],
+        listing_url: listing_url || null,
         status: status || 'active',
       })
       .select()

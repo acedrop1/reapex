@@ -92,6 +92,7 @@ export default function EditListingModal({
         description: '',
         square_feet: '',
         features: [] as string[],
+        listing_url: '',
         status: 'active' as string,
         featured: false as boolean,
         open_house: false as boolean,
@@ -119,6 +120,7 @@ export default function EditListingModal({
                 description: listing.description || '',
                 square_feet: listing.square_feet?.toString() || '',
                 features: Array.isArray(listing.features) ? listing.features : [],
+                listing_url: listing.listing_url || '',
                 status: listing.status || 'active',
                 featured: listing.featured || false,
                 open_house: listing.open_house || false,
@@ -416,6 +418,20 @@ export default function EditListingModal({
                                 multiline
                                 rows={3}
                                 sx={dashboardStyles.textField}
+                            />
+                        </Grid>
+
+                        {/* Listing URL */}
+                        <Grid item xs={12}>
+                            <TextField
+                                fullWidth
+                                label="Listing URL (Optional)"
+                                placeholder="Paste MLS, Zillow, or Realtor.com link"
+                                value={formData.listing_url}
+                                onChange={(e) => setFormData({ ...formData, listing_url: e.target.value })}
+                                sx={dashboardStyles.textField}
+                                helperText="Add a link to this property on MLS, Zillow, Realtor.com, etc."
+                                FormHelperTextProps={{ sx: { color: '#666' } }}
                             />
                         </Grid>
 

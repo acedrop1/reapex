@@ -71,6 +71,7 @@ export default function CreateListingModal({
         description: '',
         square_feet: '',
         features: [] as string[],
+        listing_url: '',
         status: 'active' as string,
         featured: false as boolean,
         open_house: false as boolean,
@@ -260,6 +261,7 @@ export default function CreateListingModal({
                     bathrooms: parseInt(data.bathrooms) || 0,
                     square_feet: parseInt(data.square_feet) || 0,
                     features: data.features,
+                    listing_url: data.listing_url || null,
                     cover_image: coverImageUrl,
                     images: galleryUrls,
                 }),
@@ -295,6 +297,7 @@ export default function CreateListingModal({
             description: '',
             square_feet: '',
             features: [],
+            listing_url: '',
             status: 'active',
             featured: false,
             open_house: false,
@@ -514,6 +517,20 @@ export default function CreateListingModal({
                                     multiline
                                     rows={3}
                                     sx={dashboardStyles.textField}
+                                />
+                            </Grid>
+
+                            {/* Listing URL */}
+                            <Grid item xs={12}>
+                                <TextField
+                                    fullWidth
+                                    label="Listing URL (Optional)"
+                                    placeholder="Paste MLS, Zillow, or Realtor.com link"
+                                    value={formData.listing_url}
+                                    onChange={(e) => setFormData({ ...formData, listing_url: e.target.value })}
+                                    sx={dashboardStyles.textField}
+                                    helperText="Add a link to this property on MLS, Zillow, Realtor.com, etc."
+                                    FormHelperTextProps={{ sx: { color: '#666' } }}
                                 />
                             </Grid>
 

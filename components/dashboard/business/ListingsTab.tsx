@@ -18,7 +18,7 @@ import {
     useTheme,
     useMediaQuery,
 } from '@mui/material';
-import { Plus, DotsThreeVertical } from '@phosphor-icons/react';
+import { Plus, DotsThreeVertical, ArrowSquareOut } from '@phosphor-icons/react';
 import { Edit } from '@mui/icons-material';
 import { dashboardStyles } from '@/lib/theme/dashboardStyles';
 import CreateListingModal from '@/components/listings/CreateListingModal';
@@ -171,7 +171,7 @@ export default function ListingsTab() {
                                         <Typography variant="caption" sx={{ color: '#808080' }}>
                                             {listing.property_city}, {listing.property_state}
                                         </Typography>
-                                        <Box sx={{ mt: 2, display: 'flex', gap: 1 }}>
+                                        <Box sx={{ mt: 2, display: 'flex', gap: 1, alignItems: 'center', flexWrap: 'wrap' }}>
                                             <Chip
                                                 label={listing.status}
                                                 size="small"
@@ -181,6 +181,26 @@ export default function ListingsTab() {
                                                     border: `1px solid ${listing.status === 'active' ? '#E2C05A' : '#FF9800'}`,
                                                 }}
                                             />
+                                            {listing.listing_url && (
+                                                <Chip
+                                                    label="View Listing"
+                                                    size="small"
+                                                    icon={<ArrowSquareOut size={14} color="#E2C05A" />}
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        let url = listing.listing_url;
+                                                        if (url && !url.startsWith('http')) url = 'https://' + url;
+                                                        window.open(url, '_blank', 'noopener,noreferrer');
+                                                    }}
+                                                    sx={{
+                                                        backgroundColor: 'rgba(226, 192, 90, 0.1)',
+                                                        color: '#E2C05A',
+                                                        border: '1px solid rgba(226, 192, 90, 0.3)',
+                                                        cursor: 'pointer',
+                                                        '&:hover': { backgroundColor: 'rgba(226, 192, 90, 0.2)' },
+                                                    }}
+                                                />
+                                            )}
                                         </Box>
                                     </CardContent>
                                 </Card>
