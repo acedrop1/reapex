@@ -34,6 +34,7 @@ import {
   Download as DownloadIcon,
   MagnifyingGlass as SearchIcon,
   Archive as ArchiveIcon,
+  CheckCircle as CheckCircleIcon,
 } from '@phosphor-icons/react';
 import { createClient } from '@/lib/supabase/client';
 import { format } from 'date-fns';
@@ -87,6 +88,8 @@ export default function ApplicationsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [showArchived, setShowArchived] = useState(false);
+  const [approving, setApproving] = useState(false);
+  const [snackbar, setSnackbar] = useState<{ message: string; severity: 'success' | 'error' | 'warning' } | null>(null);
 
   const supabase = createClient();
 
@@ -125,8 +128,50 @@ export default function ApplicationsPage() {
     setUpdateNotes('');
   };
 
+  const handleApproveApplication = async () => {
+    if (!selectedApplication) return;
+
+    setApproving(true);
+    try {
+      const response = await fetch(`/api/applications/${selectedApplication.id}/approve`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to approve application');
+      }
+
+      if (result.data?.emailSent) {
+        setSnackbar({ message: `Agent approved! Welcome email sent to ${result.data.email}`, severity: 'success' });
+      } else {
+        // Email failed — show the temp password so admin can relay it
+        setSnackbar({
+          message: `Agent approved but email failed. Temp password: ${result.data?.tempPassword || 'N/A'}`,
+          severity: 'warning',
+        });
+      }
+
+      await fetchApplications();
+      handleCloseDetails();
+    } catch (err: any) {
+      console.error('Error approving application:', err);
+      setSnackbar({ message: err.message || 'Failed to approve application', severity: 'error' });
+    } finally {
+      setApproving(false);
+    }
+  };
+
   const handleUpdateApplication = async () => {
     if (!selectedApplication) return;
+
+    // If changing to approved, use the approve flow
+    if (updateStatus === 'approved' && selectedApplication.status !== 'approved') {
+      await handleApproveApplication();
+      return;
+    }
 
     setUpdating(true);
     try {
@@ -145,11 +190,12 @@ export default function ApplicationsPage() {
         throw new Error('Failed to update application');
       }
 
+      setSnackbar({ message: 'Application updated', severity: 'success' });
       await fetchApplications();
       handleCloseDetails();
     } catch (err) {
       console.error('Error updating application:', err);
-      alert('Failed to update application');
+      setSnackbar({ message: 'Failed to update application', severity: 'error' });
     } finally {
       setUpdating(false);
     }
@@ -540,23 +586,61 @@ export default function ApplicationsPage() {
           <Button onClick={handleCloseDetails} sx={{ textTransform: 'none' }}>
             Cancel
           </Button>
-          <Button
-            variant="contained"
-            onClick={handleUpdateApplication}
-            disabled={updating}
-            sx={{
-              backgroundColor: '#1a1a1a',
-              color: '#ffffff',
-              textTransform: 'none',
-              '&:hover': {
-                backgroundColor: '#333333',
-              },
-            }}
-          >
-            {updating ? 'Updating...' : 'Update Application'}
-          </Button>
+          {updateStatus === 'approved' && selectedApplication?.status !== 'approved' ? (
+            <Button
+              variant="contained"
+              onClick={handleUpdateApplication}
+              disabled={approving || updating}
+              startIcon={approving ? <CircularProgress size={16} /> : <CheckCircleIcon size={18} />}
+              sx={{
+                backgroundColor: '#2e7d32',
+                color: '#ffffff',
+                textTransform: 'none',
+                fontWeight: 600,
+                '&:hover': {
+                  backgroundColor: '#1b5e20',
+                },
+              }}
+            >
+              {approving ? 'Creating Account...' : 'Approve & Create Account'}
+            </Button>
+          ) : (
+            <Button
+              variant="contained"
+              onClick={handleUpdateApplication}
+              disabled={updating}
+              sx={{
+                backgroundColor: '#1a1a1a',
+                color: '#ffffff',
+                textTransform: 'none',
+                '&:hover': {
+                  backgroundColor: '#333333',
+                },
+              }}
+            >
+              {updating ? 'Updating...' : 'Update Application'}
+            </Button>
+          )}
         </DialogActions>
       </Dialog>
+
+      {/* Snackbar for feedback */}
+      {snackbar && (
+        <Alert
+          severity={snackbar.severity}
+          onClose={() => setSnackbar(null)}
+          sx={{
+            position: 'fixed',
+            bottom: 24,
+            right: 24,
+            zIndex: 9999,
+            minWidth: 300,
+            boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
+          }}
+        >
+          {snackbar.message}
+        </Alert>
+      )}
     </Box>
   );
 }
