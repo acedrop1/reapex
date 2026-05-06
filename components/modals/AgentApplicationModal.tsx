@@ -730,11 +730,21 @@ export default function AgentApplicationModal({ open, onClose, initialEmail }: A
       onClose={handleClose}
       maxWidth="md"
       fullWidth
+      slotProps={{
+        backdrop: {
+          sx: {
+            backgroundColor: 'rgba(0, 0, 0, 0.85)',
+            backdropFilter: 'blur(8px)',
+          },
+        },
+      }}
       PaperProps={{
         sx: {
           borderRadius: 2,
           maxHeight: '90vh',
-          backgroundColor: '#0a0a0a',
+          backgroundColor: '#0a0a0a !important',
+          backgroundImage: 'none !important',
+          border: '1px solid rgba(226, 192, 90, 0.15)',
         },
       }}
     >

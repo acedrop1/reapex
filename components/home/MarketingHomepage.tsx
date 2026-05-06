@@ -440,50 +440,7 @@ export default function MarketingHomepage() {
     };
   }, []);
 
-  // Text scramble
-  useEffect(() => {
-    const elements = document.querySelectorAll('[data-text-anim="scramble"]');
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    const observers: IntersectionObserver[] = [];
-
-    elements.forEach(el => {
-      const htmlEl = el as HTMLElement;
-      const originalText = htmlEl.textContent || '';
-      htmlEl.dataset.originalText = originalText;
-
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          const target = entry.target as HTMLElement;
-          if (entry.isIntersecting && !target.dataset.scrambled) {
-            target.dataset.scrambled = 'true';
-            const text = target.dataset.originalText || '';
-            let iteration = 0;
-            const maxIterations = text.length;
-
-            const interval = setInterval(() => {
-              target.textContent = text.split('')
-                .map((char, index) => {
-                  if (index < iteration) return text[index];
-                  if (char === ' ') return ' ';
-                  return chars[Math.floor(Math.random() * chars.length)];
-                }).join('');
-
-              iteration += 1 / 2;
-              if (iteration >= maxIterations) {
-                target.textContent = text;
-                clearInterval(interval);
-              }
-            }, 30);
-          }
-        });
-      }, { threshold: 0.5 });
-
-      observer.observe(htmlEl);
-      observers.push(observer);
-    });
-
-    return () => observers.forEach(o => o.disconnect());
-  }, []);
+  // Text scramble removed — replaced with simple fade-in via section-reveal CSS
 
   // Mobile nav
   function closeMobileNav() {
@@ -649,7 +606,7 @@ export default function MarketingHomepage() {
           <section className="sec" id="features">
             <div className="tc section-reveal">
               <div className="sec-label">Why Reapex</div>
-              <div className="sec-title" data-text-anim="scramble">Everything you need to grow. Nothing you don&apos;t.</div>
+              <div className="sec-title">Everything you need to grow. Nothing you don&apos;t.</div>
               <div className="sec-sub">We built Reapex to be the brokerage we always wished existed &mdash; modern tools, fair splits, and real support.</div>
             </div>
             <div className="features-grid stagger-children">
