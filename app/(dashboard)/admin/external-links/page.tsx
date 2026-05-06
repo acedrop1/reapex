@@ -19,6 +19,10 @@ import {
   Alert,
   CircularProgress,
   Grid,
+  Select,
+  MenuItem,
+  InputLabel,
+  FormControl,
 } from '@mui/material';
 import {
   Plus,
@@ -63,6 +67,7 @@ export default function AdminExternalLinksPage() {
     url: '',
     color: '#E2C05A',
     is_active: true,
+    category: '',
   });
 
   // Fetch all external links
@@ -118,6 +123,7 @@ export default function AdminExternalLinksPage() {
           logo_url: logoPath,
           color: formData.color,
           is_active: formData.is_active,
+          category: formData.category || null,
           updated_at: new Date().toISOString(),
         };
 
@@ -201,6 +207,7 @@ export default function AdminExternalLinksPage() {
         url: link.url,
         color: link.color,
         is_active: link.is_active,
+        category: (link as any).category || '',
       });
 
       // Set logo preview if exists
@@ -218,6 +225,7 @@ export default function AdminExternalLinksPage() {
         url: '',
         color: '#E2C05A',
         is_active: true,
+        category: '',
       });
       setLogoPreview(null);
     }
@@ -460,6 +468,20 @@ export default function AdminExternalLinksPage() {
               placeholder="https://example.com"
               sx={{ mb: 2 }}
             />
+
+            <FormControl fullWidth sx={{ mb: 2 }}>
+              <InputLabel>Category</InputLabel>
+              <Select
+                value={formData.category}
+                label="Category"
+                onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+              >
+                <MenuItem value="">None</MenuItem>
+                <MenuItem value="Forms & Compliance">Forms & Compliance</MenuItem>
+                <MenuItem value="Marketing & Branding">Marketing & Branding</MenuItem>
+                <MenuItem value="Training & Knowledge">Training & Knowledge</MenuItem>
+              </Select>
+            </FormControl>
 
             <TextField
               fullWidth

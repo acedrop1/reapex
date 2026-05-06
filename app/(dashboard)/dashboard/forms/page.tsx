@@ -53,6 +53,30 @@ export default function FormsPage() {
 
   const isAdmin = checkIsAdmin(currentUser?.role);
 
+  // Fetch external links categorized under Forms & Compliance
+  const { data: externalLinks = [] } = useQuery({
+    queryKey: ['external-links-forms'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('external_links')
+        .select('*')
+        .eq('is_active', true)
+        .eq('category', 'Forms & Compliance')
+        .order('display_order', { ascending: true });
+      if (error) throw error;
+      return (data || []).map((link: any) => ({
+        id: link.id,
+        title: link.title,
+        description: link.description,
+        type: 'link' as const,
+        url: link.url,
+        logo_url: link.icon_url || link.logo_url || null,
+        color: link.color_hex || link.color,
+        created_at: link.created_at,
+      }));
+    },
+  });
+
   // Fetch brokerage documents (from admin brokerage documents upload)
   const { data: forms, isLoading } = useQuery({
     queryKey: ['brokerage-documents'],
@@ -198,20 +222,31 @@ export default function FormsPage() {
             </Box>
           ) : (
             <ResourceGrid
-              items={(forms || []).map((form: any) => ({
-                id: form.id,
-                title: form.title,
-                description: form.description,
-                category: form.category,
-                type: 'document',
-                url: form.file_url,
-                file_name: form.file_name,
-                file_type: form.file_name ? form.file_name.split('.').pop()?.toLowerCase() : 'unknown',
-                created_at: form.created_at,
-              }))}
-              onItemClick={handlePreviewPane}
+              items={[
+                ...(forms || []).map((form: any) => ({
+                  id: form.id,
+                  title: form.title,
+                  description: form.description,
+                  category: form.category,
+                  type: 'document' as const,
+                  url: form.file_url,
+                  file_name: form.file_name,
+                  file_type: form.file_name ? form.file_name.split('.').pop()?.toLowerCase() : 'unknown',
+                  created_at: form.created_at,
+                })),
+                ...externalLinks,
+              ]}
+              onItemClick={(item) => {
+                if (item.type === 'link' && item.url) {
+                  window.open(item.url, '_blank', 'noopener,noreferrer');
+                } else {
+                  handlePreviewPane(item);
+                }
+              }}
               isAdmin={isAdmin}
-              onDelete={(item) => deleteFormMutation.mutate(item.id)}
+              onDelete={(item) => {
+                if (item.type !== 'link') deleteFormMutation.mutate(item.id);
+              }}
             />
           )}
 

@@ -120,7 +120,7 @@ const ManageResources = () => {
         form: ['Forms', 'Training', 'Compliance', 'Other'],
         training: ['Onboarding', 'Tech', 'Compliance', 'Marketing', 'Sales'],
         marketing: ['Business Card', 'Property Flyer', 'Social Media', 'Yard Sign', 'Photography', 'Other'],
-        link: ['Tools', 'Resources', 'Vendors', 'Compliance', 'MLS', 'Property Tools', 'Utility Tools', 'Other'],
+        link: ['Forms & Compliance', 'Marketing & Branding', 'Training & Knowledge'],
     };
 
     // Determine current resource type
