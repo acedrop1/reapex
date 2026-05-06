@@ -2,7 +2,7 @@
 
 import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Box, Typography, Button, Alert, Card } from '@mui/material';
+import { Box, Typography, Button, Alert, Card, TextField, Divider } from '@mui/material';
 import GoogleIcon from '@mui/icons-material/Google';
 import { ReapexLogo } from '@/components/ui/ReapexLogo';
 import { createClient } from '@/lib/supabase/client';
@@ -11,6 +11,8 @@ function LoginContent() {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const supabase = createClient();
   const searchParams = useSearchParams();
 
@@ -41,9 +43,35 @@ function LoginContent() {
       if (error) {
         throw error;
       }
-      // Redirect happens automatically
     } catch (err: any) {
       setError(err.message || 'An unexpected error occurred');
+      setLoading(false);
+    }
+  }
+
+  async function handleEmailLogin(e: React.FormEvent) {
+    e.preventDefault();
+    if (!email || !password) {
+      setError('Please enter both email and password');
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      router.push('/dashboard');
+    } catch (err: any) {
+      setError(err.message || 'Invalid email or password');
       setLoading(false);
     }
   }
@@ -92,11 +120,60 @@ function LoginContent() {
                 Sign in to your account
               </Typography>
               {error && (
-                <Alert severity="error" sx={{ mt: 2, mb: 2, width: '100%' }}>
+                <Alert severity="error" sx={{ mt: 0, mb: 2, width: '100%' }}>
                   {error}
                 </Alert>
               )}
 
+              {/* Email & Password Form */}
+              <Box component="form" onSubmit={handleEmailLogin} sx={{ width: '100%' }}>
+                <TextField
+                  fullWidth
+                  label="Email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  disabled={loading}
+                  sx={{ mb: 2 }}
+                  size="small"
+                />
+                <TextField
+                  fullWidth
+                  label="Password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  disabled={loading}
+                  sx={{ mb: 2 }}
+                  size="small"
+                />
+                <Button
+                  fullWidth
+                  type="submit"
+                  variant="contained"
+                  disabled={loading}
+                  sx={{
+                    py: 1.25,
+                    fontWeight: 600,
+                    backgroundColor: '#d4af37',
+                    color: '#0a0a0a',
+                    '&:hover': {
+                      backgroundColor: '#c49d2f',
+                    },
+                  }}
+                >
+                  {loading ? 'Signing in...' : 'Sign In'}
+                </Button>
+              </Box>
+
+              {/* Divider */}
+              <Divider sx={{ width: '100%', my: 2.5 }}>
+                <Typography variant="caption" sx={{ color: '#999', px: 1 }}>
+                  OR
+                </Typography>
+              </Divider>
+
+              {/* Google Sign In */}
               <Button
                 fullWidth
                 variant="outlined"
@@ -104,8 +181,7 @@ function LoginContent() {
                 disabled={loading}
                 startIcon={<GoogleIcon />}
                 sx={{
-                  mt: 2,
-                  py: 1.5,
+                  py: 1.25,
                   fontWeight: 600,
                   borderColor: '#ddd',
                   color: '#555',

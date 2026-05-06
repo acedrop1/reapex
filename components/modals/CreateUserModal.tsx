@@ -110,7 +110,7 @@ function CreateUserModalContent({ open, onClose, onSuccess }: CreateUserModalPro
       const result = await response.json();
 
       if (!response.ok) {
-        throw new Error(result.error || 'Failed to create user');
+        throw new Error(result.error || result.details || 'Failed to create user');
       }
 
       onSuccess();

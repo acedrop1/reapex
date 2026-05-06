@@ -86,8 +86,13 @@ export async function POST(request: Request) {
 
     if (authError) {
       console.error('[Create User] Auth error:', authError);
+      // Show the actual Supabase error message to the admin
+      let friendlyMessage = authError.message;
+      if (authError.message?.includes('already been registered') || authError.message?.includes('already exists')) {
+        friendlyMessage = `A user with email "${email}" already exists in the system.`;
+      }
       return NextResponse.json({
-        error: 'Failed to create authentication user',
+        error: friendlyMessage,
         details: authError.message,
         code: authError.code
       }, { status: 400 });
