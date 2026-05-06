@@ -364,12 +364,26 @@ const ManageResources = () => {
                     resourceType = 'video';
                 }
 
+                // Auto-fetch thumbnail for links if no icon was manually uploaded
+                let autoThumbnail = '';
+                if (!iconUrl && !editingItem?.thumbnail_url && linkValue) {
+                    try {
+                        const ogRes = await fetch(`/api/og-image?url=${encodeURIComponent(linkValue)}`);
+                        const ogData = await ogRes.json();
+                        if (ogData.thumbnail_url) {
+                            autoThumbnail = ogData.thumbnail_url;
+                        }
+                    } catch {
+                        // Silently fail — just won't have a thumbnail
+                    }
+                }
+
                 const trainingData: any = {
                     title: formData.title,
                     description: formData.description,
                     category: formData.category.toLowerCase(),
                     resource_type: resourceType,
-                    thumbnail_url: iconUrl || editingItem?.thumbnail_url,
+                    thumbnail_url: iconUrl || editingItem?.thumbnail_url || autoThumbnail || null,
                 };
 
                 // If there's a link, use it as the URL (external resource). If file was also uploaded, file takes priority.
@@ -422,13 +436,28 @@ const ManageResources = () => {
                     iconUrl = await uploadFile(formData.icon, 'logos', iconName);  // logos/ folder
                 }
 
+                // Auto-fetch OG image for links if no icon was manually uploaded
+                let autoLogo = '';
+                const linkUrl = formData.link?.trim() || editingItem?.url || '';
+                if (!iconUrl && !editingItem?.logo_url && !editingItem?.icon_url && linkUrl) {
+                    try {
+                        const ogRes = await fetch(`/api/og-image?url=${encodeURIComponent(linkUrl)}`);
+                        const ogData = await ogRes.json();
+                        if (ogData.thumbnail_url) {
+                            autoLogo = ogData.thumbnail_url;
+                        }
+                    } catch {
+                        // Silently fail
+                    }
+                }
+
                 const linkData: any = {
                     title: formData.title,
                     description: formData.description,
                     category: formData.category,
                     url: formData.link || editingItem?.url,
-                    logo_url: iconUrl || editingItem?.logo_url || editingItem?.icon_url,
-                    icon_url: iconUrl || editingItem?.icon_url || editingItem?.logo_url, // Send to new column as well
+                    logo_url: iconUrl || editingItem?.logo_url || editingItem?.icon_url || autoLogo || null,
+                    icon_url: iconUrl || editingItem?.icon_url || editingItem?.logo_url || autoLogo || null,
                     created_by: user.id,
                 };
 

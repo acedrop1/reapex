@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     Box,
     Typography,
@@ -21,6 +21,30 @@ import {
     Image as ImageIcon,
     Link as LinkIcon,
 } from '@phosphor-icons/react';
+
+// Extract YouTube video ID from URL
+function getYouTubeVideoId(url: string): string | null {
+    const patterns = [
+        /(?:youtube\.com\/watch\?v=)([^&\s]+)/,
+        /(?:youtu\.be\/)([^?\s]+)/,
+        /(?:youtube\.com\/embed\/)([^?\s]+)/,
+        /(?:youtube\.com\/shorts\/)([^?\s]+)/,
+    ];
+    for (const pattern of patterns) {
+        const match = url.match(pattern);
+        if (match) return match[1];
+    }
+    return null;
+}
+
+// Get a thumbnail URL from any resource URL (YouTube, etc.)
+function getAutoThumbnail(url: string | undefined | null): string | null {
+    if (!url) return null;
+    // YouTube
+    const ytId = getYouTubeVideoId(url);
+    if (ytId) return `https://img.youtube.com/vi/${ytId}/hqdefault.jpg`;
+    return null;
+}
 
 export interface ResourceItem {
     id: string;
@@ -160,17 +184,21 @@ export default function ResourceGrid({
                                     overflow: 'hidden',
                                 }}
                             >
-                                {/* Display image/logo if available */}
-                                {(item.thumbnail_url || item.preview_url || item.logo_url) ? (
+                                {/* Display image/logo if available, or auto-thumbnail from URL */}
+                                {(item.thumbnail_url || item.preview_url || item.logo_url || getAutoThumbnail(item.url) || getAutoThumbnail(item.video_url)) ? (
                                     <Box
                                         component="img"
-                                        src={item.thumbnail_url || item.preview_url || item.logo_url || ''}
+                                        src={item.thumbnail_url || item.preview_url || item.logo_url || getAutoThumbnail(item.url) || getAutoThumbnail(item.video_url) || ''}
                                         alt={item.title}
                                         sx={{
                                             width: '100%',
                                             height: '100%',
                                             objectFit: 'cover',
                                             borderRadius: '22px',
+                                        }}
+                                        onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
+                                            // If image fails to load, hide it and show icon instead
+                                            e.currentTarget.style.display = 'none';
                                         }}
                                     />
                                 ) : (
