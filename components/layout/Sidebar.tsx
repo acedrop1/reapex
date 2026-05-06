@@ -36,6 +36,7 @@ import {
   Question,
   QrCode,
   Receipt,
+  LinkSimple,
 } from '@phosphor-icons/react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
@@ -62,6 +63,7 @@ const agentNavSections: NavSection[] = [
   {
     label: 'Resources',
     items: [
+      { text: 'Resources', icon: LinkSimple, href: '/dashboard/resources' },
       { text: 'Forms & Compliance', icon: CheckSquare, href: '/dashboard/forms' },
       { text: 'Marketing & Branding', icon: Star, href: '/dashboard/marketing' },
       { text: 'Training & Knowledge', icon: BookOpen, href: '/dashboard/training' },
