@@ -17,7 +17,7 @@ ALTER TABLE public.yard_signs ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Admins can manage yard signs" ON public.yard_signs
   FOR ALL USING (
-    EXISTS (SELECT 1 FROM public.users WHERE id = auth.uid() AND role IN ('admin', 'super_admin'))
+    EXISTS (SELECT 1 FROM public.users WHERE id = auth.uid() AND role IN ('admin', 'broker'))
   );
 
 CREATE POLICY "Agents can view their yard signs" ON public.yard_signs
