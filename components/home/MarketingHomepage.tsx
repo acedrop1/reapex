@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import Link from 'next/link';
+import AgentApplicationModal from '@/components/modals/AgentApplicationModal';
 
 const REAPEX_SVG_PATH = (
   <g>
@@ -63,6 +64,7 @@ export default function MarketingHomepage() {
   const [navScrolled, setNavScrolled] = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [floatingCtaVisible, setFloatingCtaVisible] = useState(false);
+  const [applicationModalOpen, setApplicationModalOpen] = useState(false);
 
   // Calculator state
   const [gci, setGci] = useState(250000);
@@ -531,7 +533,7 @@ export default function MarketingHomepage() {
         </div>
         <div className="nav-right">
           <Link href="/login" className="btn btn-outline-nav">Agent Portal</Link>
-          <a href="#cta" className="btn btn-gold magnetic-btn" onClick={(e) => scrollToId(e, 'cta')}>Partner With Us</a>
+          <a href="#" className="btn btn-gold magnetic-btn" onClick={(e) => { e.preventDefault(); setApplicationModalOpen(true); }}>Partner With Us</a>
         </div>
         <button
           className={`nav-hamburger${mobileNavOpen ? ' open' : ''}`}
@@ -913,9 +915,8 @@ export default function MarketingHomepage() {
               </div>
               <div className="cta-form section-reveal">
                 <h3>Take Back Control of Your Career</h3>
-                <div className="form-group"><input type="email" placeholder="Enter your email address" /></div>
-                <div className="form-submit"><button className="btn btn-gold btn-lg magnetic-btn">Join Reapex</button></div>
-                <div className="form-note">By submitting, you agree to our Terms of Service and Privacy Policy. We&apos;ll never share your information.</div>
+                <div className="form-submit"><button className="btn btn-gold btn-lg magnetic-btn" onClick={() => setApplicationModalOpen(true)}>Start Your Application</button></div>
+                <div className="form-note" style={{ marginTop: 16 }}>100% Confidential · Takes 2 Minutes</div>
               </div>
             </div>
           </section>
@@ -959,11 +960,14 @@ export default function MarketingHomepage() {
 
       {/* FLOATING CTA */}
       <div className={`floating-cta${floatingCtaVisible ? ' visible' : ''}`}>
-        <Link href="/join">
+        <a href="#" onClick={(e) => { e.preventDefault(); setApplicationModalOpen(true); }}>
           <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
           Partner With Us
-        </Link>
+        </a>
       </div>
+
+      {/* Agent Application Modal */}
+      <AgentApplicationModal open={applicationModalOpen} onClose={() => setApplicationModalOpen(false)} />
     </div>
   );
 }

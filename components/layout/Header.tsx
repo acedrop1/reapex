@@ -18,7 +18,6 @@ import {
   List,
   MagnifyingGlass,
   Gear,
-  Sun,
 } from '@phosphor-icons/react';
 import { useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
@@ -263,27 +262,6 @@ export function Header({ user }: HeaderProps) {
               </Typography>
             </Box>
           )}
-
-          {/* Theme Toggle (placeholder) */}
-          <IconButton
-            sx={{
-              width: 34,
-              height: 34,
-              borderRadius: '8px',
-              backgroundColor: '#111111',
-              border: '1px solid rgba(226, 192, 90, 0.08)',
-              color: '#aaaaaa',
-              transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
-              '&:hover': {
-                borderColor: 'rgba(226, 192, 90, 0.2)',
-                transform: 'translateY(-2px)',
-                boxShadow: '0 4px 16px rgba(226, 192, 90, 0.08)',
-              },
-              '& svg': { width: 15, height: 15 },
-            }}
-          >
-            <Sun size={15} />
-          </IconButton>
 
           {/* Notifications Bell with Gold Dot */}
           <IconButton

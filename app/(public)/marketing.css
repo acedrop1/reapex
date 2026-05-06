@@ -28,7 +28,7 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--white);color:va
 .scroll-progress-bar{position:fixed;top:0;left:0;height:2px;background:linear-gradient(90deg,var(--gold),var(--gold-light));width:calc(var(--scroll-progress) * 100%);z-index:2000;will-change:width}
 
 /* ===== SECTION REVEAL ===== */
-.section-reveal{opacity:0;transform:translateY(80px);transition:opacity 1s var(--spring),transform 1s var(--spring);will-change:opacity,transform}
+.section-reveal{opacity:0;transform:translateY(40px);transition:opacity 0.6s ease-out,transform 0.6s ease-out;will-change:opacity,transform}
 .section-reveal.in-view{opacity:1;transform:translateY(0)}
 
 /* ===== STAGGER CHILDREN ===== */
@@ -362,8 +362,8 @@ body.marketing-page > div > div > div {
 
 /* Only the marketing-wrapper should set backgrounds */
 .marketing-wrapper {
-  background: var(--white);
-  color: var(--black);
+  background: var(--black);
+  color: var(--white);
 }
 
 /* Remove padding/margin from layout wrapper */
@@ -376,10 +376,10 @@ body.marketing-page main {
 
 /* Light bg sections need dark text */
 .sec, .sec-off, .stats-bar, .testimonials-section {
-  color: var(--black) !important;
+  color: var(--white) !important;
 }
 .sec .sec-title, .sec-off .sec-title, .stats-bar .sec-title {
-  color: var(--black) !important;
+  color: var(--white) !important;
 }
 
 /* Dark bg sections need white text */
@@ -389,13 +389,13 @@ body.marketing-page main {
 
 /* Team section */
 .team-name {
-  color: var(--black) !important;
+  color: var(--white) !important;
 }
 .team-role {
-  color: var(--g500) !important;
+  color: var(--g400) !important;
 }
 
-/* Feature cards */
+/* Feature cards — keep dark text on white card bg */
 .feature-card h3 {
   color: var(--black) !important;
 }
@@ -405,10 +405,10 @@ body.marketing-page main {
 
 /* Calculator section on light bg */
 .sec-off .sec-title {
-  color: var(--black) !important;
+  color: var(--white) !important;
 }
 .sec-off .sec-sub {
-  color: var(--g500) !important;
+  color: var(--g400) !important;
 }
 
 /* Stats */
@@ -429,10 +429,10 @@ body.marketing-page main {
 
 /* Testimonials section titles */
 .testimonials-heading {
-  color: var(--black) !important;
+  color: var(--white) !important;
 }
 .testimonials-subtitle {
-  color: var(--g500) !important;
+  color: var(--g400) !important;
 }
 
 /* Button text in light sections */
