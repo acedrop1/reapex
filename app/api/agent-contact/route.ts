@@ -42,12 +42,12 @@ export async function POST(request: Request) {
       );
     }
 
-    // Check if agent exists and is approved (includes both agent and admin_agent roles)
+    // Check if agent exists and is approved (includes both agent and broker roles)
     const { data: agent, error: agentError } = await supabase
       .from('users')
       .select('id, role, account_status')
       .eq('id', agent_id)
-      .in('role', ['agent', 'admin_agent'])
+      .in('role', ['agent', 'broker'])
       .eq('account_status', 'approved')
       .single();
 

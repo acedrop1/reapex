@@ -92,7 +92,7 @@ export default function AdminUsersPage() {
         .eq('id', user.id)
         .single();
 
-      if (!userProfile || !['admin', 'admin_agent'].includes(userProfile.role)) {
+      if (!userProfile || !['admin', 'broker'].includes(userProfile.role)) {
         router.push('/dashboard');
       }
     };

@@ -423,7 +423,7 @@ export async function POST(request: Request) {
         });
 
         const isAdmin = currentUserProfile?.role === 'admin' ||
-                        currentUserProfile?.role === 'admin_agent';
+                        currentUserProfile?.role === 'broker';
 
         // 1. Try to find agent by name (only if current user is admin)
         if (isAdmin && listingData.agentName) {
@@ -545,7 +545,7 @@ export async function POST(request: Request) {
                     userRole: currentUserProfile?.role,
                     userId: user.id,
                     agentId: agentId,
-                    expectedRoles: ['admin', 'admin_agent'],
+                    expectedRoles: ['admin', 'broker'],
                     agentMatchesUser: agentId === user.id,
                     troubleshooting: 'Check: 1) User role in database matches expected values, 2) auth.uid() returns correct user ID, 3) RLS policy is active and correct'
                 });
@@ -555,7 +555,7 @@ export async function POST(request: Request) {
                     details: {
                         message: 'RLS policy violation',
                         yourRole: currentUserProfile?.role || 'unknown',
-                        requiredRoles: 'admin or admin_agent (or agent_id must match your user ID)',
+                        requiredRoles: 'admin or broker (or agent_id must match your user ID)',
                         userId: user.id,
                         attemptedAgentId: agentId
                     },

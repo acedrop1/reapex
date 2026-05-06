@@ -31,7 +31,7 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Check if user is admin or admin_agent
+    // Check if user is admin or broker
     const { data: userProfile } = await supabase
       .from('users')
       .select('role')
@@ -91,7 +91,7 @@ export async function PUT(request: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Check if user is admin or admin_agent
+    // Check if user is admin or broker
     const { data: userProfile } = await supabase
       .from('users')
       .select('role')
@@ -156,7 +156,7 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Check if user is admin or admin_agent
+    // Check if user is admin or broker
     const { data: userProfile } = await supabase
       .from('users')
       .select('role')

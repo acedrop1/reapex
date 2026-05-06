@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
     const category = searchParams.get('category');
     const includeInactive = searchParams.get('includeInactive') === 'true';
 
-    // Check if user is admin (admin or admin_agent)
+    // Check if user is admin (admin or broker)
     const { data: userProfile } = await supabase
       .from('users')
       .select('role')

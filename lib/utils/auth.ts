@@ -1,44 +1,38 @@
 /**
  * Authentication and Authorization Utilities
+ *
+ * Valid roles in user_role enum: 'agent', 'admin', 'broker'
+ * - agent: Regular agent with standard access
+ * - admin: Full admin access
+ * - broker: Full admin access (broker/owner level)
  */
 
 /**
  * Check if user has admin privileges
- * Both 'admin' and 'admin_agent' roles have full admin access
- *
- * Difference:
- * - admin: Full admin access, NOT listed on public agent pages
- * - admin_agent: Full admin access, IS listed on public agent pages
+ * Both 'admin' and 'broker' roles have full admin access
  */
 export function isAdmin(role: string | null | undefined): boolean {
-  return role === 'admin' || role === 'admin_agent';
+  return role === 'admin' || role === 'broker';
 }
 
 /**
- * Check if user is a regular admin (not listed on site)
+ * Check if user is a broker (highest privilege level)
  */
-export function isPureAdmin(role: string | null | undefined): boolean {
-  return role === 'admin';
+export function isBroker(role: string | null | undefined): boolean {
+  return role === 'broker';
 }
 
 /**
- * Check if user is an admin agent (listed on site with admin privileges)
- */
-export function isAdminAgent(role: string | null | undefined): boolean {
-  return role === 'admin_agent';
-}
-
-/**
- * Check if user is any type of agent (agent or admin_agent)
+ * Check if user is any type of agent
  */
 export function isAgent(role: string | null | undefined): boolean {
-  return role === 'agent' || role === 'admin_agent';
+  return role === 'agent';
 }
 
 /**
  * Check if user should be listed on public agent pages
- * Only 'agent' and 'admin_agent' roles are publicly listed
+ * All agents are publicly listed, admins/brokers can optionally be listed
  */
 export function isPubliclyListedAgent(role: string | null | undefined): boolean {
-  return role === 'agent' || role === 'admin_agent';
+  return role === 'agent' || role === 'broker';
 }

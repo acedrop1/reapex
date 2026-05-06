@@ -66,11 +66,11 @@ const getInitials = (fullName: string): string => {
 export default async function AgentsPage() {
   const supabase = await createServerComponentClient();
 
-  // Get all approved agents (including admin_agents and admins), excluding hidden
+  // Get all approved agents (including brokers and admins), excluding hidden
   const { data: agents, error } = await supabase
     .from('users')
     .select('*')
-    .in('role', ['agent', 'admin_agent', 'admin'])
+    .in('role', ['agent', 'broker', 'admin'])
     .eq('account_status', 'approved')
     .eq('hide_from_listing', false)
     .order('display_order', { ascending: true })

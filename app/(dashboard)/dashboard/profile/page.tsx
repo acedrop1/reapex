@@ -12,6 +12,7 @@ import {
 } from '@mui/material';
 import AgentInfoTab from '@/components/dashboard/business/AgentInfoTab';
 import BillingSubscriptionTab from '@/components/profile/BillingSubscriptionTab';
+import SecurityTab from '@/components/profile/SecurityTab';
 import AgreementsTab from '@/components/profile/AgreementsTab';
 
 interface TabPanelProps {
@@ -91,6 +92,7 @@ export default function MyProfilePage() {
           >
             <Tab label="Agent Profile" />
             <Tab label="Billing/Subscription" />
+            <Tab label="Security" />
             <Tab label="Agreements" />
           </Tabs>
         </Container>
@@ -108,6 +110,10 @@ export default function MyProfilePage() {
           </TabPanel>
 
           <TabPanel value={activeTab} index={2}>
+            <SecurityTab />
+          </TabPanel>
+
+          <TabPanel value={activeTab} index={3}>
             <AgreementsTab />
           </TabPanel>
         </Container>

@@ -31,14 +31,14 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Check if user is admin or admin_agent using their own profile (RLS allows viewing own profile)
+    // Check if user is admin or broker using their own profile (RLS allows viewing own profile)
     const { data: userProfile } = await supabase
       .from('users')
       .select('role')
       .eq('id', user.id)
       .single();
 
-    if (!userProfile || !['admin', 'admin_agent'].includes(userProfile.role)) {
+    if (!userProfile || !['admin', 'broker'].includes(userProfile.role)) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
@@ -98,14 +98,14 @@ export async function PUT(request: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Check if user is admin or admin_agent
+    // Check if user is admin or broker
     const { data: userProfile } = await supabase
       .from('users')
       .select('role')
       .eq('id', user.id)
       .single();
 
-    if (!userProfile || !['admin', 'admin_agent'].includes(userProfile.role)) {
+    if (!userProfile || !['admin', 'broker'].includes(userProfile.role)) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
@@ -187,14 +187,14 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Check if user is admin or admin_agent
+    // Check if user is admin or broker
     const { data: userProfile } = await supabase
       .from('users')
       .select('role')
       .eq('id', user.id)
       .single();
 
-    if (!userProfile || !['admin', 'admin_agent'].includes(userProfile.role)) {
+    if (!userProfile || !['admin', 'broker'].includes(userProfile.role)) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 

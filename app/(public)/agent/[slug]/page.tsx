@@ -27,12 +27,12 @@ export default async function AgentDetailPage({
   const resolvedParams = await params;
   const supabase = await createServerComponentClient();
 
-  // Fetch agent data (including admin_agents)
+  // Fetch agent data (including brokers)
   const { data: agent, error: agentError } = await supabase
     .from('users')
     .select('*')
     .eq('slug', resolvedParams.slug)
-    .in('role', ['agent', 'admin_agent'])
+    .in('role', ['agent', 'broker'])
     .eq('account_status', 'approved')
     .single();
 

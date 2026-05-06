@@ -4,7 +4,7 @@ import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { isAdmin } from '@/lib/utils/auth';
 
-// Helper function to verify admin role (admin or admin_agent)
+// Helper function to verify admin role (admin or broker)
 async function verifyAdminAccess(supabase: any, userId: string) {
   const { data: userProfile } = await supabase
     .from('users')

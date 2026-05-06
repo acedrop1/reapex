@@ -109,7 +109,7 @@ export default function SupportPage() {
       const { data: admins } = await supabase
         .from('users')
         .select('id')
-        .in('role', ['admin', 'admin_agent']);
+        .in('role', ['admin', 'broker']);
 
       // Create a notification for each admin
       if (admins && admins.length > 0) {
@@ -142,7 +142,7 @@ export default function SupportPage() {
       const { data: admins } = await supabase
         .from('users')
         .select('id')
-        .in('role', ['admin', 'admin_agent']);
+        .in('role', ['admin', 'broker']);
 
       if (admins && admins.length > 0) {
         const notifications = admins.map((admin) => ({

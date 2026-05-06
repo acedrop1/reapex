@@ -76,7 +76,7 @@ export default function ListingsTab() {
 
             if (data) {
                 setCurrentUserId(data.id);
-                setIsAdmin(data.role === 'admin' || data.role === 'admin_agent');
+                setIsAdmin(data.role === 'admin' || data.role === 'broker');
             }
             return data;
         },
@@ -90,7 +90,7 @@ export default function ListingsTab() {
             const { data, error } = await supabase
                 .from('users')
                 .select('id, full_name, email')
-                .in('role', ['agent', 'admin_agent'])
+                .in('role', ['agent', 'broker'])
                 .order('full_name');
 
             if (error) throw error;

@@ -81,7 +81,7 @@ export default async function HomePage() {
           total_reviews
         )
       `)
-      .in('role', ['agent', 'admin_agent'])
+      .in('role', ['agent', 'broker'])
       .eq('account_status', 'approved')
       .not('headshot_url', 'is', null)
       .order('created_at', { ascending: false })

@@ -1,6 +1,6 @@
 // Database Types (matching Supabase schema)
 
-export type UserRole = 'agent' | 'admin' | 'admin_agent';
+export type UserRole = 'agent' | 'admin' | 'broker';
 export type AccountStatus = 'pending' | 'approved' | 'rejected' | 'suspended';
 export type TransactionStatus = 'pending' | 'under_contract' | 'closed' | 'cancelled';
 export type AnnouncementPriority = 'low' | 'medium' | 'high';
