@@ -5,32 +5,36 @@ import { Box, Typography, Grid } from '@mui/material';
 interface ResourceLink {
   name: string;
   url: string;
-  icon: string; // emoji or URL
+  logo: string; // URL to company logo/favicon
   category: 'mls' | 'tools' | 'associations';
 }
 
+// Helper to get high-res favicon via Google's service
+const favicon = (domain: string) =>
+  `https://www.google.com/s2/favicons?domain=${domain}&sz=128`;
+
 const RESOURCE_LINKS: ResourceLink[] = [
   // MLS & Listings
-  { name: 'Greater Bergen Realtors (GBRAR)', url: 'https://www.greaterbergenrealtors.com/', icon: '🏠', category: 'mls' },
-  { name: 'NJMLS', url: 'https://www.njmls.com/', icon: '🏡', category: 'mls' },
-  { name: 'HCMLS', url: 'https://www.hcmls.com/', icon: '🏘️', category: 'mls' },
-  { name: 'GSMLS', url: 'https://www.gsmls.com/', icon: '🗺️', category: 'mls' },
-  { name: 'Realtors Property Resource', url: 'https://www.narrpr.com/', icon: '📊', category: 'mls' },
-  { name: 'Zillow', url: 'https://www.zillow.com/', icon: '🔵', category: 'mls' },
-  { name: 'LoopNet', url: 'https://www.loopnet.com/', icon: '🔺', category: 'mls' },
-  { name: 'Paragon MLS', url: 'https://www.paragonrels.com/', icon: '📋', category: 'mls' },
+  { name: 'Greater Bergen Realtors (GBRAR)', url: 'https://www.greaterbergenrealtors.com/', logo: favicon('greaterbergenrealtors.com'), category: 'mls' },
+  { name: 'NJMLS', url: 'https://www.njmls.com/', logo: favicon('njmls.com'), category: 'mls' },
+  { name: 'HCMLS', url: 'https://www.hcmls.com/', logo: favicon('hcmls.com'), category: 'mls' },
+  { name: 'GSMLS', url: 'https://www.gsmls.com/', logo: favicon('gsmls.com'), category: 'mls' },
+  { name: 'Realtors Property Resource', url: 'https://www.narrpr.com/', logo: favicon('narrpr.com'), category: 'mls' },
+  { name: 'Zillow', url: 'https://www.zillow.com/', logo: favicon('zillow.com'), category: 'mls' },
+  { name: 'LoopNet', url: 'https://www.loopnet.com/', logo: favicon('loopnet.com'), category: 'mls' },
+  { name: 'Paragon MLS', url: 'https://www.paragonrels.com/', logo: favicon('paragonrels.com'), category: 'mls' },
 
   // Tools & Software
-  { name: 'Supra eKEY', url: 'https://www.supraekey.com/', icon: '🔑', category: 'tools' },
-  { name: 'ShowingTime', url: 'https://www.showingtime.com/', icon: '🗓️', category: 'tools' },
-  { name: 'DocuSign', url: 'https://www.docusign.com/', icon: '✍️', category: 'tools' },
-  { name: 'dotloop', url: 'https://www.dotloop.com/', icon: '🔄', category: 'tools' },
+  { name: 'Supra eKEY', url: 'https://www.supraekey.com/', logo: favicon('supraekey.com'), category: 'tools' },
+  { name: 'ShowingTime', url: 'https://www.showingtime.com/', logo: favicon('showingtime.com'), category: 'tools' },
+  { name: 'DocuSign', url: 'https://www.docusign.com/', logo: favicon('docusign.com'), category: 'tools' },
+  { name: 'dotloop', url: 'https://www.dotloop.com/', logo: favicon('dotloop.com'), category: 'tools' },
 
   // Associations & Government
-  { name: 'National Association of Realtors', url: 'https://www.nar.realtor/', icon: '®️', category: 'associations' },
-  { name: 'NJ Property Records', url: 'https://www.njactb.org/', icon: '🏛️', category: 'associations' },
-  { name: 'FEMA FloodSmart', url: 'https://www.floodsmart.gov/', icon: '🌊', category: 'associations' },
-  { name: 'NJREC License Renewal Portal', url: 'https://newjersey.mylicense.com/', icon: '📜', category: 'associations' },
+  { name: 'National Association of Realtors', url: 'https://www.nar.realtor/', logo: favicon('nar.realtor'), category: 'associations' },
+  { name: 'NJ Property Records', url: 'https://www.njactb.org/', logo: favicon('njactb.org'), category: 'associations' },
+  { name: 'FEMA FloodSmart', url: 'https://www.floodsmart.gov/', logo: favicon('floodsmart.gov'), category: 'associations' },
+  { name: 'NJREC License Renewal Portal', url: 'https://newjersey.mylicense.com/', logo: favicon('newjersey.mylicense.com'), category: 'associations' },
 ];
 
 const CATEGORY_LABELS: Record<string, string> = {
@@ -100,10 +104,29 @@ export default function ResourcesPage() {
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
-                          fontSize: 32,
+                          overflow: 'hidden',
                         }}
                       >
-                        {link.icon}
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={link.logo}
+                          alt={link.name}
+                          width={40}
+                          height={40}
+                          style={{ objectFit: 'contain' }}
+                          onError={(e) => {
+                            // Fallback: show first letter if logo fails to load
+                            const target = e.currentTarget;
+                            target.style.display = 'none';
+                            const parent = target.parentElement;
+                            if (parent) {
+                              parent.textContent = link.name.charAt(0);
+                              parent.style.fontSize = '28px';
+                              parent.style.fontWeight = '700';
+                              parent.style.color = '#333';
+                            }
+                          }}
+                        />
                       </Box>
                       <Typography
                         variant="body2"
