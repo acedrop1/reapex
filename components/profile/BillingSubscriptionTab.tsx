@@ -92,20 +92,20 @@ export default function BillingSubscriptionTab({ userProfile }: BillingSubscript
     // Plan Details
     const userPlan = userProfile?.subscription_plan || 'launch';
     const planCaps: Record<string, number | null> = {
-        launch: 21000,
-        growth: 18000,
+        launch: 22500,
+        growth: 19500,
         pro: null,
     };
-    const capAmount = planCaps[userPlan] || userProfile?.cap_amount || 21000;
+    const capAmount = planCaps[userPlan] || userProfile?.cap_amount || 22500;
     const currentProgress = userProfile?.current_cap_progress || 0;
     const capPercentage = capAmount ? Math.min((currentProgress / capAmount) * 100, 100) : 0;
 
     const getPlanDetails = (plan: string) => {
         switch (plan) {
             case 'pro':
-                return { name: 'Reapex Pro', price: '$450/mo', color: '#E2C05A' };
+                return { name: 'Reapex Pro', price: '$550/mo', color: '#E2C05A' };
             case 'growth':
-                return { name: 'Reapex Growth', price: '$175/mo', color: '#00C853' };
+                return { name: 'Reapex Growth', price: '$225/mo', color: '#00C853' };
             default:
                 return { name: 'Reapex Launch', price: 'Free', color: '#FFB74D' };
         }

@@ -727,7 +727,7 @@ export default function OnboardingWizard({ open, onClose, onComplete }: Onboardi
                       <Box>
                         <Typography variant="h6" sx={{ fontWeight: 600 }}>Reapex Launch</Typography>
                         <Typography variant="body2" color="text.secondary">
-                          $0/month - 80/20 Commission Split, $21,000 Annual Commission Cap
+                          $0/month - 80/20 Commission Split, $22,500 Annual Commission Cap
                         </Typography>
                       </Box>
                     }
@@ -757,7 +757,7 @@ export default function OnboardingWizard({ open, onClose, onComplete }: Onboardi
                       <Box>
                         <Typography variant="h6" sx={{ fontWeight: 600 }}>Reapex Growth</Typography>
                         <Typography variant="body2" color="text.secondary">
-                          $175/month - 90/10 Commission Split, $18,000 Annual Commission Cap
+                          $225/month - 90/10 Commission Split, $19,500 Annual Commission Cap
                         </Typography>
                       </Box>
                     }
@@ -786,7 +786,7 @@ export default function OnboardingWizard({ open, onClose, onComplete }: Onboardi
                       <Box>
                         <Typography variant="h6" sx={{ fontWeight: 600 }}>Reapex Pro</Typography>
                         <Typography variant="body2" color="text.secondary">
-                          $450/month - 100% Commission, No Commission Cap
+                          $550/month - 100% Commission, No Commission Cap
                         </Typography>
                       </Box>
                     }

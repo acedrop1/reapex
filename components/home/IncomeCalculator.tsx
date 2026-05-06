@@ -49,21 +49,20 @@ export default function IncomeCalculator() {
   }, [annualGCI, currentSplit, annualCap]);
 
   const calculateEarnings = () => {
-    // Reapex Constants
-    const REAPEX_ANNUAL_FEE = 450 * 12; // $5,400
-    const REAPEX_CLOSING_FEE = 495;
+    // Reapex Constants — Zero Transaction Fee model
+    const REAPEX_ANNUAL_FEE = 550 * 12; // $6,600 (Pro Plan)
+    // No transaction/closing fees under new model
 
     // Estimate closings based on cap (assuming $16k average cap)
     const estimatedClosings = Math.max(1, Math.round(annualCap / 16000));
 
-    // Current Brokerage Calculation
-    // Current Cost = Annual Cap + (Closings * $495)
-    const closingFees = estimatedClosings * REAPEX_CLOSING_FEE;
+    // Current Brokerage Calculation (traditional still has transaction fees)
+    const TRAD_CLOSING_FEE = 495;
+    const closingFees = estimatedClosings * TRAD_CLOSING_FEE;
     const currentNet = annualGCI - annualCap - closingFees;
 
-    // Reapex Calculation
-    // Reapex Cost = Annual Fee ($5400) + (Closings * $495)
-    const reapexNet = annualGCI - REAPEX_ANNUAL_FEE - closingFees;
+    // Reapex Calculation — no transaction fees
+    const reapexNet = annualGCI - REAPEX_ANNUAL_FEE;
 
     // Calculate difference
     const difference = reapexNet - currentNet;

@@ -229,11 +229,11 @@ export default function DashboardPage() {
   // Plan-based cap calculation
   const userPlan = user?.subscription_plan || 'launch';
   const planCaps = {
-    launch: 21000,
-    growth: 18000,
+    launch: 22500,
+    growth: 19500,
     pro: null, // No cap
   };
-  const capAmount = planCaps[userPlan as keyof typeof planCaps] || user?.cap_amount || 21000;
+  const capAmount = planCaps[userPlan as keyof typeof planCaps] || user?.cap_amount || 22500;
   const currentProgress = user?.current_cap_progress || 0;
   const capPercentage = capAmount ? Math.min((currentProgress / capAmount) * 100, 100) : 0;
 

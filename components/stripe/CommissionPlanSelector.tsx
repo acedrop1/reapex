@@ -42,7 +42,7 @@ const plans: Plan[] = [
     price: 0,
     features: [
       '80/20 Commission Split',
-      '$21,000 Annual Commission Cap',
+      '$22,500 Annual Commission Cap',
     ],
   },
   {
@@ -50,10 +50,10 @@ const plans: Plan[] = [
     name: 'Reapex Growth',
     productId: 'prod_TWO0eJAXu13836',
     priceId: 'price_1SZLEOLJ58SkLqL0inV4Ecpa',
-    price: 175,
+    price: 225,
     features: [
       '90/10 Commission Split',
-      '$18,000 Annual Commission Cap',
+      '$19,500 Annual Commission Cap',
     ],
   },
   {
@@ -61,7 +61,7 @@ const plans: Plan[] = [
     name: 'Reapex Pro',
     productId: 'prod_TWO0k1liPxisfq',
     priceId: 'price_1SZLEgLJ58SkLqL0BtiTzn4J',
-    price: 450,
+    price: 550,
     features: [
       '100% Commission (No Split)',
       'No Commission Cap',
@@ -301,7 +301,7 @@ export default function CommissionPlanSelector({ currentPlan, onSuccess }: Commi
             fontSize: '0.875rem',
           }}
         >
-          * Plans do not include transaction fees or other brokerage fees
+          * Zero transaction fees for all active agents. No junk fees.
         </Typography>
       </Box>
 

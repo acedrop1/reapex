@@ -51,8 +51,8 @@ export async function POST(req: Request) {
             specialties: formData.specialties,
             years_experience: formData.years_experience,
             languages: formData.languages,
-            cap_amount: formData.selected_plan === 'launch' ? 21000 :
-                formData.selected_plan === 'growth' ? 18000 : 0,
+            cap_amount: formData.selected_plan === 'launch' ? 22500 :
+                formData.selected_plan === 'growth' ? 19500 : 0,
         };
 
         // Add phone if provided

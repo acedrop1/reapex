@@ -708,6 +708,28 @@ export default function MarketingHomepage() {
             </div>
           </section>
 
+          {/* FRICTIONLESS BANNER */}
+          <section className="section-reveal" style={{
+            background: 'linear-gradient(135deg, #0a0a0a 0%, #111 100%)',
+            borderTop: '2px solid var(--gold)',
+            borderBottom: '2px solid var(--gold)',
+            padding: '48px 24px',
+            textAlign: 'center',
+          }}>
+            <div className="si" style={{ maxWidth: 800 }}>
+              <p style={{
+                fontSize: 'clamp(20px, 3vw, 32px)',
+                fontWeight: 800,
+                color: 'var(--white)',
+                letterSpacing: '-0.5px',
+                lineHeight: 1.3,
+                margin: 0,
+              }}>
+                The Frictionless Brokerage: <span style={{ color: 'var(--gold)' }}>No Transaction Fees. No Junk Fees.</span> Just Pure Production.
+              </p>
+            </div>
+          </section>
+
           {/* PLANS */}
           <section className="sec-dark" id="plans">
             <div className="si tc">
@@ -724,7 +746,7 @@ export default function MarketingHomepage() {
                   <div className="plan-split">80/20</div>
                   <div className="plan-split-label">Commission Split</div>
                   <div className="plan-detail"><span className="dl">Monthly Fee</span><span className="dv">$0</span></div>
-                  <div className="plan-detail"><span className="dl">Annual Cap</span><span className="dv">$21K Cap</span></div>
+                  <div className="plan-detail"><span className="dl">Annual Cap</span><span className="dv">$22.5K Cap</span></div>
                   <div className="plan-cta"><a href="#cta" className="btn btn-outline-dark magnetic-btn" onClick={(e) => scrollToId(e, 'cta')}>Learn More</a></div>
                 </div>
                 <div className="plan-card gradient-border">
@@ -732,8 +754,8 @@ export default function MarketingHomepage() {
                   <div className="plan-desc">Ideal for growing your business</div>
                   <div className="plan-split">90/10</div>
                   <div className="plan-split-label">Commission Split</div>
-                  <div className="plan-detail"><span className="dl">Monthly Fee</span><span className="dv">$175</span></div>
-                  <div className="plan-detail"><span className="dl">Annual Cap</span><span className="dv">$18K Cap</span></div>
+                  <div className="plan-detail"><span className="dl">Monthly Fee</span><span className="dv">$225</span></div>
+                  <div className="plan-detail"><span className="dl">Annual Cap</span><span className="dv">$19.5K Cap</span></div>
                   <div className="plan-cta"><a href="#cta" className="btn btn-outline-dark magnetic-btn" onClick={(e) => scrollToId(e, 'cta')}>Learn More</a></div>
                 </div>
                 <div className="plan-card featured gradient-border">
@@ -741,7 +763,7 @@ export default function MarketingHomepage() {
                   <div className="plan-desc">Maximum earnings for top producers</div>
                   <div className="plan-split">100%</div>
                   <div className="plan-split-label">Commission Split</div>
-                  <div className="plan-detail"><span className="dl">Monthly Fee</span><span className="dv">$450</span></div>
+                  <div className="plan-detail"><span className="dl">Monthly Fee</span><span className="dv">$550</span></div>
                   <div className="plan-detail"><span className="dl">Annual Cap</span><span className="dv">N/A</span></div>
                   <div className="plan-cta"><a href="#cta" className="btn btn-gold magnetic-btn" onClick={(e) => scrollToId(e, 'cta')}>Learn More</a></div>
                 </div>

@@ -50,10 +50,10 @@ export default function CommissionMenuCalculator() {
     const currentMonthlyEarnings = (monthlyGCI * (currentSplit / 100)) - monthlyFees;
     const currentYearlyEarnings = currentMonthlyEarnings * 12;
 
-    // Reapex Growth Plan (90/10, $18k cap, $175/month)
+    // Reapex Growth Plan (90/10, $19.5k cap, $225/month)
     const reapexSplit = 0.9;
-    const reapexCap = 18000;
-    const reapexMonthlyFee = 175;
+    const reapexCap = 19500;
+    const reapexMonthlyFee = 225;
     const reapexMonthlyEarnings = (monthlyGCI * reapexSplit) - reapexMonthlyFee;
     let reapexYearlyEarnings = 0;
     let cappedMonth = 0;
@@ -403,7 +403,7 @@ export default function CommissionMenuCalculator() {
                   lineHeight: 1.8,
                 }}
               >
-                With the Growth Plan (90/10 split, $18k cap, $175/month), you'll reach your cap and then keep 100% of your
+                With the Growth Plan (90/10 split, $19.5k cap, $225/month), you'll reach your cap and then keep 100% of your
                 commissions (minus the monthly fee) for the rest of the year. This typically happens around month 7-9 for most agents.
               </Typography>
             </Box>
