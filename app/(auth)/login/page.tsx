@@ -134,8 +134,18 @@ function LoginContent() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   disabled={loading}
-                  sx={{ mb: 2 }}
                   size="small"
+                  sx={{
+                    mb: 2,
+                    '& .MuiOutlinedInput-root': {
+                      color: '#1a1a1a',
+                      '& fieldset': { borderColor: '#ddd' },
+                      '&:hover fieldset': { borderColor: '#d4af37' },
+                      '&.Mui-focused fieldset': { borderColor: '#d4af37' },
+                    },
+                    '& .MuiInputLabel-root': { color: '#999' },
+                    '& .MuiInputLabel-root.Mui-focused': { color: '#d4af37' },
+                  }}
                 />
                 <TextField
                   fullWidth
@@ -144,8 +154,18 @@ function LoginContent() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   disabled={loading}
-                  sx={{ mb: 2 }}
                   size="small"
+                  sx={{
+                    mb: 2,
+                    '& .MuiOutlinedInput-root': {
+                      color: '#1a1a1a',
+                      '& fieldset': { borderColor: '#ddd' },
+                      '&:hover fieldset': { borderColor: '#d4af37' },
+                      '&.Mui-focused fieldset': { borderColor: '#d4af37' },
+                    },
+                    '& .MuiInputLabel-root': { color: '#999' },
+                    '& .MuiInputLabel-root.Mui-focused': { color: '#d4af37' },
+                  }}
                 />
                 <Button
                   fullWidth

@@ -80,6 +80,7 @@ export interface Transaction {
   approved_by: string | null;
   approved_at: string | null;
   payout_notes: string | null;
+  payment_type: string | null;
   pdf_url: string | null;
   created_at: string;
   users: User;
@@ -131,6 +132,12 @@ export default function CommissionPayoutsPage() {
     customName: '',
     amount: ''
   });
+
+  // Payment type dialog
+  const [paymentDialog, setPaymentDialog] = useState(false);
+  const [paymentType, setPaymentType] = useState<'check' | 'direct_deposit'>('check');
+  const [paymentTransactionId, setPaymentTransactionId] = useState<string | null>(null);
+  const [paymentAgentId, setPaymentAgentId] = useState<string | null>(null);
 
   // Filter state
   const [filterStatus, setFilterStatus] = useState('pending_approval'); // all, pending_approval, approved, paid
@@ -331,17 +338,47 @@ export default function CommissionPayoutsPage() {
     }
   };
 
-  const handleMarkAsPaid = async (transactionId: string) => {
-    if (!confirm('Mark this commission as paid? This confirms the physical check has been issued.')) return;
+  const openPaymentDialog = (transactionId: string, agentId: string) => {
+    setPaymentTransactionId(transactionId);
+    setPaymentAgentId(agentId);
+    setPaymentType('check');
+    setPaymentDialog(true);
+  };
+
+  const handleMarkAsPaid = async () => {
+    if (!paymentTransactionId) return;
 
     try {
       const { error } = await supabase
         .from('transactions')
-        .update({ commission_status: 'paid' })
-        .eq('id', transactionId);
+        .update({
+          commission_status: 'paid',
+          payment_type: paymentType,
+        })
+        .eq('id', paymentTransactionId);
 
       if (error) throw error;
 
+      // Get transaction details for notification
+      const transaction = transactions.find(t => t.id === paymentTransactionId);
+      const agentId = paymentAgentId || transaction?.agent_id;
+
+      // Notify agent
+      if (agentId) {
+        const paymentLabel = paymentType === 'direct_deposit' ? 'Direct Deposit' : 'Check';
+        await supabase.from('notifications').insert({
+          user_id: agentId,
+          title: 'Commission Payment Ready',
+          message: `Your commission for ${transaction?.property_address || 'a property'} is ready (${paymentLabel}).`,
+          type: 'payout',
+          link: '/dashboard/business',
+          read: false,
+        });
+      }
+
+      setPaymentDialog(false);
+      setPaymentTransactionId(null);
+      setPaymentAgentId(null);
       await fetchTransactions();
     } catch (error) {
       console.error('Error marking as paid:', error);
@@ -549,6 +586,7 @@ export default function CommissionPayoutsPage() {
               <TableCell>Gross Comm.</TableCell>
               <TableCell>Net Payout</TableCell>
               <TableCell>Status</TableCell>
+              <TableCell>Payment</TableCell>
               <TableCell>Closing Date</TableCell>
               <TableCell>Actions</TableCell>
             </TableRow>
@@ -592,6 +630,23 @@ export default function CommissionPayoutsPage() {
                   {getCommissionStatusChip(transaction.commission_status)}
                 </TableCell>
                 <TableCell>
+                  {transaction.payment_type ? (
+                    <Chip
+                      label={transaction.payment_type === 'direct_deposit' ? 'Direct Deposit' : 'Check'}
+                      size="small"
+                      sx={{
+                        backgroundColor: transaction.payment_type === 'direct_deposit' ? 'rgba(33, 150, 243, 0.15)' : 'rgba(76, 175, 80, 0.15)',
+                        color: transaction.payment_type === 'direct_deposit' ? '#42A5F5' : '#66BB6A',
+                        border: `1px solid ${transaction.payment_type === 'direct_deposit' ? '#42A5F5' : '#66BB6A'}`,
+                        fontWeight: 500,
+                        fontSize: '0.7rem',
+                      }}
+                    />
+                  ) : (
+                    <Typography sx={{ color: '#808080', fontSize: '0.75rem' }}>—</Typography>
+                  )}
+                </TableCell>
+                <TableCell>
                   <Typography sx={{ color: '#B0B0B0', fontSize: '14px' }}>
                     {transaction.closing_date
                       ? new Date(transaction.closing_date).toLocaleDateString()
@@ -630,7 +685,7 @@ export default function CommissionPayoutsPage() {
                       <Tooltip title="Mark as Paid">
                         <IconButton
                           size="small"
-                          onClick={() => handleMarkAsPaid(transaction.id)}
+                          onClick={() => openPaymentDialog(transaction.id, transaction.agent_id)}
                           sx={{ color: '#4CAF50' }}
                         >
                           <AttachMoney fontSize="small" />
@@ -643,7 +698,7 @@ export default function CommissionPayoutsPage() {
             ))}
             {filteredTransactions.length === 0 && (
               <TableRow>
-                <TableCell colSpan={7} align="center" sx={{ py: 4 }}>
+                <TableCell colSpan={8} align="center" sx={{ py: 4 }}>
                   <Typography sx={{ color: '#808080' }}>
                     No transactions found
                   </Typography>
@@ -1082,6 +1137,56 @@ export default function CommissionPayoutsPage() {
             disabled={!approvalForm.final_commission_amount}
           >
             Approve & Save
+          </Button>
+        </DialogActions>
+      </Dialog>
+      {/* Payment Type Dialog */}
+      <Dialog
+        open={paymentDialog}
+        onClose={() => setPaymentDialog(false)}
+        maxWidth="sm"
+        fullWidth
+        PaperProps={{
+          sx: {
+            backgroundColor: '#121212',
+            border: '1px solid #2A2A2A',
+          },
+        }}
+      >
+        <DialogTitle sx={{ color: '#FFFFFF', fontWeight: 700 }}>
+          Mark as Paid
+        </DialogTitle>
+        <DialogContent>
+          <Typography sx={{ color: '#B0B0B0', mb: 3, mt: 1 }}>
+            Select the payment method for this commission payout. The agent will be notified.
+          </Typography>
+          <FormControl fullWidth sx={{ ...dashboardStyles.formControl }}>
+            <InputLabel sx={{ color: '#B0B0B0' }}>Payment Type</InputLabel>
+            <Select
+              value={paymentType}
+              onChange={(e) => setPaymentType(e.target.value as 'check' | 'direct_deposit')}
+              label="Payment Type"
+              sx={{
+                color: '#FFFFFF',
+                '& .MuiOutlinedInput-notchedOutline': { borderColor: '#2A2A2A' },
+              }}
+            >
+              <MenuItem value="check">Check</MenuItem>
+              <MenuItem value="direct_deposit">Direct Deposit</MenuItem>
+            </Select>
+          </FormControl>
+        </DialogContent>
+        <DialogActions sx={{ padding: '16px 24px' }}>
+          <Button onClick={() => setPaymentDialog(false)} sx={{ color: '#B0B0B0' }}>
+            Cancel
+          </Button>
+          <Button
+            onClick={handleMarkAsPaid}
+            variant="contained"
+            startIcon={<AttachMoney />}
+            sx={dashboardStyles.buttonContained}
+          >
+            Confirm Payment
           </Button>
         </DialogActions>
       </Dialog>

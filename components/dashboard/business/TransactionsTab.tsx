@@ -695,10 +695,10 @@ export default function TransactionsTab({ userProfile }: TransactionsTabProps) {
                                         )}
                                     </Box>
 
-                                    <CardContent sx={{ p: 2, flex: 1 }}>
+                                    <CardContent sx={{ p: 2, flex: 1, minWidth: 0 }}>
                                         {/* Transaction Header */}
                                         <Box sx={{ mb: 2 }}>
-                                            <Typography variant="body1" sx={{ color: '#FFFFFF', fontWeight: 600, mb: 0.5, fontSize: '1rem' }}>
+                                            <Typography variant="body1" sx={{ color: '#FFFFFF', fontWeight: 600, mb: 0.5, fontSize: '1rem', wordBreak: 'break-word' }}>
                                                 {transaction.property_address}
                                             </Typography>
                                             <Box sx={{ display: 'flex', gap: 1.5, flexWrap: 'wrap', alignItems: 'center' }}>

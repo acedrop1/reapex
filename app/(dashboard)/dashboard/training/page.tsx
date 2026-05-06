@@ -505,21 +505,20 @@ export default function TrainingPage() {
               description: resource.description,
               category: resource.category,
               type: resource.resource_type || 'document',
-              url: resource.resource_type === 'video' ? resource.video_url : resource.file_url,
+              url: resource.url || resource.video_url || resource.file_url,
               video_url: resource.video_url,
+              thumbnail_url: resource.thumbnail_url,
               created_at: resource.created_at,
             }))}
             onItemClick={(item) => {
-              if (item.type === 'video' && item.video_url) {
-                window.open(item.video_url, '_blank');
-              } else if (item.url) {
-                if (item.type !== 'video') {
-                  // Assuming the item has all necessary props for download, or we fetch logic
-                  // Re-implement handleDownload logic inline or call a helper if exists
-                  // logic from old handleDownload:
-                  const resourceObj = resources?.find((r: any) => r.id === item.id);
-                  if (resourceObj) handleDownload(resourceObj);
-                }
+              const url = item.url || item.video_url || '';
+              // External links (YouTube, courses, etc.) — open in new tab
+              if (url.startsWith('http://') || url.startsWith('https://')) {
+                window.open(url, '_blank', 'noopener,noreferrer');
+              } else if (url) {
+                // Storage file — download it
+                const resourceObj = resources?.find((r: any) => r.id === item.id);
+                if (resourceObj) handleDownload(resourceObj);
               }
             }}
             isAdmin={isAdmin}

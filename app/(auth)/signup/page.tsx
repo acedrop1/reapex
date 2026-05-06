@@ -125,6 +125,7 @@ export default function SignupPage() {
                 disabled={loading}
                 sx={{
                   '& .MuiOutlinedInput-root': {
+                    color: '#1a1a1a',
                     '& fieldset': { borderColor: '#ddd' },
                     '&:hover fieldset': { borderColor: '#d4af37' },
                     '&.Mui-focused fieldset': { borderColor: '#d4af37' },
@@ -144,6 +145,7 @@ export default function SignupPage() {
                 disabled={loading}
                 sx={{
                   '& .MuiOutlinedInput-root': {
+                    color: '#1a1a1a',
                     '& fieldset': { borderColor: '#ddd' },
                     '&:hover fieldset': { borderColor: '#d4af37' },
                     '&.Mui-focused fieldset': { borderColor: '#d4af37' },
@@ -163,8 +165,10 @@ export default function SignupPage() {
                 autoComplete="new-password"
                 disabled={loading}
                 helperText="Must be at least 6 characters"
+                FormHelperTextProps={{ sx: { color: '#999' } }}
                 sx={{
                   '& .MuiOutlinedInput-root': {
+                    color: '#1a1a1a',
                     '& fieldset': { borderColor: '#ddd' },
                     '&:hover fieldset': { borderColor: '#d4af37' },
                     '&.Mui-focused fieldset': { borderColor: '#d4af37' },
@@ -184,6 +188,7 @@ export default function SignupPage() {
                 disabled={loading}
                 sx={{
                   '& .MuiOutlinedInput-root': {
+                    color: '#1a1a1a',
                     '& fieldset': { borderColor: '#ddd' },
                     '&:hover fieldset': { borderColor: '#d4af37' },
                     '&.Mui-focused fieldset': { borderColor: '#d4af37' },

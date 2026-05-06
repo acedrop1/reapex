@@ -174,8 +174,35 @@ export default function AnnouncementsPage() {
         return data;
       }
     },
-    onSuccess: () => {
+    onSuccess: async (data) => {
       queryClient.invalidateQueries({ queryKey: ['announcements'] });
+
+      // Send in-app notifications to all agents for new announcements
+      if (!editingId && data) {
+        try {
+          const { data: agents } = await supabase
+            .from('users')
+            .select('id')
+            .eq('account_status', 'approved');
+
+          if (agents && agents.length > 0) {
+            const notifications = agents.map((agent: any) => ({
+              user_id: agent.id,
+              title: 'New Announcement',
+              message: data.title,
+              type: 'announcement',
+              link: '/dashboard',
+              read: false,
+            }));
+
+            await supabase.from('notifications').insert(notifications);
+          }
+        } catch (notifError) {
+          console.error('Failed to send notifications:', notifError);
+          // Don't block the announcement creation on notification failure
+        }
+      }
+
       resetDialog();
     },
     onError: (error: any) => {

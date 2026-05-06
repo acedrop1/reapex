@@ -79,11 +79,11 @@ export default function BillingSubscriptionTab({ userProfile }: BillingSubscript
             if (res.ok && data.url) {
                 window.location.href = data.url;
             } else {
-                alert('Failed to redirect to billing portal. Please try again.');
+                alert(data.error || 'Failed to redirect to billing portal. Please try again.');
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error('Portal redirect error:', error);
-            alert('An error occurred. Please try again.');
+            alert(error.message || 'An error occurred. Please try again.');
         } finally {
             setPortalLoading(false);
         }

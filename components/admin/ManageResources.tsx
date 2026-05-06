@@ -119,7 +119,7 @@ const ManageResources = () => {
     const categoryOptions = {
         form: ['Forms', 'Training', 'Compliance', 'Other'],
         training: ['Onboarding', 'Tech', 'Compliance', 'Marketing', 'Sales'],
-        marketing: ['Business Card', 'Property Flyer', 'Social Media', 'Yard Sign'],
+        marketing: ['Business Card', 'Property Flyer', 'Social Media', 'Yard Sign', 'Photography', 'Other'],
         link: ['Tools', 'Resources', 'Vendors', 'Compliance', 'MLS', 'Property Tools', 'Utility Tools', 'Other'],
     };
 
@@ -343,8 +343,8 @@ const ManageResources = () => {
                     await supabase.from('brokerage_documents').insert(docData);
                 }
             } else if (currentType === 'training') {
-                if (!formData.file && !editingItem) {
-                    throw new Error('Please select a file');
+                if (!formData.file && !formData.link && !editingItem) {
+                    throw new Error('Please provide a link or upload a file');
                 }
                 if (formData.file) {
                     const fileName = `${Date.now()}-${formData.file.name}`;
@@ -355,14 +355,35 @@ const ManageResources = () => {
                     iconUrl = await uploadFile(formData.icon, 'training', iconName);  // training/ folder (includes thumbnails/ subfolder)
                 }
 
+                // Determine resource type
+                let resourceType = 'document';
+                const linkValue = formData.link?.trim() || '';
+                if (formData.file?.type.includes('video')) {
+                    resourceType = 'video';
+                } else if (linkValue && (linkValue.includes('youtube.com') || linkValue.includes('youtu.be') || linkValue.includes('vimeo.com'))) {
+                    resourceType = 'video';
+                }
+
                 const trainingData: any = {
                     title: formData.title,
                     description: formData.description,
                     category: formData.category.toLowerCase(),
-                    resource_type: formData.file?.type.includes('video') ? 'video' : 'document',
-                    url: fileUrl || editingItem?.url,
+                    resource_type: resourceType,
                     thumbnail_url: iconUrl || editingItem?.thumbnail_url,
                 };
+
+                // If there's a link, use it as the URL (external resource). If file was also uploaded, file takes priority.
+                if (fileUrl) {
+                    trainingData.url = fileUrl;
+                } else if (linkValue) {
+                    trainingData.url = linkValue;
+                    // Also set video_url for video-type links
+                    if (resourceType === 'video') {
+                        trainingData.video_url = linkValue;
+                    }
+                } else {
+                    trainingData.url = editingItem?.url;
+                }
 
                 if (editingItem) {
                     await supabase.from('training_resources').update(trainingData).eq('id', editingItem.id);
@@ -813,7 +834,7 @@ const ManageResources = () => {
                         />
 
                         {/* File Upload or Link (depending on type) */}
-                        {(currentType === 'form' || currentType === 'training') && (
+                        {currentType === 'form' && (
                             <Box>
                                 <Typography variant="body2" sx={{ color: '#B0B0B0', mb: 1 }}>
                                     File {editingItem && '*Optional when editing'}
@@ -858,7 +879,74 @@ const ManageResources = () => {
                                                 {isFileDragActive ? 'Drop file here' : 'Drag & drop file here, or click to select'}
                                             </Typography>
                                             <Typography variant="caption" sx={{ color: '#666666', mt: 1, display: 'block' }}>
-                                                Supported: PDF, DOC, DOCX{currentType === 'training' && ', MP4'}
+                                                Supported: PDF, DOC, DOCX
+                                            </Typography>
+                                        </>
+                                    )}
+                                </Box>
+                            </Box>
+                        )}
+
+                        {currentType === 'training' && (
+                            <Box>
+                                <Typography variant="body2" sx={{ color: '#B0B0B0', mb: 1 }}>
+                                    External Link (YouTube, course URL, etc.) — or upload a file below
+                                </Typography>
+                                <TextField
+                                    label="Resource URL"
+                                    fullWidth
+                                    size="small"
+                                    value={formData.link}
+                                    onChange={(e) => setFormData(prev => ({ ...prev, link: e.target.value }))}
+                                    sx={dashboardStyles.textField}
+                                    placeholder="https://youtube.com/watch?v=... or https://course-site.com/..."
+                                    helperText="Paste a YouTube link, course URL, or any external resource link"
+                                    FormHelperTextProps={{ sx: { color: '#666' } }}
+                                />
+                                <Typography variant="body2" sx={{ color: '#B0B0B0', mt: 2, mb: 1 }}>
+                                    File Upload (Optional — use instead of or alongside a link)
+                                </Typography>
+                                <Box
+                                    {...getFileRootProps()}
+                                    sx={{
+                                        border: '2px dashed',
+                                        borderColor: isFileDragActive ? '#E2C05A' : '#333333',
+                                        borderRadius: 2,
+                                        p: 3,
+                                        backgroundColor: isFileDragActive ? 'rgba(226, 192, 90, 0.1)' : '#0D0D0D',
+                                        cursor: 'pointer',
+                                        textAlign: 'center',
+                                        transition: 'all 0.3s',
+                                        '&:hover': {
+                                            borderColor: '#E2C05A',
+                                            backgroundColor: 'rgba(226, 192, 90, 0.05)',
+                                        },
+                                    }}
+                                >
+                                    <input {...getFileInputProps()} />
+                                    {formData.file ? (
+                                        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 2 }}>
+                                            <File size={24} color="#E2C05A" />
+                                            <Typography sx={{ color: '#FFFFFF' }}>{formData.file.name}</Typography>
+                                            <IconButton
+                                                size="small"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    setFormData(prev => ({ ...prev, file: null }));
+                                                }}
+                                                sx={{ color: '#EF5350' }}
+                                            >
+                                                <X size={18} />
+                                            </IconButton>
+                                        </Box>
+                                    ) : (
+                                        <>
+                                            <UploadSimple size={32} color="#B0B0B0" style={{ marginBottom: 8 }} />
+                                            <Typography variant="body2" sx={{ color: '#B0B0B0' }}>
+                                                {isFileDragActive ? 'Drop file here' : 'Drag & drop file here, or click to select'}
+                                            </Typography>
+                                            <Typography variant="caption" sx={{ color: '#666666', mt: 1, display: 'block' }}>
+                                                Supported: PDF, DOC, DOCX, MP4
                                             </Typography>
                                         </>
                                     )}

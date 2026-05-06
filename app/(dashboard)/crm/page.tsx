@@ -928,7 +928,7 @@ export default function CRMPage() {
       {/* Tabs Content */}
       <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
         <TabPanel value={tabValue} index={0}>
-          <Box sx={{ p: 2, height: '100%', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+          <Box sx={{ p: 2, height: '100%', overflow: 'auto', display: 'flex', flexDirection: 'column' }}>
             {/* Search and Filters - Sticky */}
             <Box sx={{ position: 'sticky', top: 0, zIndex: 10, p: 2, backgroundColor: '#111111', borderBottom: '1px solid rgba(226, 192, 90, 0.08)', display: 'flex', gap: 2, flexWrap: 'wrap', flexShrink: 0 }}>
               <TextField

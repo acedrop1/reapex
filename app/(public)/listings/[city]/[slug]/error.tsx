@@ -27,7 +27,7 @@ export default function ListingDetailError({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: '#ffffff',
+        backgroundColor: '#0a0a0a',
         pt: { xs: 12, md: 14 },
       }}
     >
