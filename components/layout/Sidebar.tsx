@@ -54,6 +54,7 @@ const agentNavSections: NavSection[] = [
     label: 'Main',
     items: [
       { text: 'Dashboard', icon: SquaresFour, href: '/dashboard' },
+      { text: 'My Listings', icon: House, href: '/dashboard/my-listings' },
       { text: 'Leads & Contacts', icon: Users, href: '/crm' },
       { text: 'Transactions', icon: FileText, href: '/transactions' },
     ],
