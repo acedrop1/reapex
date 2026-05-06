@@ -556,7 +556,7 @@ export default function TrainingPage() {
           />
         )}
 
-        {!isLoading && (!resources || resources.length === 0) && (
+        {!isLoading && (!resources || resources.length === 0) && externalLinks.length === 0 && (
           <Box
             sx={{
               textAlign: 'center',

@@ -250,7 +250,7 @@ export default function FormsPage() {
             />
           )}
 
-          {(!isLoading && (!forms || forms.length === 0)) && (
+          {(!isLoading && (!forms || forms.length === 0) && externalLinks.length === 0) && (
             <Box sx={{ textAlign: 'center', py: 8 }}>
               <Typography variant="body2" sx={{ color: '#808080' }}>
                 No forms available yet.

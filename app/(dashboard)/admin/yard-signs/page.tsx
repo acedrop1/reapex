@@ -146,7 +146,7 @@ export default function AdminYardSignsPage() {
       const { data, error } = await supabase
         .from('users')
         .select('id, full_name, email')
-        .in('role', ['agent', 'admin', 'super_admin'])
+        .in('role', ['agent', 'admin', 'broker'])
         .order('full_name');
       if (error) throw error;
       return data as Agent[];
