@@ -11,7 +11,6 @@ import {
   Tabs,
   Tab,
 } from '@mui/material';
-import ListingsTab from '@/components/dashboard/business/ListingsTab';
 import PayoutsTab from '@/components/dashboard/business/PayoutsTab';
 import TransactionsTab from '@/components/dashboard/business/TransactionsTab';
 
@@ -45,8 +44,7 @@ export default function MyBusinessPage() {
 
   const getInitialTab = () => {
     switch (tabParam) {
-      case 'listings': return 1;
-      case 'payouts': return 2;
+      case 'payouts': return 1;
       case 'transactions':
       default: return 0;
     }
@@ -108,9 +106,7 @@ export default function MyBusinessPage() {
               },
             }}
           >
-
             <Tab label="Transactions" />
-            <Tab label="Listings" />
             <Tab label="Payouts" />
           </Tabs>
         </Container>
@@ -124,10 +120,6 @@ export default function MyBusinessPage() {
           </TabPanel>
 
           <TabPanel value={activeTab} index={1}>
-            <ListingsTab />
-          </TabPanel>
-
-          <TabPanel value={activeTab} index={2}>
             <PayoutsTab />
           </TabPanel>
         </Container>
