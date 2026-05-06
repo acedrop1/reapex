@@ -73,9 +73,11 @@ export function DualAudienceNavBar() {
     }
   }
 
-  // Homepage should start transparent
+  // Homepage has its own nav built into MarketingHomepage — hide this one
   const isHomePage = pathname === '/';
-  const isTransparent = isHomePage && !scrolled;
+  if (isHomePage) return null;
+
+  const isTransparent = false;
 
   return (
     <AppBar

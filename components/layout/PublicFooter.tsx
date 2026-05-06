@@ -1,12 +1,18 @@
 'use client';
 
 import { useState } from 'react';
+import { usePathname } from 'next/navigation';
 import { Box, Container, Typography, Link, Grid } from '@mui/material';
 import { ReapexLogo } from '@/components/ui/ReapexLogo';
 import AgentApplicationModal from '@/components/modals/AgentApplicationModal';
 
 export function PublicFooter() {
+  const pathname = usePathname();
   const [applicationModalOpen, setApplicationModalOpen] = useState(false);
+
+  // Homepage has its own footer built into MarketingHomepage
+  if (pathname === '/') return null;
+
   return (
     <Box
       component="footer"

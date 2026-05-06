@@ -482,11 +482,10 @@ export default function MarketingHomepage() {
           <ReapexLogo height={28} />
         </a>
         <div className="nav-center">
-          <a href="#features" onClick={(e) => scrollToId(e, 'features')}>Why Reapex</a>
-          <a href="#plans" onClick={(e) => scrollToId(e, 'plans')}>Plans</a>
-          <a href="#calculator" onClick={(e) => scrollToId(e, 'calculator')}>Calculator</a>
-          <a href="#team" onClick={(e) => scrollToId(e, 'team')}>Our Agents</a>
-          <a href="#cta" onClick={(e) => scrollToId(e, 'cta')}>Contact</a>
+          <Link href="/sell">Sell</Link>
+          <Link href="/listings">Buy</Link>
+          <Link href="/agents">Our Agents</Link>
+          <Link href="/contact">Contact Us</Link>
         </div>
         <div className="nav-right">
           <Link href="/login" className="btn btn-outline-nav">Agent Portal</Link>
@@ -503,12 +502,11 @@ export default function MarketingHomepage() {
 
       {/* MOBILE NAV OVERLAY */}
       <div className={`mobile-overlay${mobileNavOpen ? ' open' : ''}`}>
-        <a href="#hero" onClick={(e) => { scrollToId(e, 'hero'); closeMobileNav(); }}>Home</a>
-        <a href="#features" onClick={(e) => { scrollToId(e, 'features'); closeMobileNav(); }}>Why Reapex</a>
-        <a href="#plans" onClick={(e) => { scrollToId(e, 'plans'); closeMobileNav(); }}>Plans</a>
-        <a href="#calculator" onClick={(e) => { scrollToId(e, 'calculator'); closeMobileNav(); }}>Calculator</a>
-        <a href="#team" onClick={(e) => { scrollToId(e, 'team'); closeMobileNav(); }}>Our Agents</a>
-        <a href="#cta" onClick={(e) => { scrollToId(e, 'cta'); closeMobileNav(); }}>Contact</a>
+        <Link href="/" onClick={closeMobileNav}>Home</Link>
+        <Link href="/sell" onClick={closeMobileNav}>Sell</Link>
+        <Link href="/listings" onClick={closeMobileNav}>Buy</Link>
+        <Link href="/agents" onClick={closeMobileNav}>Our Agents</Link>
+        <Link href="/contact" onClick={closeMobileNav}>Contact Us</Link>
         <div className="mobile-cta">
           <Link href="/login" className="btn btn-outline-dark" onClick={closeMobileNav}>Agent Portal</Link>
           <a href="#cta" className="btn btn-gold" onClick={(e) => { scrollToId(e, 'cta'); closeMobileNav(); }}>Partner With Us</a>
@@ -887,16 +885,17 @@ export default function MarketingHomepage() {
                 </a>
                 <p>Reach Your Real Estate Apex.<br />A True Partnership Platform.</p>
                 <div className="footer-badges">
-                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" style={{ opacity: 0.4 }}><path d="M12 3L2 12h3v9h14v-9h3L12 3z" fill="white"/><rect x="8" y="14" width="8" height="1.5" fill="black"/><rect x="8" y="17" width="8" height="1.5" fill="black"/></svg>
-                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" style={{ opacity: 0.4 }}><rect x="3" y="3" width="18" height="18" rx="3" fill="white"/><text x="12" y="16" textAnchor="middle" fontSize="11" fontWeight="900" fill="black">R</text></svg>
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" style={{ opacity: 0.6 }}><path d="M12 3L2 12h3v9h14v-9h3L12 3z" fill="black"/><rect x="8" y="14" width="8" height="1.5" fill="white"/><rect x="8" y="17" width="8" height="1.5" fill="white"/></svg>
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" style={{ opacity: 0.6 }}><rect x="3" y="3" width="18" height="18" rx="3" fill="black"/><text x="12" y="16" textAnchor="middle" fontSize="11" fontWeight="900" fill="white">R</text></svg>
                 </div>
                 <div className="footer-broker">Licensed Real Estate Broker</div>
               </div>
               <div className="footer-col">
                 <h4>Quick Links</h4>
-                <a href="#features" onClick={(e) => scrollToId(e, 'features')}>Why Reapex</a>
-                <a href="#plans" onClick={(e) => scrollToId(e, 'plans')}>Plans</a>
-                <a href="#team" onClick={(e) => scrollToId(e, 'team')}>Our Agents</a>
+                <Link href="/sell">Sell</Link>
+                <Link href="/listings">Buy</Link>
+                <Link href="/agents">Our Agents</Link>
+                <Link href="/contact">Contact Us</Link>
               </div>
               <div className="footer-col">
                 <h4>Company</h4>
