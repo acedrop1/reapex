@@ -51,6 +51,7 @@ const getPageTitle = (pathname: string): string => {
     '/admin/sell-requests': 'Sell Requests',
     '/admin/reviews': 'Reviews',
     '/admin/yard-signs': 'Yard Signs',
+    '/admin/agent-billing': 'Agent Billing',
     '/dashboard/external-links': 'External Links',
   };
 

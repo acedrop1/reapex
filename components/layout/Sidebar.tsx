@@ -35,6 +35,7 @@ import {
   BookOpen,
   Question,
   QrCode,
+  Receipt,
 } from '@phosphor-icons/react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
@@ -84,6 +85,7 @@ const adminMenuItems: Array<{ text: string; icon: any; href: string; adminOnlySt
   { text: 'Sell Requests', icon: House, href: '/admin/sell-requests' },
   { text: 'Pending Reviews', icon: Star, href: '/admin/reviews' },
   { text: 'Commission Payouts', icon: CurrencyDollar, href: '/admin/commission-payouts' },
+  { text: 'Agent Billing', icon: Receipt, href: '/admin/agent-billing' },
   { text: 'Yard Signs', icon: QrCode, href: '/admin/yard-signs' },
   { text: 'User Management', icon: UserGear, href: '/admin/users', adminOnlyStrict: true },
 ];
