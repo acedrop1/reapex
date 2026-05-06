@@ -26,6 +26,7 @@ import {
 import { X, Upload, Trash } from '@phosphor-icons/react';
 import { dashboardStyles } from '@/lib/theme/dashboardStyles';
 import { useError } from '@/contexts/ErrorContext';
+import AddressAutocomplete from '@/components/listings/AddressAutocomplete';
 
 interface Listing {
     id: string;
@@ -281,13 +282,19 @@ export default function EditListingModal({
                 <form onSubmit={handleSubmit}>
                     <Grid container spacing={2} sx={{ mt: 1 }}>
                         <Grid item xs={12}>
-                            <TextField
-                                fullWidth
-                                label="Property Address"
+                            <AddressAutocomplete
                                 value={formData.property_address}
-                                onChange={(e) => setFormData({ ...formData, property_address: e.target.value })}
+                                onChange={(val) => setFormData({ ...formData, property_address: val })}
+                                onAddressSelect={(result) => {
+                                    setFormData(prev => ({
+                                        ...prev,
+                                        property_address: result.property_address,
+                                        property_city: result.property_city,
+                                        property_state: result.property_state,
+                                        property_zip: result.property_zip,
+                                    }));
+                                }}
                                 required
-                                sx={dashboardStyles.textField}
                             />
                         </Grid>
                         <Grid item xs={12} sm={6}>
