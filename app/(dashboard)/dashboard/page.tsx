@@ -46,6 +46,7 @@ import {
 import Image from 'next/image';
 import { createClient } from '@/lib/supabase/client';
 import OnboardingWizard from '@/components/onboarding/OnboardingWizard';
+import { StaggerContainer, StaggerItem } from '@/components/motion/StaggeredEntrance';
 
 interface Task {
   id: number;
@@ -322,7 +323,9 @@ export default function DashboardPage() {
 
   return (
     <Container maxWidth="xl" sx={{ py: 4, minHeight: '100%', display: 'flex', flexDirection: 'column' }}>
+      <StaggerContainer delay={1.0}>
       {/* Header Row - Progress Bar and Announcements */}
+      <StaggerItem>
       <Box
         sx={{
           mb: 2,
@@ -473,6 +476,7 @@ export default function DashboardPage() {
           )}
         </Box>
       </Box>
+      </StaggerItem>
 
       {/* Notifications Popover */}
       <Popover
@@ -563,6 +567,7 @@ export default function DashboardPage() {
           <Grid container spacing={2} sx={{ flexShrink: 0, display: (isMobile && mobileTab !== 0) ? 'none' : 'flex' }}>
             {/* Transactions Box */}
             <Grid item xs={12} md={6}>
+              <StaggerItem>
               <Box
                 sx={{
                   p: 2,
@@ -669,10 +674,12 @@ export default function DashboardPage() {
                   )}
                 </Box>
               </Box>
+              </StaggerItem>
             </Grid>
 
             {/* Tasks Box */}
             <Grid item xs={12} md={6}>
+              <StaggerItem>
               <Box
                 sx={{
                   p: 2,
@@ -766,10 +773,12 @@ export default function DashboardPage() {
                   ))}
                 </Box>
               </Box>
+              </StaggerItem>
             </Grid>
           </Grid>
 
           {/* Listings Below - Full Width */}
+          <StaggerItem style={{ flex: 1, minHeight: 0 }}>
           <Box sx={{ flex: 1, minHeight: 0, display: (isMobile && mobileTab !== 1) ? 'none' : 'flex', flexDirection: 'column' }}>
             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -920,10 +929,12 @@ export default function DashboardPage() {
               </Box>
             )}
           </Box>
+          </StaggerItem>
         </Grid>
 
         {/* Right Side - Calendar Full Height */}
         <Grid item xs={12} md={5} sx={{ height: isMobile ? '70vh' : '100%', display: (isMobile && mobileTab !== 2) ? 'none' : 'block' }}>
+          <StaggerItem style={{ height: '100%' }}>
           <Box
             sx={{
               p: 1.5,
@@ -1212,8 +1223,10 @@ export default function DashboardPage() {
               </Box>
             )}
           </Box>
+          </StaggerItem>
         </Grid>
       </Grid>
+      </StaggerContainer>
 
       {/* Task Detail Modal */}
       <Dialog

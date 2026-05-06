@@ -6,6 +6,7 @@ import { Header } from '@/components/layout/Header';
 import { Box } from '@mui/material';
 import { SidebarProvider } from '@/components/providers/SidebarProvider';
 import { isAdmin } from '@/lib/utils/auth';
+import PageLoader from '@/components/layout/PageLoader';
 
 export default async function DashboardLayout({
   children,
@@ -46,6 +47,7 @@ export default async function DashboardLayout({
 
   return (
     <SidebarProvider>
+      <PageLoader />
       <Box sx={{ display: 'flex', minHeight: '100vh', backgroundColor: '#000000' }}>
         <Sidebar user={user} />
         <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
