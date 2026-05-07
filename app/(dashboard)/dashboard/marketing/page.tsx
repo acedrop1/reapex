@@ -80,7 +80,7 @@ export default function MarketingPage() {
   });
 
   return (
-    <Container maxWidth="xl" sx={{ ...dashboardStyles.container, pt: 4 }}>
+    <Container maxWidth="xl" sx={{ ...dashboardStyles.container, pt: 2 }}>
       {/* Loading State */}
       {isLoading && (
         <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>

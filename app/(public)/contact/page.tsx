@@ -3,7 +3,7 @@ import { Send, LocationOn, Email } from '@mui/icons-material';
 
 export default function ContactPage() {
   return (
-    <Box sx={{ backgroundColor: '#0a0a0a', pt: 16, pb: 8 }}>
+    <Box sx={{ backgroundColor: '#000000', pt: 16, pb: 8, minHeight: '100vh' }}>
       <Container maxWidth="xl">
         {/* Header */}
         <Box sx={{ textAlign: 'center', mb: 8 }}>
@@ -21,7 +21,7 @@ export default function ContactPage() {
             <Card
               sx={{
                 p: 4,
-                backgroundColor: '#1a1a1a',
+                backgroundColor: '#111111',
                 border: '1px solid #2a2a2a',
               }}
             >
@@ -136,7 +136,7 @@ export default function ContactPage() {
               sx={{
                 p: 4,
                 height: '100%',
-                backgroundColor: '#1a1a1a',
+                backgroundColor: '#111111',
                 border: '1px solid #2a2a2a',
               }}
             >

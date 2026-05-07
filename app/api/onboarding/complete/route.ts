@@ -3,9 +3,9 @@ import { NextResponse } from 'next/server';
 import { getStripe } from '@/lib/stripe';
 
 const PLAN_PRICE_IDS = {
-    launch: 'price_launch', // FREE
-    growth: 'price_growth', // $175/mo
-    pro: 'price_pro',      // $450/mo
+    launch: 'price_1SZLDsLJ58SkLqL0LbEF7pAO', // FREE – $0/mo
+    growth: 'price_1SZLEOLJ58SkLqL0inV4Ecpa',  // $225/mo
+    pro: 'price_1SZLEgLJ58SkLqL0BtiTzn4J',     // $550/mo
 };
 
 const PLAN_COMMISSIONS = {

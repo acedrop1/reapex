@@ -549,10 +549,6 @@ export default function MarketingHomepage() {
               {[0, 1].map((set) => (
                 <React.Fragment key={set}>
                   <div className="trust-item">
-                    <svg fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                    Licensed NJ Real Estate Broker
-                  </div>
-                  <div className="trust-item">
                     <svg fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
                     100% Commission Plans Available
                   </div>
@@ -569,13 +565,35 @@ export default function MarketingHomepage() {
                     No Transaction Fees
                   </div>
                   <div className="trust-item">
-                    <svg fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                    <svg fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
                     Full Tech Stack Included
                   </div>
                 </React.Fragment>
               ))}
             </div>
           </div>
+
+          {/* FRICTIONLESS BANNER */}
+          <section className="section-reveal" style={{
+            background: 'linear-gradient(135deg, #0a0a0a 0%, #111 100%)',
+            borderTop: '2px solid var(--gold)',
+            borderBottom: '2px solid var(--gold)',
+            padding: '48px 24px',
+            textAlign: 'center',
+          }}>
+            <div className="si" style={{ maxWidth: 800 }}>
+              <p style={{
+                fontSize: 'clamp(20px, 3vw, 32px)',
+                fontWeight: 800,
+                color: 'var(--white)',
+                letterSpacing: '-0.5px',
+                lineHeight: 1.3,
+                margin: 0,
+              }}>
+                The Frictionless Brokerage: <span style={{ color: 'var(--gold)' }}>No Transaction Fees. No Junk Fees.</span> Just Pure Production.
+              </p>
+            </div>
+          </section>
 
           {/* SCROLL REVEAL TEXT SECTION */}
           <section className="scroll-reveal-section" id="scrollReveal">
@@ -611,55 +629,12 @@ export default function MarketingHomepage() {
             </div>
           </section>
 
-          <div className="glow-divider"></div>
-
-          {/* WHY REAPEX */}
-          <section className="sec" id="features">
-            <div className="tc section-reveal">
-              <div className="sec-label">Why Reapex</div>
-              <div className="sec-title">Everything you need to grow. Nothing you don&apos;t.</div>
-              <div className="sec-sub">We built Reapex to be the brokerage we always wished existed &mdash; modern tools, fair splits, and real support.</div>
-            </div>
-            <div className="features-grid stagger-children">
-              <div className="feature-card tilt-card">
-                <div className="feature-icon"><svg fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
-                <h3>Keep What You Earn</h3>
-                <p>Flexible commission splits from 80/20 up to 100%. Low caps, no hidden fees, no surprises.</p>
-              </div>
-              <div className="feature-card tilt-card">
-                <div className="feature-icon"><svg fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
-                <h3>Instant Payments</h3>
-                <p>Get paid at clear-to-close. No more waiting days or weeks for commission checks.</p>
-              </div>
-              <div className="feature-card tilt-card">
-                <div className="feature-icon"><svg fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
-                <h3>Modern Tech Stack</h3>
-                <p>Integrated Agent OS with CRM, transaction management, marketing tools, and a full portal &mdash; not a clunky intranet.</p>
-              </div>
-              <div className="feature-card tilt-card">
-                <div className="feature-icon"><svg fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
-                <h3>Accelerator Program</h3>
-                <p>50/50 split lead generation program. Qualified leads delivered directly to you &mdash; no cold calling.</p>
-              </div>
-              <div className="feature-card tilt-card">
-                <div className="feature-icon"><svg fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></div>
-                <h3>Training &amp; Mentorship</h3>
-                <p>24/7 broker support, ongoing training programs, and a knowledge base built for your success.</p>
-              </div>
-              <div className="feature-card tilt-card">
-                <div className="feature-icon"><svg fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
-                <h3>Marketing &amp; Branding</h3>
-                <p>Custom design requests, listing launch packages, brand assets, and social media templates &mdash; all included.</p>
-              </div>
-            </div>
-          </section>
-
           {/* CALCULATOR */}
           <section className="sec-off" id="calculator">
             <div className="si">
               <div className="tc section-reveal">
                 <div className="sec-label">Commission Calculator</div>
-                <div className="sec-title">See exactly how much more you could earn.</div>
+                <div className="sec-title">See how much more you could earn.</div>
                 <div className="sec-sub">Plug in your numbers. The difference speaks for itself.</div>
               </div>
               <div className="calc-grid section-reveal">
@@ -712,7 +687,7 @@ export default function MarketingHomepage() {
                     Disclaimer
                   </div>
                   {disclaimerOpen && (
-                    <div style={{ fontSize: 11, color: 'var(--g600)', marginTop: 10, lineHeight: 1.5 }}>
+                    <div style={{ fontSize: 11, color: 'var(--g500)', marginTop: 10, lineHeight: 1.5 }}>
                       *The commission calculator is for illustrative purposes only. Actual earnings may differ based on transaction volume, fees, and deal structures. This tool does not constitute a guarantee of income.
                     </div>
                   )}
@@ -721,25 +696,45 @@ export default function MarketingHomepage() {
             </div>
           </section>
 
-          {/* FRICTIONLESS BANNER */}
-          <section className="section-reveal" style={{
-            background: 'linear-gradient(135deg, #0a0a0a 0%, #111 100%)',
-            borderTop: '2px solid var(--gold)',
-            borderBottom: '2px solid var(--gold)',
-            padding: '48px 24px',
-            textAlign: 'center',
-          }}>
-            <div className="si" style={{ maxWidth: 800 }}>
-              <p style={{
-                fontSize: 'clamp(20px, 3vw, 32px)',
-                fontWeight: 800,
-                color: 'var(--white)',
-                letterSpacing: '-0.5px',
-                lineHeight: 1.3,
-                margin: 0,
-              }}>
-                The Frictionless Brokerage: <span style={{ color: 'var(--gold)' }}>No Transaction Fees. No Junk Fees.</span> Just Pure Production.
-              </p>
+          <div className="glow-divider"></div>
+
+          {/* WHY REAPEX */}
+          <section className="sec" id="features">
+            <div className="tc section-reveal">
+              <div className="sec-label">Why Reapex</div>
+              <div className="sec-title">Everything you need to grow. Nothing you don&apos;t.</div>
+            </div>
+            <div className="features-grid stagger-children">
+              <div className="feature-card tilt-card">
+                <div className="feature-icon"><svg fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+                <h3>Keep What You Earn</h3>
+                <p>Flexible commission splits from 80/20 up to 100%. Low caps, no hidden fees, no surprises.</p>
+              </div>
+              <div className="feature-card tilt-card">
+                <div className="feature-icon"><svg fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
+                <h3>Instant Payments</h3>
+                <p>Get paid at clear-to-close. No more waiting days or weeks for commission checks.</p>
+              </div>
+              <div className="feature-card tilt-card">
+                <div className="feature-icon"><svg fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
+                <h3>Modern Tech Stack</h3>
+                <p>Integrated Agent OS with CRM, transaction management, marketing tools, and a full portal.</p>
+              </div>
+              <div className="feature-card tilt-card">
+                <div className="feature-icon"><svg fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+                <h3>Accelerator Program</h3>
+                <p>50/50 split lead generation program. Qualified leads delivered directly to you.</p>
+              </div>
+              <div className="feature-card tilt-card">
+                <div className="feature-icon"><svg fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></div>
+                <h3>Training &amp; Mentorship</h3>
+                <p>24/7 broker support, ongoing training programs, and a knowledge base built for your success.</p>
+              </div>
+              <div className="feature-card tilt-card">
+                <div className="feature-icon"><svg fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+                <h3>Marketing &amp; Branding</h3>
+                <p>Custom design requests, listing launch packages, brand assets, and social media templates.</p>
+              </div>
             </div>
           </section>
 
@@ -898,10 +893,9 @@ export default function MarketingHomepage() {
           <section className="cta" id="cta">
             <div className="cta-grid">
               <div className="cta-left section-reveal">
-                <div className="sec-label">Ready to Upgrade?</div>
+                <div className="sec-label">Get Started</div>
                 <h2>Ready to Upgrade<br /><span className="gold">Your Career?</span></h2>
                 <p>The traditional brokerage model was built for the broker, not the agent. See the difference with Reapex.</p>
-                <div className="cta-tagline">Switch to the brokerage that puts you first.</div>
               </div>
               <div className="cta-form section-reveal">
                 <h3>Take Back Control of Your Career</h3>
