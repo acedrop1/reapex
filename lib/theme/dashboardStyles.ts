@@ -5,6 +5,7 @@ export const dashboardStyles = {
   container: {
     backgroundColor: '#0A0A0A', // Near-black background
     color: '#FFFFFF', // White text
+    minHeight: '100%',
   },
 
   // Paper/Card styles (dark bg, subtle borders, rounded)
