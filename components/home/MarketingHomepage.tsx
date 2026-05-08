@@ -623,8 +623,8 @@ export default function MarketingHomepage() {
                 <div className="stat-label">Hidden Fees</div>
               </div>
               <div className="stat-item">
-                <div className="stat-number" data-target="50" data-suffix="/50">0</div>
-                <div className="stat-label">Lead Split Program</div>
+                <div className="stat-number" data-display="1-CLICK" data-target="1">1-CLICK</div>
+                <div className="stat-label">All-In-One Agent Portal</div>
               </div>
             </div>
           </section>
