@@ -29,9 +29,11 @@ const RESOURCE_LINKS: ResourceLink[] = [
   { name: 'ShowingTime', url: 'https://www.showingtime.com/', logo: favicon('showingtime.com'), category: 'tools' },
   { name: 'DocuSign', url: 'https://www.docusign.com/', logo: favicon('docusign.com'), category: 'tools' },
   { name: 'dotloop', url: 'https://www.dotloop.com/', logo: favicon('dotloop.com'), category: 'tools' },
+  { name: 'zipLogix (zipForms)', url: 'https://www.ziplogix.com/', logo: favicon('ziplogix.com'), category: 'tools' },
 
   // Associations & Government
   { name: 'National Association of Realtors', url: 'https://www.nar.realtor/', logo: favicon('nar.realtor'), category: 'associations' },
+  { name: 'Greater Bergen Board of Realtors', url: 'https://www.greaterbergenrealtors.com/', logo: favicon('greaterbergenrealtors.com'), category: 'associations' },
   { name: 'NJ Property Records', url: 'https://www.njactb.org/', logo: favicon('njactb.org'), category: 'associations' },
   { name: 'FEMA FloodSmart', url: 'https://www.floodsmart.gov/', logo: favicon('floodsmart.gov'), category: 'associations' },
   { name: 'NJREC License Renewal Portal', url: 'https://newjersey.mylicense.com/', logo: favicon('newjersey.mylicense.com'), category: 'associations' },

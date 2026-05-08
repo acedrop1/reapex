@@ -67,6 +67,18 @@ const plans: Plan[] = [
       'No Commission Cap',
     ],
   },
+  {
+    id: 'team_member',
+    name: 'Team Member',
+    productId: '',
+    priceId: '',
+    price: 0,
+    features: [
+      '8% Brokerage Service Fee (capped at $1,500/tx)',
+      'No Monthly Fee',
+      'For agents joining an existing team',
+    ],
+  },
 ];
 
 interface CommissionPlanSelectorProps {
@@ -284,7 +296,36 @@ export default function CommissionPlanSelector({ currentPlan, onSuccess }: Commi
         })}
       </Grid>
 
-      <Box sx={{ mt: 4, textAlign: 'center' }}>
+      {/* Promo Code */}
+      <Box sx={{ mt: 3, display: 'flex', justifyContent: 'center' }}>
+        <Box sx={{ maxWidth: 400, width: '100%' }}>
+          <Typography variant="body2" sx={{ color: '#B0B0B0', mb: 1, textAlign: 'center' }}>
+            Have a promo code?
+          </Typography>
+          <Box sx={{ display: 'flex', gap: 1 }}>
+            <input
+              type="text"
+              placeholder="Enter promo code"
+              id="promo-code-input"
+              style={{
+                flex: 1,
+                padding: '10px 14px',
+                backgroundColor: '#1A1A1A',
+                border: '1px solid #2A2A2A',
+                borderRadius: '8px',
+                color: '#FFFFFF',
+                fontSize: '14px',
+                outline: 'none',
+              }}
+            />
+          </Box>
+          <Typography variant="caption" sx={{ color: '#808080', display: 'block', mt: 0.5, textAlign: 'center' }}>
+            Promo rates available during Phase 1 of launch
+          </Typography>
+        </Box>
+      </Box>
+
+      <Box sx={{ mt: 3, textAlign: 'center' }}>
         <Typography
           variant="body2"
           sx={{

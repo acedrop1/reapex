@@ -57,6 +57,24 @@ const TESTIMONIALS = [
     stat: '$0',
     statLabel: 'Hidden Fees',
   },
+  {
+    badge: '5x',
+    quote: "The integrated Agent OS changed my workflow completely. CRM, transactions, marketing templates, compliance docs — all in one place. I used to juggle five different platforms. Now I open one portal and everything is there.",
+    stat: '5x',
+    statLabel: 'Workflow Efficiency',
+  },
+  {
+    badge: '24/7',
+    quote: "I had a closing at 9 PM on a Friday and needed broker support. Got a response within minutes. At my last brokerage, I would have been waiting until Monday morning. That kind of support is priceless.",
+    stat: '24/7',
+    statLabel: 'Broker Support',
+  },
+  {
+    badge: '90%',
+    quote: "Keeping 90% of my commission on the Growth plan while still getting full tech, marketing support, and mentorship? It’s a no-brainer. I recommend Reapex to every agent I know who’s tired of being nickel-and-dimed.",
+    stat: '90%',
+    statLabel: 'Commission Retained',
+  },
 ];
 
 export default function MarketingHomepage() {
@@ -774,6 +792,15 @@ export default function MarketingHomepage() {
                   <div className="plan-detail"><span className="dl">Monthly Fee</span><span className="dv">$550</span></div>
                   <div className="plan-detail"><span className="dl">Annual Cap</span><span className="dv">N/A</span></div>
                   <div className="plan-cta"><a href="#cta" className="btn btn-gold magnetic-btn" onClick={(e) => scrollToId(e, 'cta')}>Learn More</a></div>
+                </div>
+                <div className="plan-card gradient-border">
+                  <div className="plan-name">Team Member</div>
+                  <div className="plan-desc">For agents joining an existing team</div>
+                  <div className="plan-split">8%</div>
+                  <div className="plan-split-label">Brokerage Service Fee</div>
+                  <div className="plan-detail"><span className="dl">Fee Cap</span><span className="dv">$1,500/tx</span></div>
+                  <div className="plan-detail"><span className="dl">Monthly Fee</span><span className="dv">$0</span></div>
+                  <div className="plan-cta"><a href="#cta" className="btn btn-outline-dark magnetic-btn" onClick={(e) => scrollToId(e, 'cta')}>Learn More</a></div>
                 </div>
               </div>
               <div className="section-reveal" style={{ textAlign: 'center', marginTop: 40 }}>

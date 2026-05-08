@@ -222,7 +222,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 .disclaimer-toggle:hover{color:var(--g300)}
 
 /* ===== PLANS ===== */
-.plans-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:48px}
+.plans-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:48px}
 .plan-card{background:var(--g900);border:1.5px solid var(--g700);border-radius:var(--rl);padding:40px;color:var(--white);transition:all .5s var(--spring);position:relative;overflow:hidden;perspective:1000px}
 .plan-card::after{content:'';position:absolute;inset:0;border-radius:var(--rl);background:linear-gradient(180deg,transparent 60%,rgba(226,192,90,.03));pointer-events:none;opacity:0;transition:opacity .4s}
 .plan-card:hover{transform:translateY(-8px);border-color:var(--gold);box-shadow:0 30px 70px rgba(0,0,0,.4)}
@@ -347,6 +347,9 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 .mobile-overlay .mobile-cta{display:flex;flex-direction:column;gap:12px;margin-top:16px;align-items:center}
 .mobile-overlay .mobile-cta a{font-size:15px}
 
+@media(min-width:1025px) and (max-width:1280px){
+  .plans-grid{grid-template-columns:repeat(2,1fr)}
+}
 @media(max-width:1024px){
   .calc-grid,.comp-grid,.cta-grid{grid-template-columns:1fr}
   .comp-col.modern{border-left:none;border-top:2px solid var(--gold)}

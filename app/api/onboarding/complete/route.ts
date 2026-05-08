@@ -6,12 +6,14 @@ const PLAN_PRICE_IDS = {
     launch: 'price_1SZLDsLJ58SkLqL0LbEF7pAO', // FREE – $0/mo
     growth: 'price_1SZLEOLJ58SkLqL0inV4Ecpa',  // $225/mo
     pro: 'price_1SZLEgLJ58SkLqL0BtiTzn4J',     // $550/mo
+    team_member: '',                              // FREE – 8% service fee per tx capped at $1,500
 };
 
 const PLAN_COMMISSIONS = {
     launch: '80/20 Split',
     growth: '90/10 Split',
     pro: '100% Commission',
+    team_member: '8% Brokerage Service Fee (capped $1,500/tx)',
 };
 
 export async function POST(req: Request) {
@@ -52,7 +54,10 @@ export async function POST(req: Request) {
             years_experience: formData.years_experience,
             languages: formData.languages,
             cap_amount: formData.selected_plan === 'launch' ? 22500 :
-                formData.selected_plan === 'growth' ? 19500 : 0,
+                formData.selected_plan === 'growth' ? 19500 :
+                formData.selected_plan === 'team_member' ? 0 : 0,
+            brokerage_service_fee_pct: formData.selected_plan === 'team_member' ? 8 : null,
+            brokerage_service_fee_cap: formData.selected_plan === 'team_member' ? 1500 : null,
         };
 
         // Add phone if provided
@@ -125,19 +130,39 @@ export async function POST(req: Request) {
         }
 
         // 3. Create Subscription
-        // Only if a paid plan is selected
-        if (formData.selected_plan !== 'launch') {
+        // Only if a paid plan is selected (skip for free plans: launch, team_member)
+        if (formData.selected_plan !== 'launch' && formData.selected_plan !== 'team_member') {
             const priceId = PLAN_PRICE_IDS[formData.selected_plan as keyof typeof PLAN_PRICE_IDS];
             if (priceId) {
                 try {
-                    const subscription = await stripe.subscriptions.create({
+                    // Build subscription params
+                    const subscriptionParams: any = {
                         customer: customerId,
                         items: [{ price: priceId }],
                         metadata: {
                             supabase_user_id: user.id,
                         },
                         expand: ['latest_invoice.payment_intent'],
-                    });
+                    };
+
+                    // Apply promo code if provided
+                    if (formData.promo_code) {
+                        try {
+                            const promotionCodes = await stripe.promotionCodes.list({
+                                code: formData.promo_code,
+                                active: true,
+                                limit: 1,
+                            });
+                            if (promotionCodes.data.length > 0) {
+                                subscriptionParams.promotion_code = promotionCodes.data[0].id;
+                            }
+                        } catch (promoErr) {
+                            console.warn('Promo code lookup failed:', promoErr);
+                            // Continue without promo - don't block subscription
+                        }
+                    }
+
+                    const subscription = await stripe.subscriptions.create(subscriptionParams);
                     updateData.stripe_subscription_id = subscription.id;
                 } catch (subError: any) {
                     console.error('Stripe Subscription Error:', subError);

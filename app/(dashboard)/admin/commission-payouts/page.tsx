@@ -692,6 +692,48 @@ export default function CommissionPayoutsPage() {
                         </IconButton>
                       </Tooltip>
                     )}
+
+                    {transaction.commission_status === 'paid' && transaction.payment_type === 'check' && (
+                      <Tooltip title="Print Check">
+                        <IconButton
+                          size="small"
+                          onClick={() => {
+                            // Open print dialog with check details
+                            const printWindow = window.open('', '_blank');
+                            if (printWindow) {
+                              printWindow.document.write(`
+                                <html><head><title>Commission Check - ${transaction.users?.full_name}</title>
+                                <style>
+                                  body { font-family: 'Courier New', monospace; padding: 40px; }
+                                  .check { border: 2px solid #333; padding: 30px; max-width: 800px; margin: 0 auto; }
+                                  .check-header { display: flex; justify-content: space-between; margin-bottom: 20px; }
+                                  .company { font-size: 18px; font-weight: bold; }
+                                  .amount { font-size: 24px; font-weight: bold; border: 1px solid #333; padding: 8px 16px; }
+                                  .payee { font-size: 16px; margin: 20px 0; border-bottom: 1px solid #333; padding-bottom: 4px; }
+                                  .memo { margin-top: 20px; font-size: 12px; color: #666; }
+                                  @media print { body { padding: 0; } }
+                                </style></head><body>
+                                <div class="check">
+                                  <div class="check-header">
+                                    <div class="company">REAPEX REALTY LLC<br/><span style="font-size:12px;font-weight:normal">260 Columbia Ave, Suite 20, Fort Lee, NJ 07024</span></div>
+                                    <div>Date: ${new Date().toLocaleDateString()}</div>
+                                  </div>
+                                  <div class="payee">PAY TO THE ORDER OF: <strong>${transaction.users?.full_name || 'Agent'}</strong></div>
+                                  <div class="amount">$${(transaction.agent_net_payout || 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}</div>
+                                  <div class="memo">MEMO: Commission - ${transaction.property_address}, ${transaction.property_city} ${transaction.property_state}</div>
+                                </div>
+                                <script>window.print();</script>
+                                </body></html>
+                              `);
+                              printWindow.document.close();
+                            }
+                          }}
+                          sx={{ color: '#2196F3' }}
+                        >
+                          <Description fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
+                    )}
                   </Box>
                 </TableCell>
               </TableRow>
