@@ -48,7 +48,12 @@ export default async function SignRedirectPage({
 
   // Priority 2: If the sign has a custom redirect URL
   if (sign.redirect_url) {
-    redirect(sign.redirect_url);
+    // Ensure the URL has a protocol so redirect works for external sites
+    let url = sign.redirect_url.trim();
+    if (!/^https?:\/\//i.test(url)) {
+      url = `https://${url}`;
+    }
+    redirect(url);
   }
 
   // Priority 3: If there's an agent_id, redirect to agent page

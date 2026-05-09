@@ -93,7 +93,7 @@ export default function MyProfilePage() {
             <Tab label="Agent Profile" />
             <Tab label="Billing/Subscription" />
             <Tab label="Security" />
-            <Tab label="Agreements" />
+            <Tab label="My ICA" />
           </Tabs>
         </Container>
       </Box>

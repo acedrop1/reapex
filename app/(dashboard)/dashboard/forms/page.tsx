@@ -83,10 +83,7 @@ export default function FormsPage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('brokerage_documents')
-        .select(`
-          *,
-          users!brokerage_documents_uploaded_by_fkey(full_name)
-        `)
+        .select('*')
         .eq('is_visible', true)
         .order('display_order', { ascending: true })
         .order('created_at', { ascending: false });

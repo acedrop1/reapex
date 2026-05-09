@@ -94,6 +94,16 @@ function getQrImageUrl(code: string): string {
   return `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(getQrUrl(code))}`;
 }
 
+function normalizeUrl(url: string): string {
+  if (!url) return url;
+  const trimmed = url.trim();
+  if (!trimmed) return trimmed;
+  // If it already has a protocol, return as-is
+  if (/^https?:\/\//i.test(trimmed)) return trimmed;
+  // Add https:// for URLs that look like domains
+  return `https://${trimmed}`;
+}
+
 function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString('en-US', {
     month: 'short',
@@ -191,7 +201,7 @@ export default function AdminYardSignsPage() {
         title: formData.title,
         agent_id: formData.agent_id || null,
         listing_id: formData.listing_id || null,
-        redirect_url: formData.redirect_url || null,
+        redirect_url: formData.redirect_url ? normalizeUrl(formData.redirect_url) : null,
         notes: formData.notes || null,
         updated_at: new Date().toISOString(),
       };

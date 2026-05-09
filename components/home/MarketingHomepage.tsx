@@ -793,15 +793,6 @@ export default function MarketingHomepage() {
                   <div className="plan-detail"><span className="dl">Annual Cap</span><span className="dv">N/A</span></div>
                   <div className="plan-cta"><a href="#cta" className="btn btn-gold magnetic-btn" onClick={(e) => scrollToId(e, 'cta')}>Learn More</a></div>
                 </div>
-                <div className="plan-card gradient-border">
-                  <div className="plan-name">Team Member</div>
-                  <div className="plan-desc">For agents joining an existing team</div>
-                  <div className="plan-split">8%</div>
-                  <div className="plan-split-label">Brokerage Service Fee</div>
-                  <div className="plan-detail"><span className="dl">Fee Cap</span><span className="dv">$1,500/tx</span></div>
-                  <div className="plan-detail"><span className="dl">Monthly Fee</span><span className="dv">$0</span></div>
-                  <div className="plan-cta"><a href="#cta" className="btn btn-outline-dark magnetic-btn" onClick={(e) => scrollToId(e, 'cta')}>Learn More</a></div>
-                </div>
               </div>
               <div className="section-reveal" style={{ textAlign: 'center', marginTop: 40 }}>
                 <p style={{ fontSize: 15, color: 'var(--g400)', marginBottom: 20 }}>Take the first step toward a more profitable and empowered real estate career.</p>

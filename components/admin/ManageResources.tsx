@@ -381,7 +381,7 @@ const ManageResources = () => {
                 const trainingData: any = {
                     title: formData.title,
                     description: formData.description,
-                    category: formData.category.toLowerCase(),
+                    category: formData.category ? formData.category.toLowerCase() : null,
                     resource_type: resourceType,
                     thumbnail_url: iconUrl || editingItem?.thumbnail_url || autoThumbnail || null,
                 };
@@ -405,8 +405,12 @@ const ManageResources = () => {
                     await supabase.from('training_resources').insert(trainingData);
                 }
             } else if (currentType === 'marketing') {
-                if (!formData.link && !editingItem) {
-                    throw new Error('Please enter a Canva template URL');
+                if (!formData.link && !formData.file && !editingItem) {
+                    throw new Error('Please provide a link or upload a file');
+                }
+                if (formData.file) {
+                    const fileName = `${Date.now()}-${formData.file.name}`;
+                    fileUrl = await uploadFile(formData.file, 'marketing', fileName);  // marketing/ folder
                 }
                 if (formData.icon) {
                     const iconName = `${Date.now()}-${formData.icon.name}`;
@@ -416,11 +420,18 @@ const ManageResources = () => {
                 const marketingData: any = {
                     name: formData.title,
                     description: formData.description,
-                    category: formData.category.toLowerCase().replace(' ', '_'),
+                    category: formData.category ? formData.category.toLowerCase().replace(' ', '_') : null,
                     canva_url: formData.link || editingItem?.canva_url,
                     preview_image_url: iconUrl || editingItem?.preview_image_url,
-                    template_id: formData.link?.split('/').pop() || editingItem?.template_id,
                 };
+
+                // If a file was uploaded, store its path
+                if (fileUrl) {
+                    marketingData.canva_url = fileUrl;
+                } else if (formData.link) {
+                    marketingData.canva_url = formData.link;
+                    marketingData.template_id = formData.link?.split('/').pop() || editingItem?.template_id;
+                }
 
                 if (editingItem) {
                     await supabase.from('canva_templates').update(marketingData).eq('id', editingItem.id);
@@ -468,11 +479,16 @@ const ManageResources = () => {
                 }
             }
 
-            // Invalidate queries
+            // Invalidate queries (admin + agent-facing)
             queryClient.invalidateQueries({ queryKey: ['admin-forms'] });
             queryClient.invalidateQueries({ queryKey: ['admin-training'] });
             queryClient.invalidateQueries({ queryKey: ['admin-marketing'] });
             queryClient.invalidateQueries({ queryKey: ['admin-links'] });
+            queryClient.invalidateQueries({ queryKey: ['brokerage-documents'] });
+            queryClient.invalidateQueries({ queryKey: ['external-links-forms'] });
+            queryClient.invalidateQueries({ queryKey: ['external-links-marketing'] });
+            queryClient.invalidateQueries({ queryKey: ['canva-templates'] });
+            queryClient.invalidateQueries({ queryKey: ['training-resources'] });
 
             // Reset form and close dialog
             setFormData({ title: '', description: '', category: '', file: null, link: '', icon: null });
@@ -529,6 +545,11 @@ const ManageResources = () => {
             queryClient.invalidateQueries({ queryKey: ['admin-training'] });
             queryClient.invalidateQueries({ queryKey: ['admin-marketing'] });
             queryClient.invalidateQueries({ queryKey: ['admin-links'] });
+            queryClient.invalidateQueries({ queryKey: ['brokerage-documents'] });
+            queryClient.invalidateQueries({ queryKey: ['external-links-forms'] });
+            queryClient.invalidateQueries({ queryKey: ['external-links-marketing'] });
+            queryClient.invalidateQueries({ queryKey: ['canva-templates'] });
+            queryClient.invalidateQueries({ queryKey: ['training-resources'] });
 
             setDeleteDialogOpen(false);
             setItemToDelete(null);
@@ -650,7 +671,7 @@ const ManageResources = () => {
                 }}
             >
                 <Tab label="Forms & Compliance" />
-                <Tab label="Training Material" />
+                <Tab label="Training and Knowledge" />
                 <Tab label="Marketing Assets" />
                 <Tab label="External Links" />
             </Tabs>
@@ -983,16 +1004,83 @@ const ManageResources = () => {
                             </Box>
                         )}
 
-                        {(currentType === 'marketing' || currentType === 'link') && (
+                        {currentType === 'marketing' && (
+                            <Box>
+                                <Typography variant="body2" sx={{ color: '#B0B0B0', mb: 1 }}>
+                                    External Link (Canva, website, etc.) — or upload a file below
+                                </Typography>
+                                <TextField
+                                    label="Resource URL"
+                                    fullWidth
+                                    size="small"
+                                    value={formData.link}
+                                    onChange={(e) => setFormData(prev => ({ ...prev, link: e.target.value }))}
+                                    sx={dashboardStyles.textField}
+                                    placeholder="https://www.canva.com/design/... or https://example.com"
+                                    helperText="Paste a Canva template URL, website link, or any external resource"
+                                    FormHelperTextProps={{ sx: { color: '#666' } }}
+                                />
+                                <Typography variant="body2" sx={{ color: '#B0B0B0', mt: 2, mb: 1 }}>
+                                    File Upload (Optional — use instead of or alongside a link)
+                                </Typography>
+                                <Box
+                                    {...getFileRootProps()}
+                                    sx={{
+                                        border: '2px dashed',
+                                        borderColor: isFileDragActive ? '#E2C05A' : '#333333',
+                                        borderRadius: 2,
+                                        p: 3,
+                                        backgroundColor: isFileDragActive ? 'rgba(226, 192, 90, 0.1)' : '#0D0D0D',
+                                        cursor: 'pointer',
+                                        textAlign: 'center',
+                                        transition: 'all 0.3s',
+                                        '&:hover': {
+                                            borderColor: '#E2C05A',
+                                            backgroundColor: 'rgba(226, 192, 90, 0.05)',
+                                        },
+                                    }}
+                                >
+                                    <input {...getFileInputProps()} />
+                                    {formData.file ? (
+                                        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 2 }}>
+                                            <File size={24} color="#E2C05A" />
+                                            <Typography sx={{ color: '#FFFFFF' }}>{formData.file.name}</Typography>
+                                            <IconButton
+                                                size="small"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    setFormData(prev => ({ ...prev, file: null }));
+                                                }}
+                                                sx={{ color: '#EF5350' }}
+                                            >
+                                                <X size={18} />
+                                            </IconButton>
+                                        </Box>
+                                    ) : (
+                                        <>
+                                            <UploadSimple size={32} color="#B0B0B0" style={{ marginBottom: 8 }} />
+                                            <Typography variant="body2" sx={{ color: '#B0B0B0' }}>
+                                                {isFileDragActive ? 'Drop file here' : 'Drag & drop file here, or click to select'}
+                                            </Typography>
+                                            <Typography variant="caption" sx={{ color: '#666666', mt: 1, display: 'block' }}>
+                                                Supported: PDF, DOC, DOCX, Images
+                                            </Typography>
+                                        </>
+                                    )}
+                                </Box>
+                            </Box>
+                        )}
+
+                        {currentType === 'link' && (
                             <TextField
-                                label={currentType === 'marketing' ? 'Canva Template URL' : 'Link URL'}
+                                label="Link URL"
                                 fullWidth
                                 size="small"
                                 value={formData.link}
                                 onChange={(e) => setFormData(prev => ({ ...prev, link: e.target.value }))}
                                 sx={dashboardStyles.textField}
                                 required={!editingItem}
-                                placeholder={currentType === 'marketing' ? 'https://www.canva.com/design/...' : 'https://example.com'}
+                                placeholder="https://example.com"
                             />
                         )}
 
@@ -1075,13 +1163,12 @@ const ManageResources = () => {
 
                         {/* Category */}
                         <FormControl fullWidth size="small">
-                            <InputLabel sx={{ color: '#B0B0B0' }}>Category</InputLabel>
+                            <InputLabel sx={{ color: '#B0B0B0' }}>Category (Optional)</InputLabel>
                             <Select
-                                label="Category"
+                                label="Category (Optional)"
                                 value={formData.category}
                                 onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value }))}
                                 sx={{ ...dashboardStyles.textField, '& .MuiSelect-select': { color: '#FFFFFF' } }}
-                                required
                             >
                                 {categoryOptions[currentType].map((cat) => (
                                     <MenuItem key={cat} value={cat}>{cat}</MenuItem>
@@ -1095,7 +1182,7 @@ const ManageResources = () => {
                     <Button
                         variant="contained"
                         onClick={handleSubmit}
-                        disabled={isSubmitting || !formData.title || !formData.category}
+                        disabled={isSubmitting || !formData.title}
                         sx={dashboardStyles.buttonContained}
                     >
                         {isSubmitting ? <CircularProgress size={20} /> : editingItem ? 'Update' : 'Create'}

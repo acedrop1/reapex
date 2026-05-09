@@ -67,18 +67,6 @@ const plans: Plan[] = [
       'No Commission Cap',
     ],
   },
-  {
-    id: 'team_member',
-    name: 'Team Member',
-    productId: '',
-    priceId: '',
-    price: 0,
-    features: [
-      '8% Brokerage Service Fee (capped at $1,500/tx)',
-      'No Monthly Fee',
-      'For agents joining an existing team',
-    ],
-  },
 ];
 
 interface CommissionPlanSelectorProps {

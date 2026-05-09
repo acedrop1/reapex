@@ -30,7 +30,7 @@ import {
 import {
   House,
   Calendar as CalendarIcon,
-  CheckSquare,
+
   Bell,
   User,
   X,
@@ -324,159 +324,6 @@ export default function DashboardPage() {
   return (
     <Container maxWidth="xl" sx={{ py: 4, minHeight: '100%', display: 'flex', flexDirection: 'column' }}>
       <StaggerContainer delay={1.0}>
-      {/* Header Row - Progress Bar and Announcements */}
-      <StaggerItem>
-      <Box
-        sx={{
-          mb: 2,
-          display: 'flex',
-          gap: 2,
-          alignItems: 'stretch',
-          flexDirection: { xs: 'column', md: 'row' },
-        }}
-      >
-        {/* Announcements (Top on mobile, Right on desktop) */}
-        <Box
-          sx={{
-            flex: 1,
-            p: 2.5,
-            backgroundColor: '#000000',
-            borderRadius: '12px',
-            border: '1px solid #3A3A3A',
-            display: 'flex',
-            flexDirection: 'column',
-          }}
-        >
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5 }}>
-            <Megaphone size={18} color="#E2C05A" weight="duotone" />
-            <Typography variant="subtitle1" sx={{ fontWeight: 600, color: '#FFFFFF', fontSize: '0.95rem' }}>
-              Announcements
-            </Typography>
-          </Box>
-          {announcements && announcements.length > 0 ? (
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-              {announcements.map((announcement: any) => (
-                <Box key={announcement.id} sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <Typography variant="body2" sx={{ fontWeight: 600, color: '#FFFFFF', fontSize: '0.875rem' }}>
-                      {announcement.title}
-                    </Typography>
-                    {announcement.priority === 'high' && (
-                      <Box sx={{
-                        px: 1,
-                        py: 0.25,
-                        backgroundColor: 'rgba(239, 83, 80, 0.15)',
-                        borderRadius: '4px',
-                        border: '1px solid rgba(239, 83, 80, 0.3)'
-                      }}>
-                        <Typography variant="caption" sx={{ color: '#EF5350', fontSize: '0.7rem', fontWeight: 600 }}>
-                          HIGH
-                        </Typography>
-                      </Box>
-                    )}
-                  </Box>
-                  <Typography
-                    variant="body2"
-                    sx={{
-                      color: '#aaaaaa',
-                      fontSize: '0.8rem',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      display: '-webkit-box',
-                      WebkitLineClamp: 2,
-                      WebkitBoxOrient: 'vertical',
-                    }}
-                  >
-                    {announcement.content}
-                  </Typography>
-                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mt: 0.5 }}>
-                    <Typography variant="caption" sx={{ color: '#808080', fontSize: '0.7rem' }}>
-                      {new Date(announcement.published_at).toLocaleDateString()}
-                    </Typography>
-                    {announcement.related_type && announcement.related_title && (
-                      <Button
-                        size="small"
-                        variant="outlined"
-                        href={announcement.related_url || '#'}
-                        sx={{
-                          fontSize: '0.7rem',
-                          py: 0.25,
-                          px: 1,
-                          minHeight: 0,
-                          borderColor: 'rgba(226, 192, 90, 0.5)',
-                          color: '#E2C05A',
-                          textTransform: 'none',
-                          '&:hover': {
-                            borderColor: '#E2C05A',
-                            backgroundColor: 'rgba(226, 192, 90, 0.1)',
-                          },
-                        }}
-                      >
-                        {announcement.related_cta_text || getDefaultCta(announcement.related_type)}
-                      </Button>
-                    )}
-                  </Box>
-                </Box>
-              ))}
-            </Box>
-          ) : (
-            <Typography variant="body2" sx={{ color: '#aaaaaa', fontSize: '0.85rem' }}>
-              No new announcements
-            </Typography>
-          )}
-        </Box>
-
-        {/* Progress Bar (Bottom on mobile, Left on desktop) */}
-        <Box
-          sx={{
-            flex: 1,
-            p: 2.5,
-            backgroundColor: '#000000',
-            borderRadius: '12px',
-            border: '1px solid #3A3A3A',
-          }}
-        >
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5 }}>
-            <TrendUp size={18} color={getProgressColor(capPercentage)} weight="duotone" />
-            <Typography variant="subtitle1" sx={{ fontWeight: 600, color: '#FFFFFF', fontSize: '0.95rem' }}>
-              Progress to {userPlan === 'pro' ? 'No' : '$' + (capAmount / 1000).toFixed(0) + 'K'} Cap
-            </Typography>
-            <Box sx={{ flex: 1 }} />
-            <Typography variant="h6" sx={{ fontWeight: 700, color: '#FFFFFF', fontSize: '1.1rem', fontFamily: '"JetBrains Mono", monospace' }}>
-              {userPlan === 'pro' ? (
-                `$${(currentProgress / 1000).toFixed(1)}K`
-              ) : (
-                `$${(currentProgress / 1000).toFixed(1)}K / $${(capAmount / 1000).toFixed(0)}K`
-              )}
-            </Typography>
-          </Box>
-
-          {/* Linear Progress Bar */}
-          {userPlan !== 'pro' && (
-            <Box sx={{ position: 'relative', height: 12, backgroundColor: '#1A1A1A', borderRadius: '6px', overflow: 'hidden' }}>
-              <Box
-                sx={{
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  height: '100%',
-                  width: `${capPercentage}%`,
-                  backgroundColor: getProgressColor(capPercentage),
-                  borderRadius: '6px',
-                  transition: 'all 0.8s cubic-bezier(0.4, 0, 0.2, 1)',
-                  boxShadow: `0 0 12px ${getProgressColor(capPercentage)}80`,
-                }}
-              />
-            </Box>
-          )}
-          {userPlan === 'pro' && (
-            <Typography variant="caption" sx={{ color: '#E2C05A', fontWeight: 500 }}>
-              No cap limit on Pro plan
-            </Typography>
-          )}
-        </Box>
-      </Box>
-      </StaggerItem>
 
       {/* Notifications Popover */}
       <Popover
@@ -561,221 +408,208 @@ export default function DashboardPage() {
         </Box>
       )}
       <Grid container spacing={2} sx={{ flex: 1, minHeight: 0 }}>
-        {/* Left Side - Tasks, Transactions, Listings stacked */}
+        {/* Left Side - Announcements, Active Deals, Listings stacked */}
         <Grid item xs={12} md={7} sx={{ height: isMobile ? 'auto' : '100%', display: (isMobile && mobileTab === 2) ? 'none' : 'flex', flexDirection: 'column', gap: 2 }}>
-          {/* Tasks and Transactions Row */}
-          <Grid container spacing={2} sx={{ flexShrink: 0, display: (isMobile && mobileTab !== 0) ? 'none' : 'flex' }}>
-            {/* Transactions Box */}
-            <Grid item xs={12} md={6}>
-              <StaggerItem>
-              <Box
-                sx={{
-                  p: 2,
-                  backgroundColor: '#000000',
-                  borderRadius: '12px',
-                  border: '1px solid #3A3A3A',
-                  height: '100%',
-                  display: 'flex',
-                  flexDirection: 'column',
-                }}
-              >
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5 }}>
-                  <FileText size={18} color="#E2C05A" weight="duotone" />
-                  <Typography variant="subtitle1" sx={{ fontWeight: 600, color: '#FFFFFF', fontSize: '1rem' }}>
-                    Active Deals
-                  </Typography>
-                  <Box sx={{ flex: 1 }} />
-                  <Button
-                    component={Link}
-                    href="/transactions"
-                    sx={{ color: '#E2C05A', textTransform: 'none', fontSize: '0.75rem', p: 0, minWidth: 'auto' }}
-                  >
-                    View All
-                  </Button>
-                </Box>
-
-                <Box sx={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: 1,
-                  overflowY: 'auto',
-                  flex: 1,
-                  '&::-webkit-scrollbar': { width: '8px' },
-                  '&::-webkit-scrollbar-track': { backgroundColor: '#000000', borderRadius: '4px' },
-                  '&::-webkit-scrollbar-thumb': {
-                    backgroundColor: '#2A2A2A',
-                    borderRadius: '4px',
-                    '&:hover': { backgroundColor: '#333333' },
-                  },
-                }}>
-                  {transactions && transactions.length > 0 ? (
-                    transactions.map((transaction) => (
-                      <Box
-                        key={transaction.id}
-                        component={Link}
-                        href={`/transactions/${transaction.id}`}
-                        sx={{
-                          p: 1,
-                          backgroundColor: '#111111',
-                          borderRadius: '6px',
-                          border: '1px solid #3A3A3A',
-                          textDecoration: 'none',
-                          cursor: 'pointer',
-                          transition: 'all 200ms ease',
-                          '&:hover': {
-                            borderColor: '#E2C05A',
-                            boxShadow: '0 4px 12px rgba(226, 192, 90, 0.2)',
-                          },
-                        }}
-                      >
-                        <Typography
-                          variant="body2"
-                          sx={{
-                            fontWeight: 500,
-                            color: '#FFFFFF',
-                            mb: 0.5,
-                            fontSize: '0.8rem',
-                          }}
-                        >
-                          {transaction.property_address}
-                        </Typography>
-                        <Typography variant="caption" sx={{ color: '#808080', display: 'block', mb: 0.5, fontSize: '0.7rem' }}>
-                          {transaction.property_city}
-                        </Typography>
-
-                        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                          <Typography variant="body2" sx={{ color: '#E2C05A', fontWeight: 600, fontSize: '0.75rem', fontFamily: '"JetBrains Mono", monospace' }}>
-                            ${transaction.sale_price?.toLocaleString()}
-                          </Typography>
-                          <Chip
-                            label={transaction.status === 'pending' ? 'Pending' : 'Under Contract'}
-                            size="small"
-                            sx={{
-                              height: '16px',
-                              fontSize: '0.65rem',
-                              fontWeight: 500,
-                              backgroundColor:
-                                transaction.status === 'pending' ? 'rgba(226, 192, 90, 0.15)' : 'rgba(255, 183, 77, 0.15)',
-                              border: `1px solid ${transaction.status === 'pending' ? 'rgba(226, 192, 90, 0.3)' : 'rgba(255, 183, 77, 0.3)'
-                                }`,
-                              color: transaction.status === 'pending' ? '#E2C05A' : '#FFB74D',
-                            }}
-                          />
-                        </Box>
-                      </Box>
-                    ))
-                  ) : (
-                    <Box sx={{ textAlign: 'center', py: 2 }}>
-                      <FileText size={32} color="#4A4A4A" weight="duotone" />
-                      <Typography variant="caption" sx={{ color: '#808080', mt: 1, display: 'block', fontSize: '0.7rem' }}>
-                        No active transactions
+          {/* Announcements */}
+          <StaggerItem>
+          <Box
+            sx={{
+              p: 2.5,
+              backgroundColor: '#000000',
+              borderRadius: '12px',
+              border: '1px solid #3A3A3A',
+              display: (isMobile && mobileTab !== 0) ? 'none' : 'flex',
+              flexDirection: 'column',
+            }}
+          >
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5 }}>
+              <Megaphone size={18} color="#E2C05A" weight="duotone" />
+              <Typography variant="subtitle1" sx={{ fontWeight: 600, color: '#FFFFFF', fontSize: '0.95rem' }}>
+                Announcements
+              </Typography>
+            </Box>
+            {announcements && announcements.length > 0 ? (
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                {announcements.map((announcement: any) => (
+                  <Box key={announcement.id} sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <Typography variant="body2" sx={{ fontWeight: 600, color: '#FFFFFF', fontSize: '0.875rem' }}>
+                        {announcement.title}
                       </Typography>
+                      {announcement.priority === 'high' && (
+                        <Box sx={{
+                          px: 1,
+                          py: 0.25,
+                          backgroundColor: 'rgba(239, 83, 80, 0.15)',
+                          borderRadius: '4px',
+                          border: '1px solid rgba(239, 83, 80, 0.3)'
+                        }}>
+                          <Typography variant="caption" sx={{ color: '#EF5350', fontSize: '0.7rem', fontWeight: 600 }}>
+                            HIGH
+                          </Typography>
+                        </Box>
+                      )}
                     </Box>
-                  )}
-                </Box>
-              </Box>
-              </StaggerItem>
-            </Grid>
-
-            {/* Tasks Box */}
-            <Grid item xs={12} md={6}>
-              <StaggerItem>
-              <Box
-                sx={{
-                  p: 2,
-                  backgroundColor: '#000000',
-                  borderRadius: '12px',
-                  border: '1px solid #3A3A3A',
-                  height: '100%',
-                  display: 'flex',
-                  flexDirection: 'column',
-                }}
-              >
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5 }}>
-                  <CheckSquare size={18} color="#E2C05A" weight="duotone" />
-                  <Typography variant="subtitle1" sx={{ fontWeight: 600, color: '#FFFFFF', fontSize: '1rem' }}>
-                    Tasks
-                  </Typography>
-                </Box>
-
-                <Box sx={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: 1,
-                  overflowY: 'auto',
-                  flex: 1,
-                  '&::-webkit-scrollbar': { width: '8px' },
-                  '&::-webkit-scrollbar-track': { backgroundColor: '#000000', borderRadius: '4px' },
-                  '&::-webkit-scrollbar-thumb': {
-                    backgroundColor: '#2A2A2A',
-                    borderRadius: '4px',
-                    '&:hover': { backgroundColor: '#333333' },
-                  },
-                }}>
-                  {tasks.map((task) => (
-                    <Box
-                      key={task.id}
-                      onClick={() => setSelectedTask(task)}
+                    <Typography
+                      variant="body2"
                       sx={{
-                        p: 1,
-                        backgroundColor: '#111111',
-                        borderRadius: '6px',
-                        border: '1px solid #3A3A3A',
-                        cursor: 'pointer',
-                        transition: 'all 200ms ease',
-                        '&:hover': {
-                          borderColor: '#E2C05A',
-                          boxShadow: '0 4px 12px rgba(226, 192, 90, 0.2)',
-                        },
+                        color: '#aaaaaa',
+                        fontSize: '0.8rem',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        display: '-webkit-box',
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: 'vertical',
                       }}
                     >
-                      <Typography
-                        variant="body2"
-                        sx={{
-                          fontWeight: 500,
-                          color: task.completed ? '#808080' : '#FFFFFF',
-                          textDecoration: task.completed ? 'line-through' : 'none',
-                          mb: 0.5,
-                          fontSize: '0.8rem',
-                        }}
-                      >
-                        {task.title}
+                      {announcement.content}
+                    </Typography>
+                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mt: 0.5 }}>
+                      <Typography variant="caption" sx={{ color: '#808080', fontSize: '0.7rem' }}>
+                        {new Date(announcement.published_at).toLocaleDateString()}
                       </Typography>
-
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <Typography variant="caption" sx={{ color: '#E2C05A', fontWeight: 500, fontSize: '0.7rem' }}>
-                          {new Date(task.dueDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                        </Typography>
-                        <Chip
-                          label={task.priority}
+                      {announcement.related_type && announcement.related_title && (
+                        <Button
                           size="small"
+                          variant="outlined"
+                          href={announcement.related_url || '#'}
                           sx={{
-                            height: '16px',
-                            fontSize: '0.65rem',
-                            fontWeight: 500,
-                            textTransform: 'capitalize',
-                            backgroundColor:
-                              task.priority === 'high' ? 'rgba(229, 115, 115, 0.15)' :
-                                task.priority === 'medium' ? 'rgba(255, 183, 77, 0.15)' :
-                                  'rgba(129, 199, 132, 0.15)',
-                            border: `1px solid ${task.priority === 'high' ? 'rgba(229, 115, 115, 0.3)' :
-                              task.priority === 'medium' ? 'rgba(255, 183, 77, 0.3)' :
-                                'rgba(129, 199, 132, 0.3)'
-                              }`,
-                            color:
-                              task.priority === 'high' ? '#E57373' :
-                                task.priority === 'medium' ? '#FFB74D' :
-                                  '#81C784',
+                            fontSize: '0.7rem',
+                            py: 0.25,
+                            px: 1,
+                            minHeight: 0,
+                            borderColor: 'rgba(226, 192, 90, 0.5)',
+                            color: '#E2C05A',
+                            textTransform: 'none',
+                            '&:hover': {
+                              borderColor: '#E2C05A',
+                              backgroundColor: 'rgba(226, 192, 90, 0.1)',
+                            },
                           }}
-                        />
-                      </Box>
+                        >
+                          {announcement.related_cta_text || getDefaultCta(announcement.related_type)}
+                        </Button>
+                      )}
                     </Box>
-                  ))}
-                </Box>
+                  </Box>
+                ))}
               </Box>
-              </StaggerItem>
-            </Grid>
-          </Grid>
+            ) : (
+              <Typography variant="body2" sx={{ color: '#aaaaaa', fontSize: '0.85rem' }}>
+                No new announcements
+              </Typography>
+            )}
+          </Box>
+          </StaggerItem>
+
+          {/* Active Deals */}
+          <StaggerItem>
+          <Box
+            sx={{
+              p: 2,
+              backgroundColor: '#000000',
+              borderRadius: '12px',
+              border: '1px solid #3A3A3A',
+              display: (isMobile && mobileTab !== 0) ? 'none' : 'flex',
+              flexDirection: 'column',
+            }}
+          >
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5 }}>
+              <FileText size={18} color="#E2C05A" weight="duotone" />
+              <Typography variant="subtitle1" sx={{ fontWeight: 600, color: '#FFFFFF', fontSize: '1rem' }}>
+                Active Deals
+              </Typography>
+              <Box sx={{ flex: 1 }} />
+              <Button
+                component={Link}
+                href="/transactions"
+                sx={{ color: '#E2C05A', textTransform: 'none', fontSize: '0.75rem', p: 0, minWidth: 'auto' }}
+              >
+                View All
+              </Button>
+            </Box>
+
+            <Box sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 1,
+              overflowY: 'auto',
+              flex: 1,
+              '&::-webkit-scrollbar': { width: '8px' },
+              '&::-webkit-scrollbar-track': { backgroundColor: '#000000', borderRadius: '4px' },
+              '&::-webkit-scrollbar-thumb': {
+                backgroundColor: '#2A2A2A',
+                borderRadius: '4px',
+                '&:hover': { backgroundColor: '#333333' },
+              },
+            }}>
+              {transactions && transactions.length > 0 ? (
+                transactions.map((transaction) => (
+                  <Box
+                    key={transaction.id}
+                    component={Link}
+                    href={`/transactions/${transaction.id}`}
+                    sx={{
+                      p: 1,
+                      backgroundColor: '#111111',
+                      borderRadius: '6px',
+                      border: '1px solid #3A3A3A',
+                      textDecoration: 'none',
+                      cursor: 'pointer',
+                      transition: 'all 200ms ease',
+                      '&:hover': {
+                        borderColor: '#E2C05A',
+                        boxShadow: '0 4px 12px rgba(226, 192, 90, 0.2)',
+                      },
+                    }}
+                  >
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        fontWeight: 500,
+                        color: '#FFFFFF',
+                        mb: 0.5,
+                        fontSize: '0.8rem',
+                      }}
+                    >
+                      {transaction.property_address}
+                    </Typography>
+                    <Typography variant="caption" sx={{ color: '#808080', display: 'block', mb: 0.5, fontSize: '0.7rem' }}>
+                      {transaction.property_city}
+                    </Typography>
+
+                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                      <Typography variant="body2" sx={{ color: '#E2C05A', fontWeight: 600, fontSize: '0.75rem', fontFamily: '"JetBrains Mono", monospace' }}>
+                        ${transaction.sale_price?.toLocaleString()}
+                      </Typography>
+                      <Chip
+                        label={transaction.status === 'pending' ? 'Pending' : 'Under Contract'}
+                        size="small"
+                        sx={{
+                          height: '16px',
+                          fontSize: '0.65rem',
+                          fontWeight: 500,
+                          backgroundColor:
+                            transaction.status === 'pending' ? 'rgba(226, 192, 90, 0.15)' : 'rgba(255, 183, 77, 0.15)',
+                          border: `1px solid ${transaction.status === 'pending' ? 'rgba(226, 192, 90, 0.3)' : 'rgba(255, 183, 77, 0.3)'
+                            }`,
+                          color: transaction.status === 'pending' ? '#E2C05A' : '#FFB74D',
+                        }}
+                      />
+                    </Box>
+                  </Box>
+                ))
+              ) : (
+                <Box sx={{ textAlign: 'center', py: 2 }}>
+                  <FileText size={32} color="#4A4A4A" weight="duotone" />
+                  <Typography variant="caption" sx={{ color: '#808080', mt: 1, display: 'block', fontSize: '0.7rem' }}>
+                    No active transactions
+                  </Typography>
+                </Box>
+              )}
+            </Box>
+          </Box>
+          </StaggerItem>
 
           {/* Listings Below - Full Width */}
           <StaggerItem style={{ flex: 1, minHeight: 0 }}>
@@ -932,9 +766,59 @@ export default function DashboardPage() {
           </StaggerItem>
         </Grid>
 
-        {/* Right Side - Calendar Full Height */}
-        <Grid item xs={12} md={5} sx={{ height: isMobile ? '70vh' : '100%', display: (isMobile && mobileTab !== 2) ? 'none' : 'block' }}>
-          <StaggerItem style={{ height: '100%' }}>
+        {/* Right Side - Cap Progress + Calendar */}
+        <Grid item xs={12} md={5} sx={{ height: isMobile ? 'auto' : '100%', display: (isMobile && mobileTab !== 2) ? 'none' : 'flex', flexDirection: 'column', gap: 2 }}>
+          {/* Progress to Cap (compact) */}
+          <StaggerItem>
+          <Box
+            sx={{
+              p: 2,
+              backgroundColor: '#000000',
+              borderRadius: '12px',
+              border: '1px solid #3A3A3A',
+            }}
+          >
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+              <TrendUp size={16} color={getProgressColor(capPercentage)} weight="duotone" />
+              <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#FFFFFF', fontSize: '0.85rem' }}>
+                Progress to Cap
+              </Typography>
+              <Box sx={{ flex: 1 }} />
+              <Typography variant="body2" sx={{ fontWeight: 700, color: '#E2C05A', fontSize: '0.95rem', fontFamily: '"JetBrains Mono", monospace' }}>
+                {userPlan === 'pro' ? (
+                  `$${(currentProgress / 1000).toFixed(1)}K`
+                ) : (
+                  `$${(capAmount / 1000).toFixed(1)}K`
+                )}
+              </Typography>
+            </Box>
+
+            {userPlan !== 'pro' ? (
+              <Box sx={{ position: 'relative', height: 8, backgroundColor: '#1A1A1A', borderRadius: '4px', overflow: 'hidden' }}>
+                <Box
+                  sx={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    height: '100%',
+                    width: `${capPercentage}%`,
+                    backgroundColor: getProgressColor(capPercentage),
+                    borderRadius: '4px',
+                    transition: 'all 0.8s cubic-bezier(0.4, 0, 0.2, 1)',
+                    boxShadow: `0 0 8px ${getProgressColor(capPercentage)}80`,
+                  }}
+                />
+              </Box>
+            ) : (
+              <Typography variant="caption" sx={{ color: '#E2C05A', fontWeight: 500, fontSize: '0.7rem' }}>
+                No cap limit on Pro plan
+              </Typography>
+            )}
+          </Box>
+          </StaggerItem>
+
+          {/* Calendar */}
+          <StaggerItem style={{ flex: 1, minHeight: 0 }}>
           <Box
             sx={{
               p: 1.5,
