@@ -223,7 +223,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 
 /* ===== PLANS ===== */
 .plans-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:48px}
-.plan-card{background:var(--g900);border:1.5px solid var(--g700);border-radius:var(--rl);padding:40px;color:var(--white);transition:all .5s var(--spring);position:relative;overflow:hidden;perspective:1000px;text-align:center;display:flex;flex-direction:column}
+.plan-card{background:var(--g900);border:1.5px solid var(--g700);border-radius:var(--rl);padding:56px 40px 40px;color:var(--white);transition:all .5s var(--spring);position:relative;overflow:hidden;perspective:1000px;text-align:center;display:flex;flex-direction:column}
 .plan-card::after{content:'';position:absolute;inset:0;border-radius:var(--rl);background:linear-gradient(180deg,transparent 60%,rgba(226,192,90,.03));pointer-events:none;opacity:0;transition:opacity .4s}
 .plan-card:hover{transform:translateY(-8px);border-color:var(--gold);box-shadow:0 30px 70px rgba(0,0,0,.4)}
 .plan-card:hover::after{opacity:1}
@@ -231,7 +231,6 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 .plan-card:hover .plan-split-label{color:var(--white)}
 .plan-card.featured{border:2.5px solid var(--gold);background:var(--g900);color:var(--white);box-shadow:0 0 30px rgba(226,192,90,.15)}
 .plan-card.featured::before{content:'Most Popular';position:absolute;top:0;left:0;right:0;padding:8px;text-align:center;font-size:11px;font-weight:700;background:var(--gold);color:var(--black);letter-spacing:1px;text-transform:uppercase}
-.plan-card.featured{padding-top:56px}
 .plan-name{font-size:22px;font-weight:700;margin-bottom:4px;letter-spacing:-.3px;text-align:center}
 .plan-desc{font-size:13px;color:var(--g400);margin-bottom:28px;text-align:center;min-height:18px}
 .plan-split{font-size:52px;font-weight:900;line-height:1;letter-spacing:-2px;margin-bottom:4px;color:var(--gold);transition:color .3s;min-height:52px;display:flex;align-items:center;justify-content:center}
@@ -470,7 +469,7 @@ body.marketing-page footer:not(.mkt-footer) {
   .hero-sub{font-size:16px}
   .hero-btns{flex-direction:column;gap:10px;align-items:center}
   .hero-btns .btn{width:100%;max-width:320px;text-align:center}
-  .plan-card{padding:28px 20px}
+  .plan-card{padding:44px 20px 28px}
   .calc-result{flex-direction:column;gap:16px}
   .comp-col{padding:28px 20px}
   .cta-grid{gap:40px}
@@ -484,7 +483,7 @@ body.marketing-page footer:not(.mkt-footer) {
   .stats-grid{grid-template-columns:1fr;gap:20px}
   .sec-title{font-size:clamp(24px,6vw,32px)}
   .mkt-footer{padding:32px 16px 20px}
-  .plan-card{padding:24px 16px}
+  .plan-card{padding:40px 16px 24px}
   .testimonial-card{min-width:240px;padding:20px}
   .trust-inner{gap:32px}
 }
