@@ -126,11 +126,11 @@ const ManageResources = () => {
     // Determine current resource type
     const getResourceType = (tabIndex: number): ResourceType => {
         switch (tabIndex) {
-            case 0: return 'form';
-            case 1: return 'training';
+            case 0: return 'link';
+            case 1: return 'form';
             case 2: return 'marketing';
-            case 3: return 'link';
-            default: return 'form';
+            case 3: return 'training';
+            default: return 'link';
         }
     };
 
@@ -202,27 +202,27 @@ const ManageResources = () => {
     };
 
     // React Queries
-    const formsQuery = useQuery({ queryKey: ['admin-forms'], queryFn: fetchForms, enabled: activeTab === 0 });
-    const trainingQuery = useQuery({ queryKey: ['admin-training'], queryFn: fetchTraining, enabled: activeTab === 1 });
+    const linksQuery = useQuery({ queryKey: ['admin-links'], queryFn: fetchLinks, enabled: activeTab === 0 });
+    const formsQuery = useQuery({ queryKey: ['admin-forms'], queryFn: fetchForms, enabled: activeTab === 1 });
     const marketingQuery = useQuery({ queryKey: ['admin-marketing'], queryFn: fetchMarketing, enabled: activeTab === 2 });
-    const linksQuery = useQuery({ queryKey: ['admin-links'], queryFn: fetchLinks, enabled: activeTab === 3 });
+    const trainingQuery = useQuery({ queryKey: ['admin-training'], queryFn: fetchTraining, enabled: activeTab === 3 });
 
     const getCurrentData = () => {
         switch (activeTab) {
-            case 0: return formsQuery.data || [];
-            case 1: return trainingQuery.data || [];
+            case 0: return linksQuery.data || [];
+            case 1: return formsQuery.data || [];
             case 2: return marketingQuery.data || [];
-            case 3: return linksQuery.data || [];
+            case 3: return trainingQuery.data || [];
             default: return [];
         }
     };
 
     const getCurrentLoading = () => {
         switch (activeTab) {
-            case 0: return formsQuery.isLoading;
-            case 1: return trainingQuery.isLoading;
+            case 0: return linksQuery.isLoading;
+            case 1: return formsQuery.isLoading;
             case 2: return marketingQuery.isLoading;
-            case 3: return linksQuery.isLoading;
+            case 3: return trainingQuery.isLoading;
             default: return false;
         }
     };
@@ -510,18 +510,18 @@ const ManageResources = () => {
             let filesToDelete: string[] = [];
 
             if (activeTab === 0) {
+                table = 'external_links';
+                if (itemToDelete.logo_url) filesToDelete.push(itemToDelete.logo_url);  // Has logos/ prefix
+            } else if (activeTab === 1) {
                 table = 'brokerage_documents';
                 if (itemToDelete.file_url) filesToDelete.push(itemToDelete.file_url);  // Already has forms/ prefix
-            } else if (activeTab === 1) {
-                // table is already training_resources
-                if (itemToDelete.url) filesToDelete.push(itemToDelete.url);  // Has training/ prefix
-                if (itemToDelete.thumbnail_url) filesToDelete.push(itemToDelete.thumbnail_url);
             } else if (activeTab === 2) {
                 table = 'canva_templates';
                 if (itemToDelete.preview_image_url) filesToDelete.push(itemToDelete.preview_image_url);  // Has marketing/ prefix
             } else if (activeTab === 3) {
-                table = 'external_links';
-                if (itemToDelete.logo_url) filesToDelete.push(itemToDelete.logo_url);  // Has logos/ prefix
+                // table is already training_resources
+                if (itemToDelete.url) filesToDelete.push(itemToDelete.url);  // Has training/ prefix
+                if (itemToDelete.thumbnail_url) filesToDelete.push(itemToDelete.thumbnail_url);
             }
 
             // Delete associated files from storage (all in documents bucket)
@@ -614,10 +614,10 @@ const ManageResources = () => {
 
             // Table and column mapping
             const tableMap: Record<number, { table: string; column: string }> = {
-                0: { table: 'brokerage_documents', column: 'display_order' },
-                1: { table: 'training_resources', column: 'order_index' },
+                0: { table: 'external_links', column: 'display_order' },
+                1: { table: 'brokerage_documents', column: 'display_order' },
                 2: { table: 'canva_templates', column: 'display_order' },
-                3: { table: 'external_links', column: 'display_order' }
+                3: { table: 'training_resources', column: 'order_index' }
             };
 
             const config = tableMap[activeTab];
@@ -637,7 +637,7 @@ const ManageResources = () => {
             await Promise.all(updates);
 
             // Invalidate cache
-            queryClient.invalidateQueries({ queryKey: [`admin-${['forms', 'training', 'marketing', 'links'][activeTab]}`] });
+            queryClient.invalidateQueries({ queryKey: [`admin-${['links', 'forms', 'marketing', 'training'][activeTab]}`] });
 
         } catch (error) {
             console.error('Reorder failed', error);
@@ -645,7 +645,7 @@ const ManageResources = () => {
     };
 
     return (
-        <Box sx={{ p: 3, borderTop: '2px solid #2A2A2A', backgroundColor: '#0A0A0A' }} id="manage-resources">
+        <Box sx={{ p: { xs: 1.5, sm: 3 }, borderTop: '2px solid #2A2A2A', backgroundColor: '#0A0A0A', width: '100%', overflow: 'hidden' }} id="manage-resources">
             <Tabs
                 value={activeTab}
                 onChange={(_, val) => setActiveTab(val)}
@@ -670,10 +670,10 @@ const ManageResources = () => {
                     },
                 }}
             >
+                <Tab label="Resources" />
                 <Tab label="Forms & Compliance" />
-                <Tab label="Training and Knowledge" />
-                <Tab label="Marketing Assets" />
-                <Tab label="External Links" />
+                <Tab label="Marketing & Branding" />
+                <Tab label="Training & Knowledge" />
             </Tabs>
 
             {/* Toolbar */}
@@ -710,12 +710,12 @@ const ManageResources = () => {
                         },
                     }}
                 >
-                    Add {activeTab === 0 ? 'Form' : activeTab === 1 ? 'Training' : activeTab === 2 ? 'Template' : 'Link'}
+                    Add {activeTab === 0 ? 'Link' : activeTab === 1 ? 'Form' : activeTab === 2 ? 'Template' : 'Training'}
                 </Button>
             </Box>
 
             {/* Table */}
-            <TableContainer sx={{ backgroundColor: '#0D0D0D', border: '1px solid #2A2A2A', borderRadius: '8px' }}>
+            <TableContainer sx={{ backgroundColor: '#0D0D0D', border: '1px solid #2A2A2A', borderRadius: '8px', overflowX: 'auto', width: '100%' }}>
                 <Table>
                     <TableHead>
                         <TableRow>
@@ -780,9 +780,10 @@ const ManageResources = () => {
                                                     size="small"
                                                     onClick={() => {
                                                         // Marketing templates open Canva URL, links open their URL
-                                                        if (activeTab === 2 && item.canva_url) {
-                                                            window.open(item.canva_url, '_blank', 'noopener,noreferrer');
-                                                        } else if (activeTab === 3 && (item.url || item.file_url)) {
+                                                        if (activeTab === 2 && (item.canva_url || item.file_url)) {
+                                                            if (item.canva_url) window.open(item.canva_url, '_blank', 'noopener,noreferrer');
+                                                            else openPreview(item);
+                                                        } else if (activeTab === 0 && (item.url || item.file_url)) {
                                                             const url = item.url?.startsWith('http') ? item.url : getViewableUrl(item);
                                                             if (url) window.open(url, '_blank', 'noopener,noreferrer');
                                                         } else {

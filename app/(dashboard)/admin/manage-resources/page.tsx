@@ -5,7 +5,7 @@ import ManageResources from '@/components/admin/ManageResources';
 
 export default function ManageResourcesPage() {
   return (
-    <Box sx={{ minHeight: '100%', backgroundColor: '#0D0D0D' }}>
+    <Box sx={{ minHeight: '100%', backgroundColor: '#0D0D0D', overflow: 'hidden', maxWidth: '100vw' }}>
       <ManageResources />
     </Box>
   );
