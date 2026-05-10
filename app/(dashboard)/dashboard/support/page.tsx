@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation } from '@tanstack/react-query';
 import { createClient } from '@/lib/supabase/client';
 import {
   Box,
@@ -17,7 +17,6 @@ import {
   FormControl,
   InputLabel,
   Alert,
-  Chip,
 } from '@mui/material';
 import { ChatCircle, EnvelopeSimple, Phone, MapPin, Buildings, Wrench } from '@phosphor-icons/react';
 
@@ -75,19 +74,13 @@ const QuickLink = ({ label, href, icon }: { label: string; href: string; icon: R
 
 export default function SupportPage() {
   const supabase = createClient();
-  const queryClient = useQueryClient();
   const [ticketOpen, setTicketOpen] = useState(false);
-  const [brokerOpen, setBrokerOpen] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [ticketForm, setTicketForm] = useState({
     subject: '',
     category: 'general',
     description: '',
     priority: 'medium',
-  });
-  const [brokerForm, setBrokerForm] = useState({
-    subject: '',
-    question: '',
   });
 
   const { data: currentUser } = useQuery({
@@ -134,37 +127,6 @@ export default function SupportPage() {
     },
   });
 
-  // Submit broker question
-  const submitBrokerMutation = useMutation({
-    mutationFn: async (form: typeof brokerForm) => {
-      if (!currentUser) throw new Error('Not logged in');
-
-      const { data: admins } = await supabase
-        .from('users')
-        .select('id')
-        .in('role', ['admin', 'broker']);
-
-      if (admins && admins.length > 0) {
-        const notifications = admins.map((admin) => ({
-          user_id: admin.id,
-          title: `Broker Question: ${form.subject}`,
-          message: `${currentUser.full_name || 'An agent'} asked: ${form.question.substring(0, 120)}`,
-          type: 'broker_question',
-          read: false,
-          link: '/admin/users',
-        }));
-
-        const { error } = await supabase.from('notifications').insert(notifications);
-        if (error) throw error;
-      }
-    },
-    onSuccess: () => {
-      setBrokerOpen(false);
-      setBrokerForm({ subject: '', question: '' });
-      setSuccessMessage('Your question has been sent to the managing broker!');
-      setTimeout(() => setSuccessMessage(null), 5000);
-    },
-  });
 
   return (
     <Box sx={{ p: { xs: 2, md: '24px 28px' }, fontFamily: "'DM Sans', sans-serif" }}>
@@ -179,18 +141,12 @@ export default function SupportPage() {
       )}
 
       {/* Support Actions */}
-      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 2, mb: 2 }}>
+      <Box sx={{ display: 'grid', gridTemplateColumns: '1fr', gap: 2, mb: 2 }}>
         <ActionCard
           title="Submit Support Ticket"
           subtitle="Get help from the operations team"
           icon={<ChatCircle size={20} weight="fill" />}
           onClick={() => setTicketOpen(true)}
-        />
-        <ActionCard
-          title="Ask a Broker Question"
-          subtitle="Direct line to your managing broker"
-          icon={<EnvelopeSimple size={20} weight="fill" />}
-          onClick={() => setBrokerOpen(true)}
         />
       </Box>
 
@@ -203,18 +159,20 @@ export default function SupportPage() {
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
             <Phone size={16} color="#E2C05A" />
             <Typography sx={{ fontSize: '13px', color: '#aaaaaa' }}>
-              Office: <Box component="a" href="tel:+1234567890" sx={{ color: '#FFFFFF', textDecoration: 'none', '&:hover': { color: '#E2C05A' } }}>(123) 456-7890</Box>
+              Office: <Box component="a" href="tel:+12012331373" sx={{ color: '#FFFFFF', textDecoration: 'none', '&:hover': { color: '#E2C05A' } }}>(201) 233-1373</Box>
             </Typography>
           </Box>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
             <EnvelopeSimple size={16} color="#E2C05A" />
             <Typography sx={{ fontSize: '13px', color: '#aaaaaa' }}>
-              Email: <Box component="a" href="mailto:support@reapex.com" sx={{ color: '#FFFFFF', textDecoration: 'none', '&:hover': { color: '#E2C05A' } }}>support@reapex.com</Box>
+              Email: <Box component="a" href="mailto:admin@re-apex.com" sx={{ color: '#FFFFFF', textDecoration: 'none', '&:hover': { color: '#E2C05A' } }}>admin@re-apex.com</Box>
+              {' / '}
+              <Box component="a" href="mailto:support@reapex.com" sx={{ color: '#FFFFFF', textDecoration: 'none', '&:hover': { color: '#E2C05A' } }}>support@reapex.com</Box>
             </Typography>
           </Box>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
             <MapPin size={16} color="#E2C05A" />
-            <Typography sx={{ fontSize: '13px', color: '#aaaaaa' }}>123 Main Street, Suite 100, City, State 12345</Typography>
+            <Typography sx={{ fontSize: '13px', color: '#aaaaaa' }}>260 Columbia Ave, Suite 20, Fort Lee, NJ 07024</Typography>
           </Box>
         </Box>
       </Box>
@@ -296,40 +254,6 @@ export default function SupportPage() {
         </DialogActions>
       </Dialog>
 
-      {/* Broker Question Dialog */}
-      <Dialog open={brokerOpen} onClose={() => setBrokerOpen(false)} maxWidth="sm" fullWidth
-        PaperProps={{ sx: { backgroundColor: '#111111', border: '1px solid rgba(226, 192, 90, 0.15)', borderRadius: '12px' } }}
-      >
-        <DialogTitle sx={{ color: '#FFFFFF', fontWeight: 700, fontSize: '16px' }}>Ask a Broker Question</DialogTitle>
-        <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: '16px !important' }}>
-          <TextField
-            label="Subject"
-            fullWidth
-            value={brokerForm.subject}
-            onChange={(e) => setBrokerForm({ ...brokerForm, subject: e.target.value })}
-            sx={{ '& .MuiOutlinedInput-root': { color: '#fff', '& fieldset': { borderColor: 'rgba(226,192,90,0.15)' } }, '& .MuiInputLabel-root': { color: '#aaa' } }}
-          />
-          <TextField
-            label="Your Question"
-            fullWidth
-            multiline
-            rows={4}
-            value={brokerForm.question}
-            onChange={(e) => setBrokerForm({ ...brokerForm, question: e.target.value })}
-            sx={{ '& .MuiOutlinedInput-root': { color: '#fff', '& fieldset': { borderColor: 'rgba(226,192,90,0.15)' } }, '& .MuiInputLabel-root': { color: '#aaa' } }}
-          />
-        </DialogContent>
-        <DialogActions sx={{ p: 2 }}>
-          <Button onClick={() => setBrokerOpen(false)} sx={{ color: '#aaa' }}>Cancel</Button>
-          <Button
-            onClick={() => submitBrokerMutation.mutate(brokerForm)}
-            disabled={!brokerForm.subject || !brokerForm.question || submitBrokerMutation.isPending}
-            sx={{ backgroundColor: '#E2C05A', color: '#000', fontWeight: 600, '&:hover': { backgroundColor: '#c4a43e' }, '&.Mui-disabled': { backgroundColor: 'rgba(226,192,90,0.3)', color: '#666' } }}
-          >
-            {submitBrokerMutation.isPending ? 'Sending...' : 'Send Question'}
-          </Button>
-        </DialogActions>
-      </Dialog>
     </Box>
   );
 }

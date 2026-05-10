@@ -59,41 +59,43 @@ const REQUIRED_DOCUMENTS = [
         id: 'Fully Executed Contract',
         name: 'Fully Executed Contract',
         description: 'Signed by all parties',
+        required: true,
     },
     {
         id: 'CIS',
         name: 'CIS',
         description: 'Dated prior to or at the time of contract',
+        required: false,
     },
     {
         id: 'Dual Agency/Informed Consent',
         name: 'Dual Agency/Informed Consent',
         description: 'If applicable - when Reapex represents both sides',
+        required: false,
     },
     {
         id: 'Seller Disclosure',
         name: 'Seller Disclosure',
         description: 'Record of what the seller disclosed',
+        required: true,
     },
     {
         id: 'Lead-Based Paint Disclosure',
         name: 'Lead-Based Paint Disclosure',
         description: 'For homes built pre-1978',
-    },
-    {
-        id: 'Proof of Deposit',
-        name: 'Proof of Deposit',
-        description: 'Copy of check or wire receipt',
+        required: true,
     },
     {
         id: 'Commission Statement',
         name: 'Commission Statement',
         description: 'Invoice sent to closing attorney/title company',
+        required: true,
     },
     {
         id: 'Final ALTA/CD',
         name: 'Final ALTA/CD',
         description: 'Required to finalize close',
+        required: false,
     },
 ];
 
@@ -607,7 +609,7 @@ export default function TransactionsTab({ userProfile }: TransactionsTabProps) {
 
     // For rentals, skip document requirements
     const isRentalTransaction = selectedListing?.listing_type === 'for_rent' || selectedListing?.transaction_type === 'rental';
-    const allDocumentsUploaded = isRentalTransaction ? true : getDocumentStatus().every(doc => doc.uploaded);
+    const allDocumentsUploaded = isRentalTransaction ? true : getDocumentStatus().filter(doc => doc.required).every(doc => doc.uploaded);
 
     return (
         <>
@@ -1052,6 +1054,11 @@ export default function TransactionsTab({ userProfile }: TransactionsTabProps) {
                                                         primary={
                                                             <Typography sx={{ color: doc.uploaded ? '#FFFFFF' : '#B0B0B0', fontWeight: doc.uploaded ? 600 : 400 }}>
                                                                 {doc.name}
+                                                                {!doc.required && (
+                                                                    <Typography component="span" sx={{ ml: 1, fontSize: '0.75rem', color: '#808080', fontWeight: 400 }}>
+                                                                        (Optional)
+                                                                    </Typography>
+                                                                )}
                                                             </Typography>
                                                         }
                                                         secondary={
