@@ -29,13 +29,11 @@ export default async function DashboardLayout({
     .eq('id', authUser.id)
     .single();
 
-  // If user profile doesn't exist, create it
-  if (!user && !userError) {
-    console.log('User profile not found, but no error - this is unexpected');
-  }
-
-  if (userError) {
-    console.error('Error fetching user profile:', userError);
+  // Block access if no user profile exists in the users table
+  if (!user || userError) {
+    // Sign out the unauthorized session
+    await supabase.auth.signOut();
+    redirect('/login');
   }
 
   // Check if user account is approved (admins bypass this check)
