@@ -83,14 +83,12 @@ export default async function HomePage() {
       `)
       .in('role', ['agent', 'broker'])
       .eq('account_status', 'approved')
-      .not('headshot_url', 'is', null)
-      .order('created_at', { ascending: false })
-      .limit(10);
+      .eq('hide_from_listing', false)
+      .order('display_order', { ascending: true })
+      .order('full_name', { ascending: true });
 
     if (!agentsError && agentsData && agentsData.length > 0) {
-      // Randomly select 3 agents from the fetched results
-      const shuffled = [...agentsData].sort(() => Math.random() - 0.5);
-      featuredAgents = shuffled.slice(0, 3);
+      featuredAgents = agentsData;
     }
   } catch (error) {
     // If there's an error (e.g., database not connected), just use empty arrays
@@ -120,7 +118,7 @@ export default async function HomePage() {
         }}
       />
 
-      <MarketingHomepage />
+      <MarketingHomepage agents={featuredAgents} />
     </>
   );
 }

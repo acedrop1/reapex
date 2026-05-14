@@ -77,7 +77,14 @@ const TESTIMONIALS = [
   },
 ];
 
-export default function MarketingHomepage() {
+interface TeamAgent {
+  id: string;
+  full_name: string;
+  headshot_url: string | null;
+  slug: string;
+}
+
+export default function MarketingHomepage({ agents = [] }: { agents?: TeamAgent[] }) {
   const [loaderHidden, setLoaderHidden] = useState(false);
   const [navScrolled, setNavScrolled] = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
@@ -883,29 +890,37 @@ export default function MarketingHomepage() {
           </section>
 
           {/* TEAM */}
-          <section className="sec-off" id="team">
-            <div className="si tc section-reveal">
-              <div className="sec-title">Meet the Reapex Team</div>
-            </div>
-            <div className="si">
-              <div className="team-grid stagger-children">
-                {[
-                  { initials: 'AY', name: 'Andrew Yeranossian', role: 'Co-Founder' },
-                  { initials: 'MH', name: 'Mutasim Huda', role: 'Co-Founder' },
-                  { initials: 'RJ', name: 'Ramzi Jaloudi', role: 'Agent' },
-                ].map((member, i) => (
-                  <div className="team-card" key={i}>
-                    <div className="team-photo"><div className="team-photo-inner">{member.initials}</div></div>
-                    <div className="team-name">{member.name}</div>
-                    <div className="team-role">{member.role}</div>
-                  </div>
-                ))}
+          {agents.length > 0 && (
+            <section className="sec-off" id="team">
+              <div className="si tc section-reveal">
+                <div className="sec-title">Meet the Reapex Team</div>
               </div>
-              <div className="section-reveal" style={{ textAlign: 'center', marginTop: 36 }}>
-                <Link href="/agents" className="btn btn-outline-light btn-lg magnetic-btn">View All Agents</Link>
+              <div className="si">
+                <div className="team-grid stagger-children">
+                  {agents.map((agent) => {
+                    const initials = agent.full_name.split(' ').map(n => n[0]).join('').toUpperCase();
+                    return (
+                      <Link href={`/agent/${agent.slug}`} key={agent.id} style={{ textDecoration: 'none' }}>
+                        <div className="team-card">
+                          <div className="team-photo" style={agent.headshot_url ? {
+                            backgroundImage: `url(${agent.headshot_url})`,
+                            backgroundSize: 'cover',
+                            backgroundPosition: 'center',
+                          } : undefined}>
+                            {!agent.headshot_url && <div className="team-photo-inner">{initials}</div>}
+                          </div>
+                          <div className="team-name">{agent.full_name}</div>
+                        </div>
+                      </Link>
+                    );
+                  })}
+                </div>
+                <div className="section-reveal" style={{ textAlign: 'center', marginTop: 36 }}>
+                  <Link href="/agents" className="btn btn-outline-light btn-lg magnetic-btn">View All Agents</Link>
+                </div>
               </div>
-            </div>
-          </section>
+            </section>
+          )}
 
           {/* CTA */}
           <section className="cta" id="cta">

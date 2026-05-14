@@ -34,6 +34,8 @@ import {
   CheckCircle as ApproveIcon,
   Prohibit as SuspendIcon,
   FileText as FileTextIcon,
+  Eye as EyeIcon,
+  EyeSlash as EyeSlashIcon,
 } from '@phosphor-icons/react';
 import { createClient } from '@/lib/supabase/client';
 import { format } from 'date-fns';
@@ -178,6 +180,20 @@ export default function AdminUsersPage() {
     } catch (err: any) {
       console.error('Error updating user status:', err);
       alert('Failed to update user status: ' + err.message);
+    }
+  };
+
+  const handleToggleVisibility = async (userId: string, currentlyHidden: boolean) => {
+    try {
+      const { error } = await supabase
+        .from('users')
+        .update({ hide_from_listing: !currentlyHidden })
+        .eq('id', userId);
+
+      if (error) throw error;
+      fetchUsers();
+    } catch (error) {
+      console.error('Error toggling visibility:', error);
     }
   };
 
@@ -359,6 +375,20 @@ export default function AdminUsersPage() {
                   </TableCell>
                   <TableCell sx={dashboardStyles.table}>
                     <Box sx={{ display: 'flex', gap: 0.5 }}>
+                      <Tooltip title={(user as any).hide_from_listing ? 'Show on Website' : 'Hide from Website'}>
+                        <IconButton
+                          size="small"
+                          onClick={() => handleToggleVisibility(user.id, (user as any).hide_from_listing)}
+                          sx={{
+                            color: (user as any).hide_from_listing ? '#ff9800' : '#81C784',
+                            '&:hover': {
+                              backgroundColor: (user as any).hide_from_listing ? 'rgba(255, 152, 0, 0.08)' : 'rgba(129, 199, 132, 0.08)',
+                            },
+                          }}
+                        >
+                          {(user as any).hide_from_listing ? <EyeSlashIcon size={20} /> : <EyeIcon size={20} />}
+                        </IconButton>
+                      </Tooltip>
                       {user.account_status === 'approved' && (
                         <Tooltip title="Suspend">
                           <IconButton
