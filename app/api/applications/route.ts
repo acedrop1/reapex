@@ -2,6 +2,78 @@ import { createClient as createServerClient } from '@/lib/supabase/server';
 import { createClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
 import { isAdmin } from '@/lib/utils/auth';
+import { Resend } from 'resend';
+
+function buildAdminNotificationEmail(application: {
+  first_name: string;
+  last_name: string;
+  email: string;
+  phone_number: string;
+  license_number: string;
+  transactions_12_months: number;
+  sales_volume_range: string;
+}): string {
+  return `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin:0;padding:0;background-color:#f5f5f5;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color:#f5f5f5;">
+    <tr>
+      <td align="center" style="padding:40px 20px;">
+        <table role="presentation" width="600" cellspacing="0" cellpadding="0" style="background-color:#0a0a0a;border-radius:12px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.15);">
+          <tr>
+            <td style="background:linear-gradient(135deg,#0a0a0a 0%,#1a1a1a 100%);padding:40px 40px 30px;text-align:center;border-bottom:2px solid #d4af37;">
+              <h1 style="margin:0;font-size:32px;font-weight:700;color:#d4af37;letter-spacing:1px;">REAPEX</h1>
+              <p style="margin:8px 0 0;font-size:13px;color:#999;letter-spacing:3px;text-transform:uppercase;">New Application Received</p>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:40px;">
+              <h2 style="margin:0 0 20px;font-size:22px;color:#ffffff;font-weight:600;">New Agent Application</h2>
+              <p style="margin:0 0 24px;font-size:16px;line-height:1.6;color:#cccccc;">A new agent has submitted an application to join Reapex.</p>
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color:#141414;border:1px solid rgba(212,175,55,0.2);border-radius:8px;margin:24px 0;">
+                <tr>
+                  <td style="padding:24px;">
+                    <p style="margin:0 0 4px;font-size:12px;color:#999;text-transform:uppercase;letter-spacing:1px;">Name</p>
+                    <p style="margin:0 0 16px;font-size:16px;color:#ffffff;font-weight:500;">${application.first_name} ${application.last_name}</p>
+                    <p style="margin:0 0 4px;font-size:12px;color:#999;text-transform:uppercase;letter-spacing:1px;">Email</p>
+                    <p style="margin:0 0 16px;font-size:16px;color:#ffffff;font-weight:500;">${application.email}</p>
+                    <p style="margin:0 0 4px;font-size:12px;color:#999;text-transform:uppercase;letter-spacing:1px;">Phone</p>
+                    <p style="margin:0 0 16px;font-size:16px;color:#ffffff;font-weight:500;">${application.phone_number}</p>
+                    <p style="margin:0 0 4px;font-size:12px;color:#999;text-transform:uppercase;letter-spacing:1px;">License Number</p>
+                    <p style="margin:0 0 16px;font-size:16px;color:#ffffff;font-weight:500;">${application.license_number}</p>
+                    <p style="margin:0 0 4px;font-size:12px;color:#999;text-transform:uppercase;letter-spacing:1px;">Transactions (Last 12 Months)</p>
+                    <p style="margin:0 0 16px;font-size:16px;color:#ffffff;font-weight:500;">${application.transactions_12_months}</p>
+                    <p style="margin:0 0 4px;font-size:12px;color:#999;text-transform:uppercase;letter-spacing:1px;">Sales Volume</p>
+                    <p style="margin:0;font-size:16px;color:#ffffff;font-weight:500;">${application.sales_volume_range}</p>
+                  </td>
+                </tr>
+              </table>
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+                <tr>
+                  <td align="center" style="padding:8px 0 24px;">
+                    <a href="https://re-apex.com/admin/applications" style="display:inline-block;background-color:#d4af37;color:#0a0a0a;font-size:16px;font-weight:700;text-decoration:none;padding:14px 40px;border-radius:6px;letter-spacing:0.5px;">Review Application</a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td style="background-color:#080808;padding:24px 40px;text-align:center;border-top:1px solid #1a1a1a;">
+              <p style="margin:0;font-size:12px;color:#666;">This is an automated notification from your Reapex portal.</p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+}
 
 export async function POST(request: Request) {
   try {
@@ -79,6 +151,41 @@ export async function POST(request: Request) {
         { error: 'Failed to create application' },
         { status: 500 }
       );
+    }
+
+    // Send notification email to all admins
+    try {
+      const resendApiKey = process.env.RESEND_API_KEY;
+      if (resendApiKey) {
+        // Get all admin emails
+        const { data: admins } = await supabase
+          .from('users')
+          .select('email')
+          .eq('role', 'admin');
+
+        const adminEmails = admins?.map((a: any) => a.email).filter(Boolean) || [];
+
+        if (adminEmails.length > 0) {
+          const resend = new Resend(resendApiKey);
+          await resend.emails.send({
+            from: 'Reapex <notifications@re-apex.com>',
+            to: adminEmails,
+            subject: `New Agent Application: ${firstName} ${lastName}`,
+            html: buildAdminNotificationEmail({
+              first_name: firstName,
+              last_name: lastName,
+              email,
+              phone_number: phoneNumber,
+              license_number: licenseNumber,
+              transactions_12_months: transactions12Months,
+              sales_volume_range: salesVolumeRange,
+            }),
+          });
+        }
+      }
+    } catch (emailError) {
+      // Don't fail the application submission if email fails
+      console.error('Failed to send admin notification email:', emailError);
     }
 
     return NextResponse.json({ data }, { status: 201 });
