@@ -216,18 +216,24 @@ export async function POST(request: Request) {
     if (resendApiKey) {
       try {
         const resend = new Resend(resendApiKey);
-        await resend.emails.send({
+        console.log('[Create User] Sending welcome email to:', email);
+        const emailResult = await resend.emails.send({
           from: 'Reapex <admin@re-apex.com>',
           to: email,
           subject: 'Welcome to Reapex - Your Account is Ready',
           html: buildWelcomeEmail(full_name, email, password),
         });
-        emailSent = true;
-      } catch (emailError) {
-        console.error('Error sending welcome email:', emailError);
+        console.log('[Create User] Email result:', JSON.stringify(emailResult));
+        if (emailResult.error) {
+          console.error('[Create User] Resend API error:', JSON.stringify(emailResult.error));
+        } else {
+          emailSent = true;
+        }
+      } catch (emailError: any) {
+        console.error('[Create User] Email send exception:', emailError?.message || emailError);
       }
     } else {
-      console.warn('RESEND_API_KEY not set - welcome email not sent');
+      console.warn('[Create User] RESEND_API_KEY not set - welcome email not sent');
     }
 
     return NextResponse.json({
