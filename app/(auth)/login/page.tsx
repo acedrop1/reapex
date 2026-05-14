@@ -2,8 +2,7 @@
 
 import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Box, Typography, Button, Alert, Card, TextField, Divider } from '@mui/material';
-import GoogleIcon from '@mui/icons-material/Google';
+import { Box, Typography, Button, Alert, Card, TextField } from '@mui/material';
 import { ReapexLogo } from '@/components/ui/ReapexLogo';
 import { createClient } from '@/lib/supabase/client';
 
@@ -23,31 +22,6 @@ function LoginContent() {
     }
   }, [searchParams]);
 
-  async function handleGoogleLogin() {
-    setLoading(true);
-    setError(null);
-
-    try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: `${window.location.origin}/auth/callback?next=/dashboard`,
-          queryParams: {
-            access_type: 'offline',
-            prompt: 'consent',
-          },
-          scopes: 'https://www.googleapis.com/auth/calendar.events',
-        },
-      });
-
-      if (error) {
-        throw error;
-      }
-    } catch (err: any) {
-      setError(err.message || 'An unexpected error occurred');
-      setLoading(false);
-    }
-  }
 
   async function handleEmailLogin(e: React.FormEvent) {
     e.preventDefault();
@@ -186,33 +160,6 @@ function LoginContent() {
                 </Button>
               </Box>
 
-              {/* Divider */}
-              <Divider sx={{ width: '100%', my: 2.5 }}>
-                <Typography variant="caption" sx={{ color: '#999', px: 1 }}>
-                  OR
-                </Typography>
-              </Divider>
-
-              {/* Google Sign In */}
-              <Button
-                fullWidth
-                variant="outlined"
-                onClick={handleGoogleLogin}
-                disabled={loading}
-                startIcon={<GoogleIcon />}
-                sx={{
-                  py: 1.25,
-                  fontWeight: 600,
-                  borderColor: '#ddd',
-                  color: '#555',
-                  '&:hover': {
-                    borderColor: '#d4af37',
-                    backgroundColor: '#f5f5f5',
-                  },
-                }}
-              >
-                {loading ? 'Connecting...' : 'Sign in with Google'}
-              </Button>
 
               <Typography
                 variant="body2"
