@@ -34,6 +34,12 @@ interface EditUserModalProps {
   user: User | null;
 }
 
+const PLAN_OPTIONS = [
+  { id: 'launch', name: 'Launch Plan', commission: '80/20 Split', cap: 18000 },
+  { id: 'growth', name: 'Growth Plan', commission: '90/10 Split', cap: 12000 },
+  { id: 'pro', name: 'Pro Plan', commission: '100% Commission', cap: 0 },
+];
+
 interface FormData {
   id: string;
   email: string;
@@ -41,6 +47,7 @@ interface FormData {
   title: string;
   role: UserRole;
   account_status: AccountStatus;
+  subscription_plan: string;
   bio: string;
   phone: string;
   email_public: string;
@@ -66,6 +73,7 @@ export default function EditUserModal({ open, onClose, onSuccess, user }: EditUs
     title: '',
     role: 'agent',
     account_status: 'pending',
+    subscription_plan: '',
     bio: '',
     phone: '',
     email_public: '',
@@ -85,6 +93,8 @@ export default function EditUserModal({ open, onClose, onSuccess, user }: EditUs
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [planUpdating, setPlanUpdating] = useState(false);
+  const [planSuccess, setPlanSuccess] = useState('');
 
   useEffect(() => {
     if (user) {
@@ -95,6 +105,7 @@ export default function EditUserModal({ open, onClose, onSuccess, user }: EditUs
         title: (user as any).title || '',
         role: user.role,
         account_status: user.account_status,
+        subscription_plan: (user as any).subscription_plan || '',
         bio: user.bio || '',
         phone: (user as any).phone || '',
         email_public: (user as any).email_public || '',
@@ -119,6 +130,47 @@ export default function EditUserModal({ open, onClose, onSuccess, user }: EditUs
       setErrors({});
       setErrorMessage('');
       onClose();
+    }
+  };
+
+  const handlePlanChange = async (newPlanId: string) => {
+    if (!newPlanId || !user) return;
+
+    const plan = PLAN_OPTIONS.find((p) => p.id === newPlanId);
+    if (!plan) return;
+
+    setPlanUpdating(true);
+    setPlanSuccess('');
+    setErrorMessage('');
+
+    try {
+      const response = await fetch('/api/stripe/update-plan', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          planId: plan.id,
+          planName: plan.name,
+          targetUserId: user.id,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to update plan');
+      }
+
+      setFormData((prev) => ({
+        ...prev,
+        subscription_plan: newPlanId,
+        cap_amount: plan.cap,
+      }));
+      setPlanSuccess(`Plan updated to ${plan.name}`);
+      setTimeout(() => setPlanSuccess(''), 3000);
+    } catch (error: any) {
+      setErrorMessage(error.message || 'Failed to update plan');
+    } finally {
+      setPlanUpdating(false);
     }
   };
 
@@ -313,6 +365,51 @@ export default function EditUserModal({ open, onClose, onSuccess, user }: EditUs
                 <MenuItem value="rejected">Rejected</MenuItem>
               </Select>
             </FormControl>
+          </Box>
+
+          <Box>
+            <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 600 }}>
+              Commission Plan
+            </Typography>
+            {planSuccess && (
+              <Alert severity="success" sx={{ mb: 1 }}>
+                {planSuccess}
+              </Alert>
+            )}
+            <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
+              <FormControl fullWidth>
+                <InputLabel>Subscription Plan</InputLabel>
+                <Select
+                  value={formData.subscription_plan || ''}
+                  label="Subscription Plan"
+                  onChange={(e) => handlePlanChange(e.target.value as string)}
+                  disabled={submitting || planUpdating}
+                >
+                  {PLAN_OPTIONS.map((plan) => (
+                    <MenuItem key={plan.id} value={plan.id}>
+                      {plan.name} — {plan.commission}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+
+              <TextField
+                label="Commission Cap"
+                type="number"
+                fullWidth
+                value={formData.cap_amount}
+                InputProps={{ readOnly: true }}
+                helperText={formData.cap_amount === 0 ? 'No cap (Pro)' : `$${formData.cap_amount.toLocaleString()} cap`}
+              />
+            </Box>
+            {planUpdating && (
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 1 }}>
+                <CircularProgress size={16} />
+                <Typography variant="caption" color="text.secondary">
+                  Updating plan...
+                </Typography>
+              </Box>
+            )}
           </Box>
 
           <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
