@@ -302,15 +302,10 @@ export default function AnnouncementsPage() {
   return (
     <Container maxWidth="lg" sx={dashboardStyles.container}>
       <Box sx={{ mb: 4 }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-          <Box>
-            <Typography variant="h4" component="h1" gutterBottom sx={{ color: '#000000' }}>
-              Announcements
-            </Typography>
-            <Typography variant="body1" sx={{ color: '#000000' }}>
-              Stay updated with company news and updates
-            </Typography>
-          </Box>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <Typography variant="body1" sx={{ color: '#B0B0B0' }}>
+            Stay updated with company news and updates
+          </Typography>
           {isAdmin && (
             <Button
               variant="contained"
@@ -641,7 +636,7 @@ export default function AnnouncementsPage() {
                   <Box sx={{ mt: 3 }}>
                     <Typography
                       variant="subtitle2"
-                      sx={{ mb: 1, color: '#000000', fontWeight: 600 }}
+                      sx={{ mb: 1, color: '#FFFFFF', fontWeight: 600 }}
                     >
                       Attachments
                     </Typography>
