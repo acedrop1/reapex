@@ -102,7 +102,7 @@ export default function SupportPage() {
       const { data: admins } = await supabase
         .from('users')
         .select('id')
-        .in('role', ['admin', 'broker']);
+        .eq('role', 'admin');
 
       // Create a notification for each admin
       if (admins && admins.length > 0) {

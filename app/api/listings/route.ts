@@ -44,7 +44,7 @@ export async function POST(request: Request) {
       .eq('id', user.id)
       .single();
 
-    const isAdmin = userProfile?.role === 'admin' || userProfile?.role === 'broker';
+    const isAdmin = userProfile?.role === 'admin';
 
     console.log('[Listings API] User:', user.id);
     console.log('[Listings API] User role:', userProfile?.role);

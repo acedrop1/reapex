@@ -101,8 +101,8 @@ export async function PUT(
       .update(updates)
       .eq('id', params.id);
 
-    // If not admin or broker, restrict to own listings
-    if (userData?.role !== 'admin' && userData?.role !== 'broker') {
+    // If not admin, restrict to own listings
+    if (userData?.role !== 'admin') {
       query = query.eq('agent_id', user.id);
     }
 
@@ -177,8 +177,8 @@ export async function DELETE(
       .delete()
       .eq('id', params.id);
 
-    // If not admin or broker, restrict to own listings
-    if (userData?.role !== 'admin' && userData?.role !== 'broker') {
+    // If not admin, restrict to own listings
+    if (userData?.role !== 'admin') {
       query = query.eq('agent_id', user.id);
     }
 

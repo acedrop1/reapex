@@ -69,7 +69,7 @@ USING (
   AND EXISTS (
     SELECT 1 FROM public.users
     WHERE users.id = auth.uid()
-    AND users.role IN ('admin', 'broker')
+    AND users.role = 'admin'
   )
 );
 

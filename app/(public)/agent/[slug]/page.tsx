@@ -32,7 +32,7 @@ export default async function AgentDetailPage({
     .from('users')
     .select('*')
     .eq('slug', resolvedParams.slug)
-    .in('role', ['agent', 'broker'])
+    .in('role', ['agent', 'admin'])
     .eq('account_status', 'approved')
     .single();
 

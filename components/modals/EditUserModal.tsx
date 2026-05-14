@@ -295,7 +295,6 @@ export default function EditUserModal({ open, onClose, onSuccess, user }: EditUs
                 disabled={submitting}
               >
                 <MenuItem value="agent">Agent</MenuItem>
-                <MenuItem value="broker">Broker</MenuItem>
                 <MenuItem value="admin">Admin</MenuItem>
               </Select>
             </FormControl>

@@ -19,7 +19,7 @@ export async function GET(req: Request) {
       .eq('id', user.id)
       .single();
 
-    if (!adminUser || !['admin', 'broker'].includes(adminUser.role)) {
+    if (!adminUser || adminUser.role !== 'admin') {
       return NextResponse.json({ error: 'Admin access required' }, { status: 403 });
     }
 

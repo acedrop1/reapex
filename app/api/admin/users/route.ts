@@ -186,7 +186,7 @@ export async function POST(request: Request) {
         current_cap_progress: 0,
         slug,
         display_order: 0,
-        hide_from_listing: false,
+        hide_from_listing: (role || 'agent') === 'admin' ? true : false,
         must_change_password: true,
       }, {
         onConflict: 'id',

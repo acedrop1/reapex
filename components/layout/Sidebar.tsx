@@ -543,7 +543,7 @@ export function Sidebar({ user }: { user: any }) {
                       lineHeight: 1.4,
                     }}
                   >
-                    {user?.role === 'broker' ? 'Broker' : 'Admin'}
+                    Admin
                   </Box>
                 )}
               </Box>

@@ -276,8 +276,7 @@ function CreateUserModalContent({ open, onClose, onSuccess }: CreateUserModalPro
               disabled={submitting}
             >
               <MenuItem value="agent">Agent</MenuItem>
-              <MenuItem value="broker">Broker (Admin + Public Profile)</MenuItem>
-              <MenuItem value="admin">Admin (Admin Panel Only)</MenuItem>
+              <MenuItem value="admin">Admin</MenuItem>
             </Select>
           </FormControl>
 
