@@ -120,7 +120,7 @@ export default function DashboardPage() {
         .or(`expires_at.is.null,expires_at.gt.${new Date().toISOString()}`)
         .eq('archived', false)
         .order('published_at', { ascending: false })
-        .limit(1);
+        .limit(5);
       setAnnouncements(announcementsData || []);
 
       const { data: listingsData } = await supabase

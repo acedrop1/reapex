@@ -11,12 +11,10 @@ import {
   ListItem,
   ListItemText,
   Button,
-  InputBase,
 } from '@mui/material';
 import {
   Bell,
   List,
-  MagnifyingGlass,
   Gear,
 } from '@phosphor-icons/react';
 import { useState } from 'react';
@@ -200,42 +198,7 @@ export function Header({ user }: HeaderProps) {
             {pageTitle}
           </Typography>
 
-          {/* Search Bar */}
-          <Box
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 1,
-              backgroundColor: '#111111',
-              border: '1px solid rgba(226, 192, 90, 0.08)',
-              borderRadius: '8px',
-              px: 1.75,
-              py: 0.875,
-              width: { xs: '100%', sm: 220 },
-              maxWidth: 220,
-              ml: 'auto',
-              transition: 'border-color 0.3s ease, box-shadow 0.3s ease',
-              '&:focus-within': {
-                borderColor: '#E2C05A',
-                boxShadow: '0 0 0 3px rgba(226, 192, 90, 0.08)',
-              },
-            }}
-          >
-            <MagnifyingGlass size={15} color="#666666" style={{ flexShrink: 0 }} />
-            <InputBase
-              placeholder="Search..."
-              sx={{
-                flex: 1,
-                color: '#FFFFFF',
-                fontSize: '13px',
-                fontFamily: "'DM Sans', sans-serif",
-                '& input::placeholder': {
-                  color: '#666666',
-                  opacity: 1,
-                },
-              }}
-            />
-          </Box>
+          <Box sx={{ flex: 1 }} />
         </Box>
 
         {/* Right side */}

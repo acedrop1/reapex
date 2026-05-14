@@ -21,8 +21,8 @@ export default function ContactPage() {
             <Card
               sx={{
                 p: 4,
-                backgroundColor: '#111111',
-                border: '1px solid #2a2a2a',
+                backgroundColor: '#0A0A0A',
+                border: '1px solid #1a1a1a',
               }}
             >
               <Typography variant="h5" gutterBottom sx={{ fontWeight: 700, mb: 3, color: '#ffffff' }}>
@@ -136,8 +136,8 @@ export default function ContactPage() {
               sx={{
                 p: 4,
                 height: '100%',
-                backgroundColor: '#111111',
-                border: '1px solid #2a2a2a',
+                backgroundColor: '#0A0A0A',
+                border: '1px solid #1a1a1a',
               }}
             >
               <Typography variant="h5" gutterBottom sx={{ fontWeight: 700, mb: 3, color: '#ffffff' }}>

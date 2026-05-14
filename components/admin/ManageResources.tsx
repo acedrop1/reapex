@@ -287,7 +287,7 @@ const ManageResources = () => {
             .from('documents')  // Always use documents bucket
             .upload(path, file, {
                 cacheControl: '3600',
-                upsert: false,
+                upsert: true,
             });
 
         if (error) throw error;

@@ -227,6 +227,7 @@ export default function FormsPage() {
                   category: form.category,
                   type: 'document' as const,
                   url: form.file_url,
+                  logo_url: form.icon_url || form.logo_url || null,
                   file_name: form.file_name,
                   file_type: form.file_name ? form.file_name.split('.').pop()?.toLowerCase() : 'unknown',
                   created_at: form.created_at,

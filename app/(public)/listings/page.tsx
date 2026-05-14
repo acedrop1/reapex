@@ -114,7 +114,7 @@ export default async function PublicListingsPage({
               Discover Your
               <Box component="span" sx={{ color: '#d4af37' }}>
                 {' '}
-                Next Home
+                Next Property
               </Box>
             </Typography>
           </Box>
