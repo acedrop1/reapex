@@ -10,7 +10,7 @@ import {
   Grid,
   TextField,
 } from '@mui/material';
-import { X, CalendarBlank, Clock } from '@phosphor-icons/react';
+import { X, CalendarBlank, Clock, Info } from '@phosphor-icons/react';
 import { LocalizationProvider, DateCalendar } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs, { Dayjs } from 'dayjs';
@@ -19,6 +19,7 @@ import { createClient } from '@/lib/supabase/client';
 interface ScheduleTourModalProps {
   agentId: string;
   agentName: string;
+  agentEmail?: string;
   listingId: string;
   listingAddress: string;
 }
@@ -26,6 +27,7 @@ interface ScheduleTourModalProps {
 export default function ScheduleTourModal({
   agentId,
   agentName,
+  agentEmail,
   listingId,
   listingAddress,
 }: ScheduleTourModalProps) {
@@ -42,7 +44,6 @@ export default function ScheduleTourModal({
 
   const supabase = createClient();
 
-  // Generate time slots from 8 AM to 5 PM in 1-hour increments
   const timeSlots = [
     '8:00 AM',
     '9:00 AM',
@@ -74,7 +75,7 @@ export default function ScheduleTourModal({
 
     if (!agentId || !listingId) {
       console.error('Missing agent or listing information:', { agentId, listingId });
-      setErrorMessage('Unable to schedule tour. Missing property or agent information.');
+      setErrorMessage('Unable to request tour. Missing property or agent information.');
       setErrorModalOpen(true);
       return;
     }
@@ -98,7 +99,6 @@ export default function ScheduleTourModal({
       let isNewContact = false;
 
       if (existingContact) {
-        // Update existing contact if new data provided
         const { data: updatedContact, error: updateError } = await supabase
           .from('contacts')
           .update({
@@ -117,7 +117,6 @@ export default function ScheduleTourModal({
         }
         contactId = updatedContact.id;
       } else {
-        // Create new contact
         const { data: newContact, error: createError } = await supabase
           .from('contacts')
           .insert({
@@ -153,7 +152,6 @@ export default function ScheduleTourModal({
         .select('id')
         .single();
 
-      // If assignment already exists (23505 = unique violation), that's okay
       if (assignmentError && assignmentError.code !== '23505') {
         console.error('[ScheduleTourModal] Error creating assignment:', assignmentError);
         throw new Error('Failed to assign contact to agent');
@@ -176,13 +174,13 @@ export default function ScheduleTourModal({
         throw tourError;
       }
 
-      // Create activity record for the contact
+      // Create activity record
       await supabase.from('contact_activities').insert({
         contact_id: contactId,
         agent_id: agentId,
         activity_type: 'tour_scheduled',
-        subject: `Tour scheduled for ${selectedDate.format('MMMM D, YYYY')} at ${selectedTime}`,
-        body: `Tour appointment scheduled at ${listingAddress}`,
+        subject: `Tour requested for ${selectedDate.format('MMMM D, YYYY')} at ${selectedTime}`,
+        body: `Tour request submitted for ${listingAddress}`,
         direction: 'inbound',
         status: 'completed',
         metadata: {
@@ -193,11 +191,33 @@ export default function ScheduleTourModal({
         },
       });
 
+      // Send email notification to the agent
+      try {
+        await fetch('/api/tour-request', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            agentId,
+            agentName,
+            agentEmail,
+            visitorName: name,
+            visitorEmail: email,
+            visitorPhone: phone,
+            listingAddress,
+            requestedDate: selectedDate.format('MMMM D, YYYY'),
+            requestedTime: selectedTime,
+          }),
+        });
+      } catch (emailErr) {
+        console.error('Failed to send tour request email:', emailErr);
+        // Don't block the request if email fails
+      }
+
       handleClose();
       setSuccessModalOpen(true);
     } catch (error: any) {
-      console.error('[ScheduleTourModal] Tour scheduling failed:', error);
-      setErrorMessage(`Failed to schedule tour: ${error.message}`);
+      console.error('[ScheduleTourModal] Tour request failed:', error);
+      setErrorMessage(`Failed to submit tour request: ${error.message}`);
       setErrorModalOpen(true);
     } finally {
       setLoading(false);
@@ -225,7 +245,7 @@ export default function ScheduleTourModal({
         }}
         startIcon={<CalendarBlank size={20} weight="duotone" />}
       >
-        Schedule Tour
+        Request a Tour
       </Button>
 
       <Modal
@@ -269,15 +289,34 @@ export default function ScheduleTourModal({
           </IconButton>
 
           {/* Header */}
-          <Box sx={{ mb: 4 }}>
+          <Box sx={{ mb: 3 }}>
             <Typography variant="h4" sx={{ color: '#ffffff', fontWeight: 700, mb: 1 }}>
-              Schedule a Tour
+              Request a Tour
             </Typography>
             <Typography variant="body1" sx={{ color: '#b0b0b0' }}>
               {listingAddress}
             </Typography>
             <Typography variant="body2" sx={{ color: '#808080', mt: 0.5 }}>
               with {agentName}
+            </Typography>
+          </Box>
+
+          {/* Info banner */}
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'flex-start',
+              gap: 1.5,
+              backgroundColor: 'rgba(212, 175, 55, 0.08)',
+              border: '1px solid rgba(212, 175, 55, 0.2)',
+              borderRadius: '10px',
+              p: 2,
+              mb: 3,
+            }}
+          >
+            <Info size={22} weight="fill" color="#d4af37" style={{ marginTop: 2, flexShrink: 0 }} />
+            <Typography variant="body2" sx={{ color: '#b0b0b0', lineHeight: 1.6 }}>
+              This is a tour request, not a confirmed appointment. Your agent will reach out to confirm the date, time, and details that work best for both of you.
             </Typography>
           </Box>
 
@@ -340,7 +379,7 @@ export default function ScheduleTourModal({
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
                   <Clock size={24} weight="duotone" color="#d4af37" />
                   <Typography variant="h6" sx={{ color: '#ffffff', fontWeight: 600 }}>
-                    Select Time
+                    Preferred Time
                   </Typography>
                 </Box>
 
@@ -390,21 +429,13 @@ export default function ScheduleTourModal({
                         backgroundColor: '#1a1a1a',
                         borderRadius: '8px',
                         color: '#ffffff',
-                        '& fieldset': {
-                          borderColor: '#2a2a2a',
-                        },
-                        '&:hover fieldset': {
-                          borderColor: '#d4af37',
-                        },
-                        '&.Mui-focused fieldset': {
-                          borderColor: '#d4af37',
-                        },
+                        '& fieldset': { borderColor: '#2a2a2a' },
+                        '&:hover fieldset': { borderColor: '#d4af37' },
+                        '&.Mui-focused fieldset': { borderColor: '#d4af37' },
                       },
                       '& .MuiInputLabel-root': {
                         color: '#b0b0b0',
-                        '&.Mui-focused': {
-                          color: '#d4af37',
-                        },
+                        '&.Mui-focused': { color: '#d4af37' },
                       },
                     }}
                   />
@@ -421,21 +452,13 @@ export default function ScheduleTourModal({
                         backgroundColor: '#1a1a1a',
                         borderRadius: '8px',
                         color: '#ffffff',
-                        '& fieldset': {
-                          borderColor: '#2a2a2a',
-                        },
-                        '&:hover fieldset': {
-                          borderColor: '#d4af37',
-                        },
-                        '&.Mui-focused fieldset': {
-                          borderColor: '#d4af37',
-                        },
+                        '& fieldset': { borderColor: '#2a2a2a' },
+                        '&:hover fieldset': { borderColor: '#d4af37' },
+                        '&.Mui-focused fieldset': { borderColor: '#d4af37' },
                       },
                       '& .MuiInputLabel-root': {
                         color: '#b0b0b0',
-                        '&.Mui-focused': {
-                          color: '#d4af37',
-                        },
+                        '&.Mui-focused': { color: '#d4af37' },
                       },
                     }}
                   />
@@ -452,27 +475,19 @@ export default function ScheduleTourModal({
                         backgroundColor: '#1a1a1a',
                         borderRadius: '8px',
                         color: '#ffffff',
-                        '& fieldset': {
-                          borderColor: '#2a2a2a',
-                        },
-                        '&:hover fieldset': {
-                          borderColor: '#d4af37',
-                        },
-                        '&.Mui-focused fieldset': {
-                          borderColor: '#d4af37',
-                        },
+                        '& fieldset': { borderColor: '#2a2a2a' },
+                        '&:hover fieldset': { borderColor: '#d4af37' },
+                        '&.Mui-focused fieldset': { borderColor: '#d4af37' },
                       },
                       '& .MuiInputLabel-root': {
                         color: '#b0b0b0',
-                        '&.Mui-focused': {
-                          color: '#d4af37',
-                        },
+                        '&.Mui-focused': { color: '#d4af37' },
                       },
                     }}
                   />
                 </Box>
 
-                {/* Schedule Button */}
+                {/* Submit Button */}
                 <Box sx={{ mt: 3 }}>
                   <Button
                     fullWidth
@@ -496,7 +511,7 @@ export default function ScheduleTourModal({
                       },
                     }}
                   >
-                    {loading ? 'Scheduling...' : 'Confirm Tour'}
+                    {loading ? 'Submitting...' : 'Submit Tour Request'}
                   </Button>
                 </Box>
               </Box>
@@ -543,11 +558,11 @@ export default function ScheduleTourModal({
           </Box>
 
           <Typography variant="h5" sx={{ color: '#ffffff', fontWeight: 700, mb: 2 }}>
-            Tour Scheduled!
+            Tour Request Submitted!
           </Typography>
 
           <Typography variant="body1" sx={{ color: '#b0b0b0', mb: 4 }}>
-            Your tour has been scheduled successfully. The agent will contact you shortly to confirm the details.
+            Your tour request has been sent to {agentName}. They will be in touch shortly to confirm the date, time, and any additional details.
           </Typography>
 
           <Button

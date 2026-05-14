@@ -9,6 +9,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import MortgageCalculator from '@/components/property/MortgageCalculator';
 import ScheduleTourModal from '@/components/property/ScheduleTourModal';
+import CopyEmailButton from '@/components/property/CopyEmailButton';
 import ListingFeatures from '@/components/property/ListingFeatures';
 import ListingActions from '@/components/property/ListingActions';
 import { generateListingSchema, generateBreadcrumbSchema } from '@/lib/seo/jsonLd';
@@ -519,31 +520,15 @@ export default async function ListingDetailPage({
                   {agent?.phone || 'Call Agent'}
                 </Button>
 
-                <Button
-                  variant="outlined"
-                  fullWidth
-                  size="large"
-                  sx={{
-                    borderColor: '#2a2a2a',
-                    color: '#ffffff',
-                    py: 1.5,
-                    fontWeight: 600,
-                    textTransform: 'none',
-                    '&:hover': {
-                      borderColor: '#d4af37',
-                      backgroundColor: 'rgba(212, 175, 55, 0.1)',
-                    },
-                  }}
-                  startIcon={<Email />}
-                  href={agent?.email ? `mailto:${agent.email}` : undefined}
-                >
-                  Send Email
-                </Button>
+                {agent?.email && (
+                  <CopyEmailButton email={agent.email} />
+                )}
 
                 {agent?.id && (
                   <ScheduleTourModal
                     agentId={agent.id}
                     agentName={agent.full_name || 'Agent'}
+                    agentEmail={agent.email}
                     listingId={listing.id}
                     listingAddress={listing.property_address}
                   />
