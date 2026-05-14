@@ -220,14 +220,22 @@ export async function DELETE(request: Request) {
       }
     );
 
+    // Delete from users table first
     const { error } = await supabaseAdmin
       .from('users')
       .delete()
       .eq('id', id);
 
     if (error) {
-      console.error('Error deleting user:', error);
+      console.error('Error deleting user profile:', error);
       return NextResponse.json({ error: error.message }, { status: 400 });
+    }
+
+    // Also delete from Supabase Auth so the email can be reused
+    const { error: authError } = await supabaseAdmin.auth.admin.deleteUser(id);
+    if (authError) {
+      console.error('Error deleting auth user:', authError);
+      // Don't fail the request — the profile is already deleted
     }
 
     return NextResponse.json({ success: true });
