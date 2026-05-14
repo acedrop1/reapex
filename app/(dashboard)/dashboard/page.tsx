@@ -109,8 +109,20 @@ export default function DashboardPage() {
       setUser(userData);
 
       // Check if onboarding is completed
+      // Admins skip onboarding entirely — auto-mark as completed
       if (userData && !userData.onboarding_completed) {
-        setOnboardingOpen(true);
+        if (userData.role === 'admin') {
+          // Auto-complete onboarding for admin accounts
+          await supabase
+            .from('users')
+            .update({
+              onboarding_completed: true,
+              onboarding_completed_at: new Date().toISOString(),
+            })
+            .eq('id', session.user.id);
+        } else {
+          setOnboardingOpen(true);
+        }
       }
 
       const { data: announcementsData } = await supabase

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -22,6 +22,7 @@ import {
   InputAdornment,
   Autocomplete,
   Chip,
+  CircularProgress,
 } from '@mui/material';
 import {
   ArrowLeft,
@@ -39,12 +40,19 @@ import {
   CloudArrowUp,
   Image as ImageIcon,
   CheckFat,
+  CreditCard,
+  SkipForward,
+  ShieldCheck,
 } from '@phosphor-icons/react';
 import { dashboardStyles } from '@/lib/theme/dashboardStyles';
 import { createClient } from '@/lib/supabase/client';
 import Image from 'next/image';
 import { AGENT_SPECIALTIES } from '@/lib/constants';
+import { loadStripe } from '@stripe/stripe-js';
+import { Elements } from '@stripe/react-stripe-js';
+import PaymentForm from './PaymentForm';
 
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
 interface OnboardingWizardProps {
   open: boolean;
@@ -77,9 +85,12 @@ interface FormData {
 
   // Step 4: Plan Selection
   selected_plan: 'launch' | 'growth' | 'pro' | '';
+
+  // Step 5: Payment (Stripe)
+  payment_method_id: string;
 }
 
-const TOTAL_STEPS = 5; // 0-4: Welcome, Profile, Bio, Contact, Plan
+const TOTAL_STEPS = 6; // 0-5: Welcome, Profile, Bio, Contact, Plan, Payment
 
 const stepTitles = [
   'Welcome',
@@ -87,6 +98,7 @@ const stepTitles = [
   'Bio',
   'Contact Info',
   'Choose Plan',
+  'Payment Information',
 ];
 
 export default function OnboardingWizard({ open, onClose, onComplete }: OnboardingWizardProps) {
@@ -108,11 +120,15 @@ export default function OnboardingWizard({ open, onClose, onComplete }: Onboardi
     website: '',
     phone_visible: true,
     selected_plan: '',
+    payment_method_id: '',
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [clientSecret, setClientSecret] = useState<string | null>(null);
+  const [loadingSetupIntent, setLoadingSetupIntent] = useState(false);
+  const [cardAdded, setCardAdded] = useState(false);
 
   // Phone formatting
   const formatPhoneNumber = (value: string) => {
@@ -158,6 +174,25 @@ export default function OnboardingWizard({ open, onClose, onComplete }: Onboardi
     setFormData({ ...formData, avatarFile: null, headshot_url: null });
   };
 
+  // Fetch Stripe SetupIntent when reaching payment step
+  const fetchSetupIntent = async () => {
+    if (clientSecret) return; // Already have one
+    setLoadingSetupIntent(true);
+    try {
+      const res = await fetch('/api/stripe/create-setup-intent', { method: 'POST' });
+      const data = await res.json();
+      if (data.clientSecret) {
+        setClientSecret(data.clientSecret);
+      } else {
+        setErrors({ payment: 'Failed to initialize payment setup. Please try again.' });
+      }
+    } catch (err) {
+      setErrors({ payment: 'Failed to connect to payment system.' });
+    } finally {
+      setLoadingSetupIntent(false);
+    }
+  };
+
   const validateStep = (step: number): boolean => {
     const newErrors: Record<string, string> = {};
 
@@ -166,20 +201,22 @@ export default function OnboardingWizard({ open, onClose, onComplete }: Onboardi
         // Welcome screen - no validation
         break;
       case 1:
-        if (!formData.avatarFile && !formData.headshot_url) {
-          newErrors.avatar = 'Please upload a profile picture';
-        }
+        // Profile picture - optional (skippable)
         break;
       case 2:
         // Bio is optional - no validation required
         break;
       case 3:
         // Contact info - all fields are optional
-        // No validation required for social media and contact fields
         break;
       case 4:
         if (!formData.selected_plan) {
           newErrors.plan = 'Please select a plan';
+        }
+        break;
+      case 5:
+        if (!formData.payment_method_id && !cardAdded) {
+          newErrors.payment = 'A card on file is required to proceed';
         }
         break;
     }
@@ -190,12 +227,29 @@ export default function OnboardingWizard({ open, onClose, onComplete }: Onboardi
 
   const handleNext = () => {
     if (validateStep(currentStep)) {
-      setCurrentStep((prev) => Math.min(prev + 1, TOTAL_STEPS - 1));
+      const nextStep = Math.min(currentStep + 1, TOTAL_STEPS - 1);
+      setCurrentStep(nextStep);
+      // Pre-fetch setup intent when moving to payment step
+      if (nextStep === 5) {
+        fetchSetupIntent();
+      }
     }
+  };
+
+  const handleSkip = () => {
+    // Skip is only for steps 1-3 (profile, bio, contact)
+    setErrors({});
+    setCurrentStep((prev) => Math.min(prev + 1, TOTAL_STEPS - 1));
   };
 
   const handleBack = () => {
     setCurrentStep((prev) => Math.max(prev - 1, 0));
+  };
+
+  const handlePaymentSuccess = (paymentMethodId: string) => {
+    setFormData({ ...formData, payment_method_id: paymentMethodId });
+    setCardAdded(true);
+    setErrors({});
   };
 
   const handleSubmit = async () => {
@@ -216,6 +270,7 @@ export default function OnboardingWizard({ open, onClose, onComplete }: Onboardi
             specialties: formData.specialties,
             years_experience: formData.years_experience,
             languages: formData.languages,
+            payment_method_id: formData.payment_method_id,
           },
         }),
       });
@@ -802,6 +857,107 @@ export default function OnboardingWizard({ open, onClose, onComplete }: Onboardi
           </Box>
         );
 
+      case 5:
+        // Payment Information (Mandatory)
+        return (
+          <Box>
+            <Typography variant="h6" sx={{ mb: 1, fontWeight: 600 }}>
+              Card on File
+            </Typography>
+            <Typography variant="body2" sx={{ color: '#B0B0B0', mb: 3 }}>
+              A card on file is required for all plans. Your card will only be charged based on your selected plan.
+            </Typography>
+
+            {cardAdded ? (
+              <Box sx={{
+                textAlign: 'center',
+                py: 6,
+              }}>
+                <Box sx={{
+                  width: 80,
+                  height: 80,
+                  borderRadius: '50%',
+                  backgroundColor: 'rgba(76, 175, 80, 0.1)',
+                  border: '2px solid rgba(76, 175, 80, 0.3)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  mx: 'auto',
+                  mb: 3,
+                }}>
+                  <ShieldCheck size={40} color="#4CAF50" weight="duotone" />
+                </Box>
+                <Typography variant="h6" sx={{ color: '#4CAF50', fontWeight: 600, mb: 1 }}>
+                  Card Verified Successfully
+                </Typography>
+                <Typography variant="body2" sx={{ color: '#B0B0B0' }}>
+                  Your payment method has been securely saved. Click "Complete Onboarding" to finish.
+                </Typography>
+              </Box>
+            ) : loadingSetupIntent ? (
+              <Box sx={{ textAlign: 'center', py: 8 }}>
+                <CircularProgress sx={{ color: '#E2C05A', mb: 2 }} />
+                <Typography variant="body2" sx={{ color: '#B0B0B0' }}>
+                  Setting up secure payment...
+                </Typography>
+              </Box>
+            ) : clientSecret ? (
+              <Box sx={{
+                backgroundColor: '#121212',
+                border: '1px solid #2A2A2A',
+                borderRadius: '12px',
+                p: 3,
+              }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 3 }}>
+                  <CreditCard size={24} color="#E2C05A" weight="duotone" />
+                  <Typography variant="subtitle1" sx={{ color: '#FFFFFF', fontWeight: 600 }}>
+                    Enter Card Details
+                  </Typography>
+                </Box>
+                <Elements
+                  stripe={stripePromise}
+                  options={{
+                    clientSecret,
+                    appearance: {
+                      theme: 'night',
+                      variables: {
+                        colorPrimary: '#E2C05A',
+                        colorBackground: '#1A1A1A',
+                        colorText: '#ffffff',
+                        colorDanger: '#EF5350',
+                        fontFamily: '"DM Sans", sans-serif',
+                        borderRadius: '8px',
+                      },
+                    },
+                  }}
+                >
+                  <PaymentForm
+                    onSuccess={handlePaymentSuccess}
+                  />
+                </Elements>
+              </Box>
+            ) : (
+              <Box sx={{ textAlign: 'center', py: 6 }}>
+                <Typography color="error" variant="body2">
+                  {errors.payment || 'Failed to load payment form. Please go back and try again.'}
+                </Typography>
+                <Button
+                  onClick={fetchSetupIntent}
+                  sx={{ mt: 2, color: '#E2C05A' }}
+                >
+                  Retry
+                </Button>
+              </Box>
+            )}
+
+            {errors.payment && !cardAdded && clientSecret && (
+              <Typography color="error" variant="caption" display="block" sx={{ mt: 2, textAlign: 'center' }}>
+                {errors.payment}
+              </Typography>
+            )}
+          </Box>
+        );
+
       default:
         return null;
     }
@@ -852,6 +1008,16 @@ export default function OnboardingWizard({ open, onClose, onComplete }: Onboardi
           <Box sx={{ mb: 4, textAlign: 'center' }}>
             <Typography variant="overline" sx={{ color: '#E2C05A', fontWeight: 600, letterSpacing: '0.1em' }}>
               Step {currentStep} of {TOTAL_STEPS - 1}
+              {[1, 2, 3].includes(currentStep) && (
+                <Typography component="span" variant="overline" sx={{ color: '#808080', ml: 1, fontWeight: 400 }}>
+                  (Optional)
+                </Typography>
+              )}
+              {currentStep === 5 && (
+                <Typography component="span" variant="overline" sx={{ color: '#FF9800', ml: 1, fontWeight: 400 }}>
+                  (Required)
+                </Typography>
+              )}
             </Typography>
           </Box>
         )}
@@ -872,56 +1038,81 @@ export default function OnboardingWizard({ open, onClose, onComplete }: Onboardi
             Back
           </Button>
 
-          {currentStep === TOTAL_STEPS - 1 ? (
-            <Button
-              variant="contained"
-              onClick={handleSubmit}
-              disabled={submitting}
-              endIcon={!submitting && <CheckCircle size={20} weight="fill" />}
-              sx={{
-                borderRadius: '8px',
-                px: 4,
-                py: 1.5,
-                backgroundColor: '#E2C05A',
-                fontWeight: 600,
-                boxShadow: '0 4px 12px rgba(226, 192, 90, 0.4)',
-                '&:hover': {
-                  backgroundColor: '#D4B04A',
-                  transform: 'translateY(-1px)',
-                  boxShadow: '0 6px 16px rgba(226, 192, 90, 0.5)',
-                },
-                '&.Mui-disabled': {
-                  backgroundColor: '#1A1A1A',
-                  color: '#666',
-                },
-                transition: 'all 0.2s',
-              }}
-            >
-              {submitting ? 'Completing...' : 'Complete Onboarding'}
-            </Button>
-          ) : (
-            <Button
-              variant="contained"
-              onClick={handleNext}
-              endIcon={<ArrowRight size={20} />}
-              sx={{
-                borderRadius: '8px',
-                px: 4,
-                py: 1.5,
-                backgroundColor: '#E2C05A',
-                fontWeight: 600,
-                boxShadow: '0 4px 12px rgba(226, 192, 90, 0.4)',
-                '&:hover': {
-                  backgroundColor: '#D4B04A',
-                  transform: 'translateY(-1px)',
-                  boxShadow: '0 6px 16px rgba(226, 192, 90, 0.5)',
-                },
-                transition: 'all 0.2s',
-              }}
-            >
-              Continue
-            </Button>
-          )}
+          <Box sx={{ display: 'flex', gap: 2 }}>
+            {/* Skip button for steps 1-3 (profile, bio, contact) */}
+            {[1, 2, 3].includes(currentStep) && (
+              <Button
+                onClick={handleSkip}
+                endIcon={<SkipForward size={18} />}
+                sx={{
+                  color: '#808080',
+                  borderRadius: '8px',
+                  px: 3,
+                  py: 1.5,
+                  '&:hover': {
+                    color: '#B0B0B0',
+                    backgroundColor: 'rgba(255,255,255,0.04)',
+                  },
+                }}
+              >
+                Skip for now
+              </Button>
+            )}
+
+            {currentStep === TOTAL_STEPS - 1 ? (
+              <Button
+                variant="contained"
+                onClick={handleSubmit}
+                disabled={submitting || (!cardAdded && !formData.payment_method_id)}
+                endIcon={!submitting && <CheckCircle size={20} weight="fill" />}
+                sx={{
+                  borderRadius: '8px',
+                  px: 4,
+                  py: 1.5,
+                  backgroundColor: '#E2C05A',
+                  fontWeight: 600,
+                  boxShadow: '0 4px 12px rgba(226, 192, 90, 0.4)',
+                  '&:hover': {
+                    backgroundColor: '#D4B04A',
+                    transform: 'translateY(-1px)',
+                    boxShadow: '0 6px 16px rgba(226, 192, 90, 0.5)',
+                  },
+                  '&.Mui-disabled': {
+                    backgroundColor: '#1A1A1A',
+                    color: '#666',
+                  },
+                  transition: 'all 0.2s',
+                }}
+              >
+                {submitting ? 'Completing...' : 'Complete Onboarding'}
+              </Button>
+            ) : currentStep === 5 ? (
+              // On payment step, don't show Continue - PaymentForm handles it
+              null
+            ) : (
+              <Button
+                variant="contained"
+                onClick={handleNext}
+                endIcon={<ArrowRight size={20} />}
+                sx={{
+                  borderRadius: '8px',
+                  px: 4,
+                  py: 1.5,
+                  backgroundColor: '#E2C05A',
+                  fontWeight: 600,
+                  boxShadow: '0 4px 12px rgba(226, 192, 90, 0.4)',
+                  '&:hover': {
+                    backgroundColor: '#D4B04A',
+                    transform: 'translateY(-1px)',
+                    boxShadow: '0 6px 16px rgba(226, 192, 90, 0.5)',
+                  },
+                  transition: 'all 0.2s',
+                }}
+              >
+                Continue
+              </Button>
+            )}
+          </Box>
         </Box>
       </DialogContent>
     </Dialog>
