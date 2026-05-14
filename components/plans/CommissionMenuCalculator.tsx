@@ -403,7 +403,7 @@ export default function CommissionMenuCalculator() {
                   lineHeight: 1.8,
                 }}
               >
-                With the Growth Plan (90/10 split, $19.5k cap, $225/month), you'll reach your cap and then keep 100% of your
+                With the Growth Plan (90/10 split, $12k cap, $225/month), you'll reach your cap and then keep 100% of your
                 commissions (minus the monthly fee) for the rest of the year. This typically happens around month 7-9 for most agents.
               </Typography>
             </Box>

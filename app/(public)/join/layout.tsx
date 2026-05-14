@@ -2,11 +2,11 @@ import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Join Reapex | Agent Application & Commission Plans',
-  description: 'Ready to keep more of your hard-earned commission? Apply to Reapex in minutes. 100% commission plans, low caps, and cutting-edge technology. Your success starts here.',
+  description: 'Ready to keep your hard-earned commission? Apply to Reapex in minutes. 100% commission plans, low caps, and cutting-edge technology. Your success starts here.',
   keywords: ['join Reapex', 'real estate agent application', 'become a realtor', 'agent recruitment', 'real estate career', 'agent onboarding', 'commission plans'],
   openGraph: {
     title: 'Join Reapex | Agent Application & Commission Plans',
-    description: 'Ready to keep more of your hard-earned commission? Apply to Reapex in minutes. 100% commission plans, low caps, and cutting-edge technology.',
+    description: 'Ready to keep your hard-earned commission? Apply to Reapex in minutes. 100% commission plans, low caps, and cutting-edge technology.',
     url: 'https://reapex.com/join',
     siteName: 'Reapex',
     images: [
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'Join Reapex | Agent Application & Commission Plans',
-    description: 'Ready to keep more of your hard-earned commission? Apply to Reapex in minutes. 100% commission plans, low caps, and cutting-edge technology.',
+    description: 'Ready to keep your hard-earned commission? Apply to Reapex in minutes. 100% commission plans, low caps, and cutting-edge technology.',
     images: ['/images/og-image.jpeg'],
   },
   robots: {

@@ -10,14 +10,14 @@ const tiers = [
     name: 'Launch',
     split: '80/20',
     monthlyFee: '$0',
-    annualCap: '$22.5K Cap',
+    annualCap: '$18K Cap',
     description: 'Perfect for new agents getting started',
   },
   {
     name: 'Growth',
     split: '90/10',
     monthlyFee: '$225',
-    annualCap: '$19.5K Cap',
+    annualCap: '$12K Cap',
     description: 'Ideal for growing your business',
   },
   {

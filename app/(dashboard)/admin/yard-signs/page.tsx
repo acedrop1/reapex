@@ -645,13 +645,6 @@ export default function AdminYardSignsPage() {
                   >
                     {formData.sign_code}
                   </Typography>
-                  <Button
-                    size="small"
-                    onClick={() => setFormData({ ...formData, sign_code: generateSignCode() })}
-                    sx={{ color: '#808080', minWidth: 'auto', fontSize: '0.75rem' }}
-                  >
-                    Regenerate
-                  </Button>
                 </Box>
                 <Typography variant="caption" sx={{ color: '#555', mt: 0.5, display: 'block' }}>
                   URL: {getQrUrl(formData.sign_code)}

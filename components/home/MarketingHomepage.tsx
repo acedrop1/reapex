@@ -169,7 +169,7 @@ export default function MarketingHomepage({ agents = [] }: { agents?: TeamAgent[
     const headline = heroHeadlineRef.current;
     if (!headline) return;
 
-    const rawHTML = "IT'S YOUR COMMISSION. <span class=\"gold\">KEEP MORE OF IT.</span>";
+    const rawHTML = "IT'S YOUR COMMISSION. <span class=\"gold\">KEEP IT.</span>";
     const parts = rawHTML.split(/(<span[^>]*>.*?<\/span>)/);
     headline.innerHTML = '';
     let wordIndex = 0;
@@ -779,7 +779,7 @@ export default function MarketingHomepage({ agents = [] }: { agents?: TeamAgent[
                   <div className="plan-split">80/20</div>
                   <div className="plan-split-label">Commission Split</div>
                   <div className="plan-detail"><span className="dl">Monthly Fee</span><span className="dv">$0</span></div>
-                  <div className="plan-detail"><span className="dl">Annual Cap</span><span className="dv">$22.5K Cap</span></div>
+                  <div className="plan-detail"><span className="dl">Annual Cap</span><span className="dv">$18K Cap</span></div>
                   <div className="plan-cta"><a href="#cta" className="btn btn-outline-dark magnetic-btn" onClick={(e) => scrollToId(e, 'cta')}>Learn More</a></div>
                 </div>
                 <div className="plan-card gradient-border">
@@ -788,7 +788,7 @@ export default function MarketingHomepage({ agents = [] }: { agents?: TeamAgent[
                   <div className="plan-split">90/10</div>
                   <div className="plan-split-label">Commission Split</div>
                   <div className="plan-detail"><span className="dl">Monthly Fee</span><span className="dv">$225</span></div>
-                  <div className="plan-detail"><span className="dl">Annual Cap</span><span className="dv">$19.5K Cap</span></div>
+                  <div className="plan-detail"><span className="dl">Annual Cap</span><span className="dv">$12K Cap</span></div>
                   <div className="plan-cta"><a href="#cta" className="btn btn-outline-dark magnetic-btn" onClick={(e) => scrollToId(e, 'cta')}>Learn More</a></div>
                 </div>
                 <div className="plan-card featured gradient-border">

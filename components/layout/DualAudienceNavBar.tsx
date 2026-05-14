@@ -387,7 +387,7 @@ export function DualAudienceNavBar() {
                 fontWeight: 500,
               }}
             >
-              Join us at Reapex and keep more of your commission
+              Join us at Reapex and keep your commission
             </Typography>
           </Box>
         </Box>

@@ -145,9 +145,12 @@ const ManageResources = () => {
             .order('created_at', { ascending: false });
         if (error) throw error;
 
-        // Convert storage paths to public URLs
+        // Convert storage paths to public URLs (keep originals for save-back)
         return data?.map(doc => ({
             ...doc,
+            _original_file_url: doc.file_url,
+            _original_icon_url: doc.icon_url,
+            _original_logo_url: doc.logo_url,
             file_url: doc.file_url ? supabase.storage.from('documents').getPublicUrl(doc.file_url).data.publicUrl : doc.file_url,
             icon_url: doc.icon_url ? supabase.storage.from('documents').getPublicUrl(doc.icon_url).data.publicUrl : doc.icon_url,
             logo_url: doc.logo_url ? supabase.storage.from('documents').getPublicUrl(doc.logo_url).data.publicUrl : doc.logo_url,
@@ -162,9 +165,11 @@ const ManageResources = () => {
             .order('created_at', { ascending: false });
         if (error) throw error;
 
-        // Convert storage paths to public URLs
+        // Convert storage paths to public URLs (keep originals for save-back)
         return data?.map(resource => ({
             ...resource,
+            _original_thumbnail_url: resource.thumbnail_url,
+            _original_file_url: resource.file_url,
             thumbnail_url: resource.thumbnail_url ? supabase.storage.from('documents').getPublicUrl(resource.thumbnail_url).data.publicUrl : resource.thumbnail_url,
             file_url: resource.file_url ? supabase.storage.from('documents').getPublicUrl(resource.file_url).data.publicUrl : resource.file_url,
         })) || [];
@@ -178,9 +183,10 @@ const ManageResources = () => {
             .order('created_at', { ascending: false });
         if (error) throw error;
 
-        // Convert storage paths to public URLs
+        // Convert storage paths to public URLs (keep originals for save-back)
         return data?.map(template => ({
             ...template,
+            _original_preview_image_url: template.preview_image_url,
             preview_image_url: template.preview_image_url ? supabase.storage.from('documents').getPublicUrl(template.preview_image_url).data.publicUrl : template.preview_image_url,
         })) || [];
     };
@@ -193,9 +199,11 @@ const ManageResources = () => {
             .order('created_at', { ascending: false });
         if (error) throw error;
 
-        // Convert storage paths to public URLs
+        // Convert storage paths to public URLs (keep originals for save-back)
         return data?.map(link => ({
             ...link,
+            _original_logo_url: link.logo_url,
+            _original_icon_url: link.icon_url,
             logo_url: link.logo_url ? supabase.storage.from('documents').getPublicUrl(link.logo_url).data.publicUrl : link.logo_url,
             icon_url: link.icon_url ? supabase.storage.from('documents').getPublicUrl(link.icon_url).data.publicUrl : link.icon_url,
         })) || [];
@@ -335,6 +343,9 @@ const ManageResources = () => {
                 }
                 if (iconUrl) {
                     docData.icon_url = iconUrl;
+                } else if (editingItem?._original_icon_url) {
+                    // Keep existing storage path (not the resolved public URL)
+                    docData.icon_url = editingItem._original_icon_url;
                 }
 
                 if (editingItem) {
@@ -383,7 +394,7 @@ const ManageResources = () => {
                     description: formData.description,
                     category: formData.category ? formData.category.toLowerCase() : null,
                     resource_type: resourceType,
-                    thumbnail_url: iconUrl || editingItem?.thumbnail_url || autoThumbnail || null,
+                    thumbnail_url: iconUrl || editingItem?._original_thumbnail_url || autoThumbnail || null,
                 };
 
                 // If there's a link, use it as the URL (external resource). If file was also uploaded, file takes priority.
@@ -422,7 +433,7 @@ const ManageResources = () => {
                     description: formData.description,
                     category: formData.category ? formData.category.toLowerCase().replace(' ', '_') : null,
                     canva_url: formData.link || editingItem?.canva_url,
-                    preview_image_url: iconUrl || editingItem?.preview_image_url,
+                    preview_image_url: iconUrl || editingItem?._original_preview_image_url || null,
                 };
 
                 // If a file was uploaded, store its path
@@ -467,8 +478,8 @@ const ManageResources = () => {
                     description: formData.description,
                     category: formData.category,
                     url: formData.link || editingItem?.url,
-                    logo_url: iconUrl || editingItem?.logo_url || editingItem?.icon_url || autoLogo || null,
-                    icon_url: iconUrl || editingItem?.icon_url || editingItem?.logo_url || autoLogo || null,
+                    logo_url: iconUrl || editingItem?._original_logo_url || editingItem?._original_icon_url || autoLogo || null,
+                    icon_url: iconUrl || editingItem?._original_icon_url || editingItem?._original_logo_url || autoLogo || null,
                     created_by: user.id,
                 };
 
