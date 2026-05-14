@@ -49,6 +49,37 @@ function CreateUserModalContent({ open, onClose, onSuccess }: CreateUserModalPro
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
+  const [successResult, setSuccessResult] = useState<{ emailSent: boolean; tempPassword?: string; fullName: string; email: string } | null>(null);
+
+  // Auto-generate a strong temporary password
+  const generatePassword = (): string => {
+    const uppercase = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
+    const lowercase = 'abcdefghjkmnpqrstuvwxyz';
+    const numbers = '23456789';
+    const special = '!@#$%&*';
+    const all = uppercase + lowercase + numbers + special;
+    let pw = '';
+    pw += uppercase[Math.floor(Math.random() * uppercase.length)];
+    pw += lowercase[Math.floor(Math.random() * lowercase.length)];
+    pw += numbers[Math.floor(Math.random() * numbers.length)];
+    pw += special[Math.floor(Math.random() * special.length)];
+    for (let i = pw.length; i < 14; i++) {
+      pw += all[Math.floor(Math.random() * all.length)];
+    }
+    return pw.split('').sort(() => Math.random() - 0.5).join('');
+  };
+
+  // Auto-generate password when modal opens
+  const handleOpen = () => {
+    if (open && !formData.password) {
+      setFormData(prev => ({ ...prev, password: generatePassword() }));
+    }
+  };
+
+  // Trigger auto-generate on open
+  useState(() => {
+    if (open) handleOpen();
+  });
 
   const handleClose = () => {
     if (!submitting) {
@@ -60,14 +91,15 @@ function CreateUserModalContent({ open, onClose, onSuccess }: CreateUserModalPro
         account_status: 'approved',
       });
       setErrors({});
+      setSuccessResult(null);
       onClose();
     }
   };
 
-  // Auto-generate a temporary password
-  const generatePassword = () => {
-    const pw = `Temp${Math.random().toString(36).slice(2, 10)}!${Math.floor(Math.random() * 100)}`;
-    setFormData({ ...formData, password: pw });
+  const handleDone = () => {
+    setSuccessResult(null);
+    onSuccess();
+    handleClose();
   };
 
   const validateForm = (): boolean => {
@@ -101,9 +133,7 @@ function CreateUserModalContent({ open, onClose, onSuccess }: CreateUserModalPro
     try {
       const response = await fetch('/api/admin/users', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
       });
 
@@ -113,8 +143,13 @@ function CreateUserModalContent({ open, onClose, onSuccess }: CreateUserModalPro
         throw new Error(result.error || result.details || 'Failed to create user');
       }
 
-      onSuccess();
-      handleClose();
+      // Show success screen with email status
+      setSuccessResult({
+        emailSent: result.emailSent,
+        tempPassword: result.tempPassword,
+        fullName: formData.full_name,
+        email: formData.email,
+      });
     } catch (error) {
       showError({
         ...parseError(error),
@@ -125,26 +160,61 @@ function CreateUserModalContent({ open, onClose, onSuccess }: CreateUserModalPro
     }
   };
 
+  // Success screen
+  if (successResult) {
+    return (
+      <Dialog open={open} onClose={handleDone} maxWidth="sm" fullWidth PaperProps={{ sx: { borderRadius: 2 } }}>
+        <DialogTitle>
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <Typography variant="h6" component="div">Agent Account Created</Typography>
+            <IconButton onClick={handleDone} size="small"><XIcon size={20} /></IconButton>
+          </Box>
+        </DialogTitle>
+        <DialogContent>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
+            {successResult.emailSent ? (
+              <Alert severity="success">
+                <Typography variant="body2">
+                  Welcome email sent to <strong>{successResult.email}</strong> with login credentials. They will be asked to change their password on first login.
+                </Typography>
+              </Alert>
+            ) : (
+              <>
+                <Alert severity="warning">
+                  <Typography variant="body2">
+                    Email could not be sent (Resend API key may not be configured). Please share these credentials manually with <strong>{successResult.fullName}</strong>.
+                  </Typography>
+                </Alert>
+                <Box sx={{ p: 2, backgroundColor: '#f5f5f5', borderRadius: 1, border: '1px solid #ddd' }}>
+                  <Typography variant="body2" sx={{ mb: 1 }}><strong>Email:</strong> {successResult.email}</Typography>
+                  <Typography variant="body2"><strong>Temporary Password:</strong> <code style={{ backgroundColor: '#e0e0e0', padding: '2px 6px', borderRadius: 4 }}>{successResult.tempPassword}</code></Typography>
+                </Box>
+                <Typography variant="caption" color="text.secondary">
+                  The agent will be asked to set a new password on their first login.
+                </Typography>
+              </>
+            )}
+          </Box>
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 2 }}>
+          <Button variant="contained" onClick={handleDone}>Done</Button>
+        </DialogActions>
+      </Dialog>
+    );
+  }
+
   return (
     <Dialog
       open={open}
       onClose={handleClose}
       maxWidth="sm"
       fullWidth
-      PaperProps={{
-        sx: {
-          borderRadius: 2,
-        },
-      }}
+      PaperProps={{ sx: { borderRadius: 2 } }}
     >
       <DialogTitle>
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <Typography variant="h6" component="div">
-            Create New User
-          </Typography>
-          <IconButton onClick={handleClose} disabled={submitting} size="small">
-            <XIcon size={20} />
-          </IconButton>
+          <Typography variant="h6" component="div">Create Agent Account</Typography>
+          <IconButton onClick={handleClose} disabled={submitting} size="small"><XIcon size={20} /></IconButton>
         </Box>
       </DialogTitle>
 
@@ -172,28 +242,28 @@ function CreateUserModalContent({ open, onClose, onSuccess }: CreateUserModalPro
             helperText={errors.email}
             disabled={submitting}
             required
-            placeholder="agent@re-apex.com"
+            placeholder="agent@example.com"
           />
 
           <Box sx={{ display: 'flex', gap: 1, alignItems: 'flex-start' }}>
             <TextField
-              label="Password"
+              label="Temporary Password"
               fullWidth
               value={formData.password}
               onChange={(e) => setFormData({ ...formData, password: e.target.value })}
               error={!!errors.password}
-              helperText={errors.password || 'Temporary password — user can login with Google OAuth instead'}
+              helperText={errors.password || 'Auto-generated — agent must change on first login'}
               disabled={submitting}
               required
             />
             <Button
               variant="outlined"
               size="small"
-              onClick={generatePassword}
+              onClick={() => setFormData({ ...formData, password: generatePassword() })}
               disabled={submitting}
               sx={{ mt: 1, whiteSpace: 'nowrap', minWidth: 'auto', px: 2 }}
             >
-              Generate
+              Regenerate
             </Button>
           </Box>
 
@@ -211,40 +281,23 @@ function CreateUserModalContent({ open, onClose, onSuccess }: CreateUserModalPro
             </Select>
           </FormControl>
 
-          <FormControl fullWidth>
-            <InputLabel>Account Status</InputLabel>
-            <Select
-              value={formData.account_status}
-              label="Account Status"
-              onChange={(e) => setFormData({ ...formData, account_status: e.target.value as AccountStatus })}
-              disabled={submitting}
-            >
-              <MenuItem value="approved">Approved (Active)</MenuItem>
-              <MenuItem value="pending">Pending Approval</MenuItem>
-              <MenuItem value="suspended">Suspended</MenuItem>
-              <MenuItem value="rejected">Rejected</MenuItem>
-            </Select>
-          </FormControl>
-
           <Alert severity="info" sx={{ mt: 1 }}>
             <Typography variant="caption">
-              If the user has a Google Workspace account (@re-apex.com), they can sign in with "Sign in with Google" instead of using a password.
+              A welcome email with login credentials will be sent to the agent. They will be required to set a new password on their first login.
             </Typography>
           </Alert>
         </Box>
       </DialogContent>
 
       <DialogActions sx={{ px: 3, pb: 2 }}>
-        <Button onClick={handleClose} disabled={submitting}>
-          Cancel
-        </Button>
+        <Button onClick={handleClose} disabled={submitting}>Cancel</Button>
         <Button
           variant="contained"
           onClick={handleSubmit}
           disabled={submitting}
           startIcon={submitting ? <CircularProgress size={20} /> : <UserPlus size={20} />}
         >
-          {submitting ? 'Creating...' : 'Create User'}
+          {submitting ? 'Creating...' : 'Create & Send Invite'}
         </Button>
       </DialogActions>
     </Dialog>

@@ -93,17 +93,6 @@ export default async function AgentsPage() {
     });
   }
 
-  // Static team members
-  const staticTeamMembers = [
-    { name: 'Yasmin Elayan' },
-    { name: 'Mohammad Hadla' },
-    { name: 'Ahmad Obaidallah' },
-    { name: 'Furhaan Mian' },
-    { name: 'Malik Elayan' },
-    { name: 'Adam Najib' },
-    { name: 'Kays Sawaged' },
-  ];
-
   const organizationSchema = generateOrganizationSchema();
   const breadcrumbSchema = generateBreadcrumbSchema([
     { name: 'Home', url: 'https://reapex.com' },
@@ -340,98 +329,6 @@ export default async function AgentsPage() {
           </Box>
         )}
 
-        {/* Static Team Members Section */}
-        <Grid container spacing={4} sx={{ mt: 4 }}>
-          {staticTeamMembers.map((member) => (
-            <Grid item xs={12} sm={6} md={4} lg={3} key={member.name}>
-              <Card
-                sx={{
-                  height: 400,
-                  position: 'relative',
-                  overflow: 'hidden',
-                  borderRadius: '16px',
-                }}
-              >
-                {/* Background with Gradient */}
-                <Box
-                  sx={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    width: '100%',
-                    height: '100%',
-                    background: 'linear-gradient(135deg, #d4af37 0%, #c49d2f 100%)',
-                    filter: 'brightness(0.8)',
-                  }}
-                >
-                  <Box
-                    sx={{
-                      width: '100%',
-                      height: '100%',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontSize: '120px',
-                      fontWeight: 700,
-                      color: 'rgba(0,0,0,0.3)',
-                    }}
-                  >
-                    {getInitials(member.name)}
-                  </Box>
-                </Box>
-
-                {/* Gradient Overlay */}
-                <Box
-                  sx={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    width: '100%',
-                    height: '100%',
-                    background: 'linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0) 100%)',
-                  }}
-                />
-
-                {/* Content */}
-                <Box
-                  sx={{
-                    position: 'absolute',
-                    bottom: 0,
-                    left: 0,
-                    width: '100%',
-                    p: 3,
-                    zIndex: 1,
-                  }}
-                >
-                  {/* Glassmorphic Name Button */}
-                  <Box
-                    sx={{
-                      background: 'rgba(212, 175, 55, 0.15)',
-                      backdropFilter: 'blur(10px)',
-                      WebkitBackdropFilter: 'blur(10px)',
-                      border: '1px solid rgba(212, 175, 55, 0.3)',
-                      borderRadius: '12px',
-                      padding: '16px 20px',
-                      textAlign: 'center',
-                    }}
-                  >
-                    <Typography
-                      variant="h6"
-                      sx={{
-                        color: '#ffffff',
-                        fontWeight: 700,
-                        fontSize: '1.1rem',
-                        textShadow: '0 2px 8px rgba(0,0,0,0.3)',
-                      }}
-                    >
-                      {member.name}
-                    </Typography>
-                  </Box>
-                </Box>
-              </Card>
-            </Grid>
-          ))}
-        </Grid>
       </Container>
     </Box>
   );

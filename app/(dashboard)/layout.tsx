@@ -45,6 +45,11 @@ export default async function DashboardLayout({
     }
   }
 
+  // Check if user must change their password (temporary password)
+  if (user && (user as any).must_change_password === true) {
+    redirect('/change-password');
+  }
+
   return (
     <SidebarProvider>
       <PageLoader />
