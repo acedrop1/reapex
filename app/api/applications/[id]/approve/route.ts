@@ -254,7 +254,7 @@ export async function POST(
       try {
         const resend = new Resend(resendApiKey);
         await resend.emails.send({
-          from: 'Reapex <noreply@re-apex.com>',
+          from: 'Reapex <admin@re-apex.com>',
           to: application.email,
           subject: 'Welcome to Reapex - Your Account is Ready',
           html: buildWelcomeEmail(fullName, application.email, password),

@@ -73,7 +73,7 @@ async function sendChargeResultEmail(
       : `A scheduled charge of $${amount} failed to process. ${errorMessage ? `Reason: ${errorMessage}` : 'The card may need to be updated.'} Description: ${description}`;
 
     await resend.emails.send({
-      from: 'Reapex Billing <notifications@re-apex.com>',
+      from: 'Reapex <admin@re-apex.com>',
       to: adminEmails,
       subject,
       html: `<!DOCTYPE html>

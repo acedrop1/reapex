@@ -119,7 +119,7 @@ async function sendAdminBillingEmail(emailSubject: string, htmlBody: string) {
 
     const resend = new Resend(resendApiKey);
     await resend.emails.send({
-      from: 'Reapex Billing <notifications@re-apex.com>',
+      from: 'Reapex <admin@re-apex.com>',
       to: adminEmails,
       subject: emailSubject,
       html: htmlBody,

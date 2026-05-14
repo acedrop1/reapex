@@ -168,7 +168,7 @@ export async function POST(request: Request) {
         if (adminEmails.length > 0) {
           const resend = new Resend(resendApiKey);
           await resend.emails.send({
-            from: 'Reapex <notifications@re-apex.com>',
+            from: 'Reapex <admin@re-apex.com>',
             to: adminEmails,
             subject: `New Agent Application: ${firstName} ${lastName}`,
             html: buildAdminNotificationEmail({
