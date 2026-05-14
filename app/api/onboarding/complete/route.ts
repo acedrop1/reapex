@@ -51,8 +51,8 @@ export async function POST(req: Request) {
             specialties: formData.specialties,
             years_experience: formData.years_experience,
             languages: formData.languages,
-            cap_amount: formData.selected_plan === 'launch' ? 22500 :
-                formData.selected_plan === 'growth' ? 19500 : 0,
+            cap_amount: formData.selected_plan === 'launch' ? 18000 :
+                formData.selected_plan === 'growth' ? 12000 : 0,
         };
 
         // Add phone if provided
@@ -126,16 +126,19 @@ export async function POST(req: Request) {
 
         // 3. Create Subscription
         // Only if a paid plan is selected (skip for free plan: launch)
+        // First month is free (30-day trial), then billed monthly for 1-year term
         if (formData.selected_plan !== 'launch') {
             const priceId = PLAN_PRICE_IDS[formData.selected_plan as keyof typeof PLAN_PRICE_IDS];
             if (priceId) {
                 try {
-                    // Build subscription params
+                    // Build subscription params with 30-day free trial
                     const subscriptionParams: any = {
                         customer: customerId,
                         items: [{ price: priceId }],
+                        trial_period_days: 30, // First month free
                         metadata: {
                             supabase_user_id: user.id,
+                            plan_locked_until: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(), // 1-year lock
                         },
                         expand: ['latest_invoice.payment_intent'],
                     };
@@ -159,11 +162,19 @@ export async function POST(req: Request) {
 
                     const subscription = await stripe.subscriptions.create(subscriptionParams);
                     updateData.stripe_subscription_id = subscription.id;
+
+                    // Store the plan lock date so we can enforce no upgrades/downgrades for 1 year
+                    updateData.plan_locked_until = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString();
                 } catch (subError: any) {
                     console.error('Stripe Subscription Error:', subError);
                     throw new Error(`Subscription error: ${subError.message}`);
                 }
             }
+        }
+
+        // For Launch plan, also lock for 1 year
+        if (formData.selected_plan === 'launch') {
+            updateData.plan_locked_until = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString();
         }
 
         // 4. Update Database

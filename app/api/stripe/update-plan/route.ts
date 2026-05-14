@@ -23,6 +23,24 @@ export async function POST(request: Request) {
       );
     }
 
+    // Check if plan is locked (1-year commitment)
+    const { data: userData } = await supabase
+      .from('users')
+      .select('plan_locked_until, role')
+      .eq('id', user.id)
+      .single();
+
+    if (userData?.plan_locked_until && userData.role !== 'admin') {
+      const lockDate = new Date(userData.plan_locked_until);
+      if (lockDate > new Date()) {
+        const formattedDate = lockDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+        return NextResponse.json(
+          { error: `Your plan is locked until ${formattedDate}. Plan changes are not allowed during the 1-year term.` },
+          { status: 403 }
+        );
+      }
+    }
+
     // Update user's subscription plan
     const { error: updateError } = await supabase
       .from('users')

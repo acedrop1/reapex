@@ -42,7 +42,7 @@ const plans: Plan[] = [
     price: 0,
     features: [
       '80/20 Commission Split',
-      '$22,500 Annual Commission Cap',
+      '$18,000 Annual Commission Cap',
     ],
   },
   {
@@ -53,7 +53,7 @@ const plans: Plan[] = [
     price: 225,
     features: [
       '90/10 Commission Split',
-      '$19,500 Annual Commission Cap',
+      '$12,000 Annual Commission Cap',
     ],
   },
   {

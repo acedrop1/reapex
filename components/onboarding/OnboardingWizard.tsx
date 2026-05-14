@@ -750,10 +750,17 @@ export default function OnboardingWizard({ open, onClose, onComplete }: Onboardi
 
       case 4:
         // Plan Selection
+        const billingStartDate = new Date();
+        billingStartDate.setDate(billingStartDate.getDate() + 30);
+        const billingDateStr = billingStartDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+
         return (
           <Box>
-            <Typography variant="h6" sx={{ mb: 3, fontWeight: 600 }}>
+            <Typography variant="h6" sx={{ mb: 1, fontWeight: 600 }}>
               Choose Your Plan
+            </Typography>
+            <Typography variant="body2" sx={{ color: '#B0B0B0', mb: 3 }}>
+              All plans are a 1-year commitment. Your first month is free — billing begins on <strong style={{ color: '#E2C05A' }}>{billingDateStr}</strong>.
             </Typography>
             <RadioGroup
               value={formData.selected_plan}
@@ -782,7 +789,10 @@ export default function OnboardingWizard({ open, onClose, onComplete }: Onboardi
                       <Box>
                         <Typography variant="h6" sx={{ fontWeight: 600 }}>Reapex Launch</Typography>
                         <Typography variant="body2" color="text.secondary">
-                          $0/month - 80/20 Commission Split, $22,500 Annual Commission Cap
+                          $0/month — 80/20 Commission Split, $18,000 Annual Cap
+                        </Typography>
+                        <Typography variant="caption" sx={{ color: '#4CAF50' }}>
+                          No monthly fee
                         </Typography>
                       </Box>
                     }
@@ -812,7 +822,10 @@ export default function OnboardingWizard({ open, onClose, onComplete }: Onboardi
                       <Box>
                         <Typography variant="h6" sx={{ fontWeight: 600 }}>Reapex Growth</Typography>
                         <Typography variant="body2" color="text.secondary">
-                          $225/month - 90/10 Commission Split, $19,500 Annual Commission Cap
+                          $225/month — 90/10 Commission Split, $12,000 Annual Cap
+                        </Typography>
+                        <Typography variant="caption" sx={{ color: '#FF9800' }}>
+                          First charge of $225 on {billingDateStr}
                         </Typography>
                       </Box>
                     }
@@ -841,7 +854,10 @@ export default function OnboardingWizard({ open, onClose, onComplete }: Onboardi
                       <Box>
                         <Typography variant="h6" sx={{ fontWeight: 600 }}>Reapex Pro</Typography>
                         <Typography variant="body2" color="text.secondary">
-                          $550/month - 100% Commission, No Commission Cap
+                          $550/month — 100% Commission, No Cap
+                        </Typography>
+                        <Typography variant="caption" sx={{ color: '#FF9800' }}>
+                          First charge of $550 on {billingDateStr}
                         </Typography>
                       </Box>
                     }
@@ -849,6 +865,20 @@ export default function OnboardingWizard({ open, onClose, onComplete }: Onboardi
                 </CardContent>
               </Card>
             </RadioGroup>
+
+            {/* 1-year term notice */}
+            <Box sx={{
+              mt: 3,
+              p: 2,
+              backgroundColor: 'rgba(255, 152, 0, 0.06)',
+              border: '1px solid rgba(255, 152, 0, 0.2)',
+              borderRadius: '8px',
+            }}>
+              <Typography variant="caption" sx={{ color: '#FF9800', lineHeight: 1.6 }}>
+                Plans cannot be upgraded or downgraded during the 1-year term. Choose the plan that best fits your business goals.
+              </Typography>
+            </Box>
+
             {errors.plan && (
               <Typography color="error" variant="caption" display="block" sx={{ mt: 2 }}>
                 {errors.plan}

@@ -1,3 +1,6 @@
+-- Add plan_locked_until to users table (1-year plan commitment)
+ALTER TABLE users ADD COLUMN IF NOT EXISTS plan_locked_until TIMESTAMPTZ;
+
 -- Scheduled & Recurring Charges table
 CREATE TABLE IF NOT EXISTS scheduled_charges (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),

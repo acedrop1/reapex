@@ -50,9 +50,9 @@ export default function CommissionMenuCalculator() {
     const currentMonthlyEarnings = (monthlyGCI * (currentSplit / 100)) - monthlyFees;
     const currentYearlyEarnings = currentMonthlyEarnings * 12;
 
-    // Reapex Growth Plan (90/10, $19.5k cap, $225/month)
+    // Reapex Growth Plan (90/10, $12k cap, $225/month)
     const reapexSplit = 0.9;
-    const reapexCap = 19500;
+    const reapexCap = 12000;
     const reapexMonthlyFee = 225;
     const reapexMonthlyEarnings = (monthlyGCI * reapexSplit) - reapexMonthlyFee;
     let reapexYearlyEarnings = 0;

@@ -92,11 +92,11 @@ export default function BillingSubscriptionTab({ userProfile }: BillingSubscript
     // Plan Details
     const userPlan = userProfile?.subscription_plan || 'launch';
     const planCaps: Record<string, number | null> = {
-        launch: 22500,
-        growth: 19500,
+        launch: 18000,
+        growth: 12000,
         pro: null,
     };
-    const capAmount = planCaps[userPlan] || userProfile?.cap_amount || 22500;
+    const capAmount = planCaps[userPlan] || userProfile?.cap_amount || 18000;
     const currentProgress = userProfile?.current_cap_progress || 0;
     const capPercentage = capAmount ? Math.min((currentProgress / capAmount) * 100, 100) : 0;
 
