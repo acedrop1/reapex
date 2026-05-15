@@ -83,7 +83,7 @@ export default function AgentHeroSection({ cities }: AgentHeroSectionProps) {
                   backgroundClip: 'text',
                 }}
               >
-                KEEP MORE OF IT.
+                KEEP IT.
               </Box>
             </Typography>
           </motion.div>
