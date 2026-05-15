@@ -57,7 +57,6 @@ const agentNavSections: NavSection[] = [
       { text: 'Dashboard', icon: SquaresFour, href: '/dashboard' },
       { text: 'My Listings', icon: House, href: '/dashboard/my-listings' },
       { text: 'Leads & Contacts', icon: Users, href: '/crm' },
-      { text: 'Transactions', icon: FileText, href: '/transactions' },
     ],
   },
   {
@@ -72,7 +71,7 @@ const agentNavSections: NavSection[] = [
   {
     label: 'Business',
     items: [
-      { text: 'My Business', icon: CurrencyDollar, href: '/dashboard/business' },
+      { text: 'Transactions', icon: CurrencyDollar, href: '/dashboard/business' },
       { text: 'Support & Brokerage', icon: Question, href: '/dashboard/support' },
     ],
   },

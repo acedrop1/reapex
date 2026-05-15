@@ -64,7 +64,7 @@ export async function POST(req: Request) {
         if (formData.instagram) updateData.social_instagram = formData.instagram;
         if (formData.facebook) updateData.social_facebook = formData.facebook;
         if (formData.linkedin) updateData.social_linkedin = formData.linkedin;
-        if (formData.twitter) updateData.social_x = formData.twitter;
+        if (formData.x) updateData.social_x = formData.x;
         if (formData.tiktok) updateData.social_tiktok = formData.tiktok;
         if (formData.website) updateData.website = formData.website;
 

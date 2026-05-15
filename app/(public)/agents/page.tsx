@@ -200,12 +200,23 @@ export default async function AgentsPage() {
                               display: 'flex',
                               alignItems: 'center',
                               justifyContent: 'center',
-                              fontSize: '120px',
-                              fontWeight: 700,
-                              color: 'rgba(0,0,0,0.3)',
                             }}
                           >
-                            {agent.full_name?.charAt(0) || 'A'}
+                            <svg
+                              width="120"
+                              height="120"
+                              viewBox="0 0 120 120"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              {/* Head */}
+                              <circle cx="60" cy="40" r="20" fill="rgba(255,255,255,0.25)" />
+                              {/* Body/Shoulders */}
+                              <path
+                                d="M20 105C20 85 35 72 60 72C85 72 100 85 100 105"
+                                fill="rgba(255,255,255,0.25)"
+                              />
+                            </svg>
                           </Box>
                         )}
                       </Box>

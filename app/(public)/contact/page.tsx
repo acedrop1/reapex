@@ -165,7 +165,7 @@ export default function ContactPage() {
                       Email
                     </Typography>
                     <Typography variant="body2" sx={{ color: '#999999' }}>
-                      info@re-apex.com
+                      admin@re-apex.com
                     </Typography>
                   </Box>
                 </Box>

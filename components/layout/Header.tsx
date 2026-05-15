@@ -39,7 +39,7 @@ const getPageTitle = (pathname: string): string => {
     '/dashboard/forms': 'Forms & Compliance',
     '/dashboard/marketing': 'Marketing & Branding',
     '/dashboard/training': 'Training & Knowledge',
-    '/dashboard/business': 'My Business',
+    '/dashboard/business': 'Transactions',
     '/dashboard/support': 'Support & Brokerage',
     '/dashboard/profile': 'My Profile',
     '/admin/applications': 'Agent Applications',
