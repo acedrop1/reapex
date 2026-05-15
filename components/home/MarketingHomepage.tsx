@@ -215,8 +215,6 @@ export default function MarketingHomepage({ agents = [] }: { agents?: TeamAgent[
       { text: 'YOUR', gold: false },
       { text: 'COMMISSION.', gold: false },
       { text: 'KEEP', gold: true },
-      { text: 'MORE', gold: true },
-      { text: 'OF', gold: true },
       { text: 'IT.', gold: true },
     ];
     allWords.forEach((w, i) => {
