@@ -441,9 +441,24 @@ export default function DashboardPage() {
               </Typography>
             </Box>
             {announcements && announcements.length > 0 ? (
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
                 {announcements.map((announcement: any) => (
-                  <Box key={announcement.id} sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
+                  <Box
+                    key={announcement.id}
+                    sx={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: 0.5,
+                      p: 2,
+                      backgroundColor: '#111111',
+                      border: '1px solid rgba(226, 192, 90, 0.08)',
+                      borderRadius: '8px',
+                      transition: 'all 0.2s ease',
+                      '&:hover': {
+                        borderColor: 'rgba(226, 192, 90, 0.2)',
+                      },
+                    }}
+                  >
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                       <Typography variant="body2" sx={{ fontWeight: 600, color: '#FFFFFF', fontSize: '0.875rem' }}>
                         {announcement.title}
@@ -476,11 +491,8 @@ export default function DashboardPage() {
                     >
                       {announcement.content}
                     </Typography>
-                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mt: 0.5 }}>
-                      <Typography variant="caption" sx={{ color: '#808080', fontSize: '0.7rem' }}>
-                        {new Date(announcement.published_at).toLocaleDateString()}
-                      </Typography>
-                      {announcement.related_type && announcement.related_title && (
+                    {announcement.related_type && announcement.related_title && (
+                      <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 0.5 }}>
                         <Button
                           size="small"
                           variant="outlined"
@@ -501,8 +513,8 @@ export default function DashboardPage() {
                         >
                           {announcement.related_cta_text || getDefaultCta(announcement.related_type)}
                         </Button>
-                      )}
-                    </Box>
+                      </Box>
+                    )}
                   </Box>
                 ))}
               </Box>
