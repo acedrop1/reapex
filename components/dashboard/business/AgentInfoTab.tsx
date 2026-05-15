@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { createClient } from '@/lib/supabase/client';
 import {
@@ -53,6 +53,27 @@ export default function AgentInfoTab({ userProfile }: AgentInfoTabProps) {
         social_x: userProfile?.social_x || '',
         headshot_url: userProfile?.headshot_url || '',
     });
+
+    // Sync form data when userProfile loads (useState only uses initial value once)
+    useEffect(() => {
+        if (userProfile) {
+            setFormData({
+                full_name: userProfile.full_name || '',
+                email: userProfile.email || '',
+                phone: userProfile.phone || '',
+                bio: userProfile.bio || '',
+                phone_visible: userProfile.phone_visible || false,
+                years_experience: userProfile.years_experience || '',
+                specialties: userProfile.specialties || [],
+                social_facebook: userProfile.social_facebook || '',
+                social_instagram: userProfile.social_instagram || '',
+                social_linkedin: userProfile.social_linkedin || '',
+                social_tiktok: userProfile.social_tiktok || '',
+                social_x: userProfile.social_x || '',
+                headshot_url: userProfile.headshot_url || '',
+            });
+        }
+    }, [userProfile]);
 
     const [uploadingHeadshot, setUploadingHeadshot] = useState(false);
     const [isDragging, setIsDragging] = useState(false);
