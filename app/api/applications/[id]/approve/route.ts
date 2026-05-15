@@ -57,7 +57,7 @@ function buildWelcomeEmail(fullName: string, email: string, password: string): s
           <tr>
             <td style="background:linear-gradient(135deg,#0a0a0a 0%,#1a1a1a 100%);padding:40px 40px 30px;text-align:center;border-bottom:2px solid #d4af37;">
               <img src="https://www.re-apex.com/images/reapex-logo-email.png" alt="Reapex" width="200" style="display:block;margin:0 auto 8px;max-width:200px;height:auto;" />
-              <p style="margin:8px 0 0;font-size:13px;color:#999;letter-spacing:3px;text-transform:uppercase;">Real Estate Elevated</p>
+              <p style="margin:8px 0 0;font-size:13px;color:#999;letter-spacing:3px;text-transform:uppercase;">Reach Your Real Estate Apex</p>
             </td>
           </tr>
 
