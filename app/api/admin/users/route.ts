@@ -14,6 +14,7 @@ function generateSlug(name: string): string {
 }
 
 function buildWelcomeEmail(fullName: string, email: string, password: string): string {
+  const firstName = fullName.split(' ')[0];
   return `
 <!DOCTYPE html>
 <html>
@@ -27,38 +28,82 @@ function buildWelcomeEmail(fullName: string, email: string, password: string): s
     <tr>
       <td align="center" style="padding:40px 20px;">
         <table role="presentation" width="600" cellspacing="0" cellpadding="0" style="background-color:#0a0a0a;border-radius:12px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.15);">
+
+          <!-- Header -->
           <tr>
             <td style="background:linear-gradient(135deg,#0a0a0a 0%,#1a1a1a 100%);padding:40px 40px 30px;text-align:center;border-bottom:2px solid #d4af37;">
               <h1 style="margin:0;font-size:32px;font-weight:700;color:#d4af37;letter-spacing:1px;">REAPEX</h1>
               <p style="margin:8px 0 0;font-size:13px;color:#999;letter-spacing:3px;text-transform:uppercase;">Real Estate Elevated</p>
             </td>
           </tr>
+
+          <!-- Body -->
           <tr>
             <td style="padding:40px;">
-              <h2 style="margin:0 0 20px;font-size:24px;color:#ffffff;font-weight:600;">Welcome aboard, ${fullName}!</h2>
-              <p style="margin:0 0 24px;font-size:16px;line-height:1.6;color:#cccccc;">Your agent account has been created. Below are your login credentials to access the Reapex Agent Portal.</p>
-              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color:#141414;border:1px solid rgba(212,175,55,0.2);border-radius:8px;margin:24px 0;">
+              <p style="margin:0 0 20px;font-size:16px;line-height:1.6;color:#cccccc;">Welcome to the team, <strong style="color:#ffffff;">${firstName}</strong>!</p>
+
+              <p style="margin:0 0 16px;font-size:16px;line-height:1.6;color:#cccccc;">We are thrilled to officially partner with you. At Reapex, our mission is to provide you with advanced tools, unmatched support, and a culture that elevates your business. You've made a great decision for your career, and now it's time to get to work.</p>
+
+              <p style="margin:0 0 16px;font-size:16px;line-height:1.6;color:#cccccc;">Your Reapex Agent Portal is your central command center. From here, you will access your CRM, marketing assets, transaction management tools, and our exclusive training library.</p>
+
+              <p style="margin:0 0 24px;font-size:16px;line-height:1.6;color:#cccccc;">Your account has been successfully provisioned. Here are your credentials to get started:</p>
+
+              <!-- Credentials Box -->
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color:#141414;border:1px solid rgba(212,175,55,0.2);border-radius:8px;margin:0 0 24px;">
                 <tr>
                   <td style="padding:24px;">
-                    <p style="margin:0 0 4px;font-size:12px;color:#999;text-transform:uppercase;letter-spacing:1px;">Email</p>
+                    <p style="margin:0 0 4px;font-size:12px;color:#999;text-transform:uppercase;letter-spacing:1px;">Portal Login URL</p>
+                    <p style="margin:0 0 20px;font-size:16px;"><a href="https://www.re-apex.com/login" style="color:#d4af37;text-decoration:none;font-weight:500;">www.re-apex.com/login</a></p>
+                    <p style="margin:0 0 4px;font-size:12px;color:#999;text-transform:uppercase;letter-spacing:1px;">Your Email</p>
                     <p style="margin:0 0 20px;font-size:16px;color:#ffffff;font-weight:500;">${email}</p>
                     <p style="margin:0 0 4px;font-size:12px;color:#999;text-transform:uppercase;letter-spacing:1px;">Temporary Password</p>
                     <p style="margin:0;font-size:18px;color:#d4af37;font-weight:600;font-family:monospace;letter-spacing:1px;">${password}</p>
                   </td>
                 </tr>
               </table>
-              <p style="margin:0 0 24px;font-size:14px;line-height:1.6;color:#ff9800;font-weight:500;">You will be asked to set a new password when you first log in.</p>
-              <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+
+              <p style="margin:0 0 28px;font-size:14px;line-height:1.6;color:#999;font-style:italic;">For your security, you will be prompted to create a new, permanent password upon your first login.</p>
+
+              <!-- Next Steps -->
+              <h3 style="margin:0 0 16px;font-size:18px;color:#ffffff;font-weight:700;">Your Next Steps to Launch:</h3>
+              <p style="margin:0 0 8px;font-size:15px;line-height:1.6;color:#cccccc;">To ensure a frictionless onboarding experience, please complete the following within the next 24 hours:</p>
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin:0 0 24px;">
                 <tr>
-                  <td align="center" style="padding:8px 0 24px;">
-                    <a href="https://re-apex.com/login" style="display:inline-block;background-color:#d4af37;color:#0a0a0a;font-size:16px;font-weight:700;text-decoration:none;padding:14px 40px;border-radius:6px;letter-spacing:0.5px;">Sign In to Your Portal</a>
+                  <td style="padding:8px 0;">
+                    <p style="margin:0;font-size:15px;line-height:1.6;color:#cccccc;"><strong style="color:#d4af37;">1.</strong> <strong style="color:#ffffff;">Log In &amp; Secure Your Account:</strong> Use the credentials above to log in and set your new password.</p>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding:8px 0;">
+                    <p style="margin:0;font-size:15px;line-height:1.6;color:#cccccc;"><strong style="color:#d4af37;">2.</strong> <strong style="color:#ffffff;">Complete Your Agent Profile:</strong> Upload your professional headshot, update your bio, and link your social media accounts so we can build your digital footprint on our main site.</p>
                   </td>
                 </tr>
               </table>
+
+              <!-- CTA Button -->
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+                <tr>
+                  <td align="center" style="padding:8px 0 24px;">
+                    <a href="https://www.re-apex.com/login" style="display:inline-block;background-color:#d4af37;color:#0a0a0a;font-size:16px;font-weight:700;text-decoration:none;padding:14px 40px;border-radius:6px;letter-spacing:0.5px;">Sign In to Your Portal</a>
+                  </td>
+                </tr>
+              </table>
+
               <hr style="border:none;border-top:1px solid #2a2a2a;margin:24px 0;">
-              <p style="margin:0;font-size:13px;line-height:1.6;color:#666;">If you have any questions, reach out to us at <a href="mailto:admin@re-apex.com" style="color:#d4af37;text-decoration:none;">admin@re-apex.com</a>.</p>
+
+              <!-- Support -->
+              <p style="margin:0 0 8px;font-size:14px;color:#ffffff;font-weight:700;">Need Help? We've got your back.</p>
+              <p style="margin:0 0 24px;font-size:14px;line-height:1.6;color:#999;">If you hit any technical snags, our support team is standing by. Just reply to this email or reach out directly to <a href="mailto:admin@re-apex.com" style="color:#d4af37;text-decoration:none;">admin@re-apex.com</a>.</p>
+
+              <p style="margin:0 0 4px;font-size:15px;line-height:1.6;color:#cccccc;">Let's build something extraordinary together.</p>
+              <p style="margin:0 0 24px;font-size:15px;line-height:1.6;color:#cccccc;">To your success,</p>
+
+              <p style="margin:0 0 2px;font-size:15px;color:#ffffff;font-weight:600;">Ramzi Jaloudi, Founder</p>
+              <p style="margin:0;font-size:14px;color:#d4af37;font-weight:500;">Reapex</p>
             </td>
           </tr>
+
+          <!-- Footer -->
           <tr>
             <td style="background-color:#080808;padding:24px 40px;text-align:center;border-top:1px solid #1a1a1a;">
               <p style="margin:0 0 8px;font-size:14px;color:#d4af37;font-weight:600;">Reapex</p>
@@ -220,7 +265,7 @@ export async function POST(request: Request) {
         const emailResult = await resend.emails.send({
           from: 'Reapex <admin@re-apex.com>',
           to: email,
-          subject: 'Welcome to Reapex - Your Account is Ready',
+          subject: 'Welcome to Reapex — Your Portal Access is Live!',
           html: buildWelcomeEmail(full_name, email, password),
         });
         console.log('[Create User] Email result:', JSON.stringify(emailResult));
