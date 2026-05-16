@@ -60,7 +60,7 @@ export async function POST(request: Request) {
         if (lockDate > new Date()) {
           const formattedDate = lockDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
           return NextResponse.json(
-            { error: `Your plan is locked until ${formattedDate}. Plan changes are not allowed during the 1-year term.` },
+            { error: `Plans can only be modified on your anniversary date (${formattedDate}). Contact your admin if you need an exception.` },
             { status: 403 }
           );
         }

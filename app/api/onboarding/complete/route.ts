@@ -33,17 +33,8 @@ export async function POST(req: Request) {
             .eq('id', user.id)
             .single();
 
-        // Generate @reapex.com email from full name
-        const fullName = userData?.full_name || 'agent';
-        const emailSlug = fullName
-            .toLowerCase()
-            .replace(/[^a-z0-9]+/g, '.')
-            .replace(/^\.+|\.+$/g, '');
-        const generatedEmail = `${emailSlug}@reapex.com`;
-
         const updateData: any = {
             bio: formData.bio,
-            email: generatedEmail,
             phone_visible: formData.phone_visible,
             onboarding_completed: true,
             onboarding_completed_at: new Date().toISOString(),

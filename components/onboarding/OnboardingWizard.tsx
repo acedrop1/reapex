@@ -756,11 +756,8 @@ export default function OnboardingWizard({ open, onClose, onComplete }: Onboardi
 
         return (
           <Box>
-            <Typography variant="h6" sx={{ mb: 1, fontWeight: 600 }}>
+            <Typography variant="h6" sx={{ mb: 3, fontWeight: 600 }}>
               Choose Your Plan
-            </Typography>
-            <Typography variant="body2" sx={{ color: '#B0B0B0', mb: 3 }}>
-              All plans are a 1-year commitment. Your first month is free — billing begins on <strong style={{ color: '#E2C05A' }}>{billingDateStr}</strong>.
             </Typography>
             <RadioGroup
               value={formData.selected_plan}
@@ -866,7 +863,7 @@ export default function OnboardingWizard({ open, onClose, onComplete }: Onboardi
               </Card>
             </RadioGroup>
 
-            {/* 1-year term notice */}
+            {/* Plan change notice */}
             <Box sx={{
               mt: 3,
               p: 2,
@@ -875,7 +872,7 @@ export default function OnboardingWizard({ open, onClose, onComplete }: Onboardi
               borderRadius: '8px',
             }}>
               <Typography variant="caption" sx={{ color: '#FF9800', lineHeight: 1.6 }}>
-                Plans cannot be upgraded or downgraded during the 1-year term. Choose the plan that best fits your business goals.
+                Plans can only be modified once per year on your anniversary date. Choose the plan that best fits your current business goals.
               </Typography>
             </Box>
 

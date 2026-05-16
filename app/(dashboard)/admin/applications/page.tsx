@@ -544,9 +544,19 @@ export default function ApplicationsPage() {
                   <Button
                     variant="outlined"
                     startIcon={<DownloadIcon size={20} />}
-                    href={selectedApplication.photo_id_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                    onClick={async () => {
+                      try {
+                        const res = await fetch('/api/applications/document-url', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ url: selectedApplication.photo_id_url }),
+                        });
+                        const { signedUrl } = await res.json();
+                        window.open(signedUrl || selectedApplication.photo_id_url, '_blank');
+                      } catch {
+                        window.open(selectedApplication.photo_id_url!, '_blank');
+                      }
+                    }}
                     sx={{ textTransform: 'none' }}
                   >
                     View Document
