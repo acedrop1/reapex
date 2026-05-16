@@ -892,7 +892,7 @@ export default function OnboardingWizard({ open, onClose, onComplete }: Onboardi
               Card on File
             </Typography>
             <Typography variant="body2" sx={{ color: '#B0B0B0', mb: 3 }}>
-              A card on file is required for all plans. Your card will only be charged based on your selected plan.
+              As your partner, we cover certain external fees (like MLS charges or State fees) upfront so your listings never miss a beat. Your required card on file covers your Reapex plan and the exact pass-through of these external costs.
             </Typography>
 
             {cardAdded ? (
