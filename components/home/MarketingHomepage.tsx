@@ -169,7 +169,7 @@ export default function MarketingHomepage({ agents = [] }: { agents?: TeamAgent[
     const headline = heroHeadlineRef.current;
     if (!headline) return;
 
-    const rawHTML = "IT'S YOUR COMMISSION. <span class=\"gold\">KEEP IT.</span>";
+    const rawHTML = "IT'S YOUR COMMISSION.<br /><span class=\"gold\">KEEP IT.</span>";
     const parts = rawHTML.split(/(<span[^>]*>.*?<\/span>)/);
     headline.innerHTML = '';
     let wordIndex = 0;
@@ -218,6 +218,10 @@ export default function MarketingHomepage({ agents = [] }: { agents?: TeamAgent[
       { text: 'IT.', gold: true },
     ];
     allWords.forEach((w, i) => {
+      // Add line break before "KEEP" so "KEEP IT." stays on its own line
+      if (w.text === 'KEEP') {
+        headline.appendChild(document.createElement('br'));
+      }
       const span = document.createElement('span');
       span.className = `hero-headline-word${w.gold ? ' gold' : ''}`;
       span.textContent = w.text;
