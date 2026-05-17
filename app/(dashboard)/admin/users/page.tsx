@@ -76,6 +76,8 @@ export default function AdminUsersPage() {
   const [selectedAgentForAgreements, setSelectedAgentForAgreements] = useState<{ id: string; name: string } | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [loginMap, setLoginMap] = useState<Record<string, string | null>>({});
+  const [cardMap, setCardMap] = useState<Record<string, boolean>>({});
 
   const supabase = createClient();
 
@@ -125,8 +127,22 @@ export default function AdminUsersPage() {
     }
   };
 
+  const fetchUserStatus = async () => {
+    try {
+      const res = await fetch('/api/admin/user-status');
+      if (res.ok) {
+        const data = await res.json();
+        setLoginMap(data.loginMap || {});
+        setCardMap(data.cardMap || {});
+      }
+    } catch (err) {
+      console.error('Failed to fetch user status:', err);
+    }
+  };
+
   useEffect(() => {
     fetchUsers();
+    fetchUserStatus();
   }, []);
 
   useEffect(() => {
@@ -304,6 +320,8 @@ export default function AdminUsersPage() {
               <TableCell sx={dashboardStyles.table}>Email</TableCell>
               <TableCell sx={dashboardStyles.table}>Role</TableCell>
               <TableCell sx={dashboardStyles.table}>Account Status</TableCell>
+              <TableCell sx={dashboardStyles.table}>Last Login</TableCell>
+              <TableCell sx={dashboardStyles.table}>Card on File</TableCell>
               <TableCell sx={dashboardStyles.table}>Visibility</TableCell>
               <TableCell sx={dashboardStyles.table}>Created</TableCell>
               <TableCell sx={dashboardStyles.table}>Actions</TableCell>
@@ -312,7 +330,7 @@ export default function AdminUsersPage() {
           <TableBody sx={dashboardStyles.table}>
             {filteredUsers.length === 0 ? (
               <TableRow sx={dashboardStyles.table}>
-                <TableCell colSpan={7} align="center" sx={{ ...dashboardStyles.table, py: 4 }}>
+                <TableCell colSpan={9} align="center" sx={{ ...dashboardStyles.table, py: 4 }}>
                   <Typography variant="body1" sx={{ color: '#808080' }}>
                     {searchTerm || statusFilter !== 'all'
                       ? 'No users match your filters'
@@ -348,6 +366,22 @@ export default function AdminUsersPage() {
                       color={getStatusColor(user.account_status)}
                       size="small"
                     />
+                  </TableCell>
+                  <TableCell sx={dashboardStyles.table}>
+                    {loginMap[user.id] ? (
+                      <Typography variant="body2" sx={{ color: '#4CAF50', fontSize: '0.8rem' }}>
+                        {format(new Date(loginMap[user.id]!), 'MMM d, yyyy')}
+                      </Typography>
+                    ) : (
+                      <Chip label="Never" size="small" sx={{ backgroundColor: 'rgba(239, 83, 80, 0.1)', color: '#EF5350', border: '1px solid rgba(239, 83, 80, 0.3)' }} />
+                    )}
+                  </TableCell>
+                  <TableCell sx={dashboardStyles.table}>
+                    {cardMap[user.id] ? (
+                      <Chip label="Yes" size="small" color="success" />
+                    ) : (
+                      <Chip label="No" size="small" sx={{ backgroundColor: 'rgba(239, 83, 80, 0.1)', color: '#EF5350', border: '1px solid rgba(239, 83, 80, 0.3)' }} />
+                    )}
                   </TableCell>
                   <TableCell sx={dashboardStyles.table}>
                     {(user as any).hide_from_listing ? (
