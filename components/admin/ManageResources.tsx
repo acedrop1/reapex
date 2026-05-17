@@ -99,6 +99,7 @@ const ManageResources = () => {
     const [itemToDelete, setItemToDelete] = useState<any>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [successMessage, setSuccessMessage] = useState<string | null>(null);
     const [previewItem, setPreviewItem] = useState<any>(null);
     const [previewDialogOpen, setPreviewDialogOpen] = useState(false);
 
@@ -314,6 +315,7 @@ const ManageResources = () => {
         try {
             setIsSubmitting(true);
             setError(null);
+            setSuccessMessage(null);
 
             const { data: { user } } = await supabase.auth.getUser();
             if (!user) throw new Error('Not authenticated');
@@ -432,11 +434,13 @@ const ManageResources = () => {
                 }
                 if (formData.file) {
                     const fileName = `${Date.now()}-${formData.file.name}`;
-                    fileUrl = await uploadFile(formData.file, 'marketing', fileName);  // marketing/ folder
+                    fileUrl = await uploadFile(formData.file, 'marketing', fileName);
+                    console.log('[ManageResources] Uploaded marketing file:', fileUrl);
                 }
                 if (formData.icon) {
                     const iconName = `${Date.now()}-${formData.icon.name}`;
-                    iconUrl = await uploadFile(formData.icon, 'marketing', iconName);  // marketing/ folder
+                    iconUrl = await uploadFile(formData.icon, 'marketing', iconName);
+                    console.log('[ManageResources] Uploaded marketing icon:', iconUrl);
                 }
 
                 const marketingData: any = {
@@ -455,12 +459,16 @@ const ManageResources = () => {
                     marketingData.template_id = formData.link?.split('/').pop() || editingItem?.template_id;
                 }
 
+                console.log('[ManageResources] Saving marketing data:', JSON.stringify(marketingData));
+
                 if (editingItem) {
-                    const { error: dbError } = await supabase.from('canva_templates').update(marketingData).eq('id', editingItem.id);
+                    const { data: updateResult, error: dbError } = await supabase.from('canva_templates').update(marketingData).eq('id', editingItem.id).select();
                     if (dbError) throw dbError;
+                    console.log('[ManageResources] Update result:', updateResult);
                 } else {
-                    const { error: dbError } = await supabase.from('canva_templates').insert(marketingData);
+                    const { data: insertResult, error: dbError } = await supabase.from('canva_templates').insert(marketingData).select();
                     if (dbError) throw dbError;
+                    console.log('[ManageResources] Insert result:', insertResult);
                 }
             } else if (currentType === 'link') {
                 if (!formData.link && !editingItem) {
@@ -520,6 +528,8 @@ const ManageResources = () => {
             setFormData({ title: '', description: '', category: '', file: null, link: '', icon: null });
             setEditingItem(null);
             setOpenDialog(false);
+            setSuccessMessage('Resource saved successfully!');
+            setTimeout(() => setSuccessMessage(null), 4000);
         } catch (err: any) {
             console.error('Submit error:', err);
             setError(err.message || 'Failed to save resource');
@@ -701,6 +711,13 @@ const ManageResources = () => {
                 <Tab label="Marketing & Branding" />
                 <Tab label="Training & Knowledge" />
             </Tabs>
+
+            {/* Success/Error Messages */}
+            {successMessage && (
+                <Alert severity="success" sx={{ mb: 2 }} onClose={() => setSuccessMessage(null)}>
+                    {successMessage}
+                </Alert>
+            )}
 
             {/* Toolbar */}
             <Box sx={{ display: 'flex', gap: 2, mb: 3, alignItems: 'center', flexWrap: 'wrap' }}>
