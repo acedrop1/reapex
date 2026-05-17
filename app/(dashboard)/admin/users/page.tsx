@@ -77,7 +77,7 @@ export default function AdminUsersPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [loginMap, setLoginMap] = useState<Record<string, string | null>>({});
-  const [cardMap, setCardMap] = useState<Record<string, boolean>>({});
+  const [cardMap, setCardMap] = useState<Record<string, { brand: string; last4: string; expMonth: number; expYear: number } | null>>({});
 
   const supabase = createClient();
 
@@ -378,9 +378,16 @@ export default function AdminUsersPage() {
                   </TableCell>
                   <TableCell sx={dashboardStyles.table}>
                     {cardMap[user.id] ? (
-                      <Chip label="Yes" size="small" color="success" />
+                      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.25 }}>
+                        <Typography variant="body2" sx={{ fontWeight: 500, textTransform: 'capitalize' }}>
+                          {cardMap[user.id]!.brand} •••• {cardMap[user.id]!.last4}
+                        </Typography>
+                        <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                          Exp {String(cardMap[user.id]!.expMonth).padStart(2, '0')}/{String(cardMap[user.id]!.expYear).slice(-2)}
+                        </Typography>
+                      </Box>
                     ) : (
-                      <Chip label="No" size="small" sx={{ backgroundColor: 'rgba(239, 83, 80, 0.1)', color: '#EF5350', border: '1px solid rgba(239, 83, 80, 0.3)' }} />
+                      <Chip label="No Card" size="small" sx={{ backgroundColor: 'rgba(239, 83, 80, 0.1)', color: '#EF5350', border: '1px solid rgba(239, 83, 80, 0.3)' }} />
                     )}
                   </TableCell>
                   <TableCell sx={dashboardStyles.table}>

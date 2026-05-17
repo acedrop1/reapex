@@ -70,8 +70,8 @@ export async function GET() {
       .select('id, stripe_customer_id')
       .not('stripe_customer_id', 'is', null);
 
-    // Check Stripe for payment methods
-    const cardMap: Record<string, boolean> = {};
+    // Check Stripe for payment methods with card details
+    const cardMap: Record<string, { brand: string; last4: string; expMonth: number; expYear: number } | null> = {};
 
     if (process.env.STRIPE_SECRET_KEY && users && users.length > 0) {
       const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
@@ -88,9 +88,19 @@ export async function GET() {
                 type: 'card',
                 limit: 1,
               });
-              cardMap[u.id] = methods.data.length > 0;
+              if (methods.data.length > 0 && methods.data[0].card) {
+                const card = methods.data[0].card;
+                cardMap[u.id] = {
+                  brand: card.brand,
+                  last4: card.last4,
+                  expMonth: card.exp_month,
+                  expYear: card.exp_year,
+                };
+              } else {
+                cardMap[u.id] = null;
+              }
             } catch {
-              cardMap[u.id] = false;
+              cardMap[u.id] = null;
             }
           }
         })
