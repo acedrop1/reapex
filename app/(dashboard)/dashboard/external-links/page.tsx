@@ -45,11 +45,16 @@ export default function ExternalLinksPage() {
 
       if (error) throw error;
 
-      // Convert storage paths to public URLs
+      // Convert storage paths to public URLs (skip paths that are already URLs or public paths)
+      const resolveUrl = (path: string | null) => {
+        if (!path) return null;
+        if (path.startsWith('/') || path.startsWith('http')) return path;
+        return supabase.storage.from('documents').getPublicUrl(path).data.publicUrl;
+      };
       return (data as ExternalLink[])?.map(link => ({
         ...link,
-        logo_url: link.logo_url ? supabase.storage.from('documents').getPublicUrl(link.logo_url).data.publicUrl : link.logo_url,
-        icon_url: link.icon_url ? supabase.storage.from('documents').getPublicUrl(link.icon_url).data.publicUrl : link.icon_url,
+        logo_url: resolveUrl(link.logo_url) || link.logo_url,
+        icon_url: resolveUrl(link.icon_url) || link.icon_url,
       })) || [];
     },
   });

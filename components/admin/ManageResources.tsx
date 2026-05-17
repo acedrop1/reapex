@@ -137,6 +137,13 @@ const ManageResources = () => {
     const currentType = getResourceType(activeTab);
 
     // Fetch functions
+    // Helper: resolve a storage path to a public URL (skip if already a URL or public path)
+    const resolveStorageUrl = (path: string | null | undefined): string | null => {
+        if (!path) return null;
+        if (path.startsWith('/') || path.startsWith('http')) return path;
+        return supabase.storage.from('documents').getPublicUrl(path).data.publicUrl;
+    };
+
     const fetchForms = async () => {
         const { data, error } = await supabase
             .from('brokerage_documents')
@@ -151,9 +158,9 @@ const ManageResources = () => {
             _original_file_url: doc.file_url,
             _original_icon_url: doc.icon_url,
             _original_logo_url: doc.logo_url,
-            file_url: doc.file_url ? supabase.storage.from('documents').getPublicUrl(doc.file_url).data.publicUrl : doc.file_url,
-            icon_url: doc.icon_url ? supabase.storage.from('documents').getPublicUrl(doc.icon_url).data.publicUrl : doc.icon_url,
-            logo_url: doc.logo_url ? supabase.storage.from('documents').getPublicUrl(doc.logo_url).data.publicUrl : doc.logo_url,
+            file_url: resolveStorageUrl(doc.file_url) || doc.file_url,
+            icon_url: resolveStorageUrl(doc.icon_url) || doc.icon_url,
+            logo_url: resolveStorageUrl(doc.logo_url) || doc.logo_url,
         })) || [];
     };
 
@@ -170,8 +177,8 @@ const ManageResources = () => {
             ...resource,
             _original_thumbnail_url: resource.thumbnail_url,
             _original_file_url: resource.file_url,
-            thumbnail_url: resource.thumbnail_url ? supabase.storage.from('documents').getPublicUrl(resource.thumbnail_url).data.publicUrl : resource.thumbnail_url,
-            file_url: resource.file_url ? supabase.storage.from('documents').getPublicUrl(resource.file_url).data.publicUrl : resource.file_url,
+            thumbnail_url: resolveStorageUrl(resource.thumbnail_url) || resource.thumbnail_url,
+            file_url: resolveStorageUrl(resource.file_url) || resource.file_url,
         })) || [];
     };
 
@@ -187,7 +194,7 @@ const ManageResources = () => {
         return data?.map(template => ({
             ...template,
             _original_preview_image_url: template.preview_image_url,
-            preview_image_url: template.preview_image_url ? supabase.storage.from('documents').getPublicUrl(template.preview_image_url).data.publicUrl : template.preview_image_url,
+            preview_image_url: resolveStorageUrl(template.preview_image_url) || template.preview_image_url,
         })) || [];
     };
 
@@ -204,8 +211,8 @@ const ManageResources = () => {
             ...link,
             _original_logo_url: link.logo_url,
             _original_icon_url: link.icon_url,
-            logo_url: link.logo_url ? supabase.storage.from('documents').getPublicUrl(link.logo_url).data.publicUrl : link.logo_url,
-            icon_url: link.icon_url ? supabase.storage.from('documents').getPublicUrl(link.icon_url).data.publicUrl : link.icon_url,
+            logo_url: resolveStorageUrl(link.logo_url) || link.logo_url,
+            icon_url: resolveStorageUrl(link.icon_url) || link.icon_url,
         })) || [];
     };
 
@@ -349,9 +356,11 @@ const ManageResources = () => {
                 }
 
                 if (editingItem) {
-                    await supabase.from('brokerage_documents').update(docData).eq('id', editingItem.id);
+                    const { error: dbError } = await supabase.from('brokerage_documents').update(docData).eq('id', editingItem.id);
+                    if (dbError) throw dbError;
                 } else {
-                    await supabase.from('brokerage_documents').insert(docData);
+                    const { error: dbError } = await supabase.from('brokerage_documents').insert(docData);
+                    if (dbError) throw dbError;
                 }
             } else if (currentType === 'training') {
                 if (!formData.file && !formData.link && !editingItem) {
@@ -411,9 +420,11 @@ const ManageResources = () => {
                 }
 
                 if (editingItem) {
-                    await supabase.from('training_resources').update(trainingData).eq('id', editingItem.id);
+                    const { error: dbError } = await supabase.from('training_resources').update(trainingData).eq('id', editingItem.id);
+                    if (dbError) throw dbError;
                 } else {
-                    await supabase.from('training_resources').insert(trainingData);
+                    const { error: dbError } = await supabase.from('training_resources').insert(trainingData);
+                    if (dbError) throw dbError;
                 }
             } else if (currentType === 'marketing') {
                 if (!formData.link && !formData.file && !editingItem) {
@@ -445,9 +456,11 @@ const ManageResources = () => {
                 }
 
                 if (editingItem) {
-                    await supabase.from('canva_templates').update(marketingData).eq('id', editingItem.id);
+                    const { error: dbError } = await supabase.from('canva_templates').update(marketingData).eq('id', editingItem.id);
+                    if (dbError) throw dbError;
                 } else {
-                    await supabase.from('canva_templates').insert(marketingData);
+                    const { error: dbError } = await supabase.from('canva_templates').insert(marketingData);
+                    if (dbError) throw dbError;
                 }
             } else if (currentType === 'link') {
                 if (!formData.link && !editingItem) {
@@ -484,9 +497,11 @@ const ManageResources = () => {
                 };
 
                 if (editingItem) {
-                    await supabase.from('external_links').update(linkData).eq('id', editingItem.id);
+                    const { error: dbError } = await supabase.from('external_links').update(linkData).eq('id', editingItem.id);
+                    if (dbError) throw dbError;
                 } else {
-                    await supabase.from('external_links').insert(linkData);
+                    const { error: dbError } = await supabase.from('external_links').insert(linkData);
+                    if (dbError) throw dbError;
                 }
             }
 
