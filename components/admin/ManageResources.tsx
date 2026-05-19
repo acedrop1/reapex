@@ -403,7 +403,7 @@ const ManageResources = () => {
                 const trainingData: any = {
                     title: formData.title,
                     description: formData.description,
-                    category: formData.category ? formData.category.toLowerCase() : null,
+                    category: formData.category ? formData.category.toLowerCase() : 'onboarding',
                     resource_type: resourceType,
                     thumbnail_url: iconUrl || editingItem?._original_thumbnail_url || autoThumbnail || null,
                 };
@@ -413,10 +413,6 @@ const ManageResources = () => {
                     trainingData.url = fileUrl;
                 } else if (linkValue) {
                     trainingData.url = linkValue;
-                    // Also set video_url for video-type links
-                    if (resourceType === 'video') {
-                        trainingData.video_url = linkValue;
-                    }
                 } else {
                     trainingData.url = editingItem?.url;
                 }
