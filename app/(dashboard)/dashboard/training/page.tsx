@@ -106,29 +106,6 @@ export default function TrainingPage() {
     },
   });
 
-  // Fetch external links categorized under Training & Knowledge
-  const { data: externalLinks = [] } = useQuery({
-    queryKey: ['external-links-training'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('external_links')
-        .select('*')
-        .eq('is_active', true)
-        .eq('category', 'Training & Knowledge')
-        .order('display_order', { ascending: true });
-      if (error) throw error;
-      return (data || []).map((link: any) => ({
-        id: link.id,
-        title: link.title,
-        description: link.description,
-        type: 'link' as const,
-        url: link.url,
-        thumbnail_url: link.icon_url || link.logo_url || null,
-        color: link.color_hex || link.color,
-        created_at: link.created_at,
-      }));
-    },
-  });
 
   const createResourceMutation = useMutation({
     mutationFn: async (resource: any) => {
@@ -535,7 +512,6 @@ export default function TrainingPage() {
                 thumbnail_url: resource.thumbnail_url,
                 created_at: resource.created_at,
               })),
-              ...externalLinks,
             ]}
             onItemClick={(item) => {
               const url = item.url || item.video_url || '';
@@ -556,7 +532,7 @@ export default function TrainingPage() {
           />
         )}
 
-        {!isLoading && (!resources || resources.length === 0) && externalLinks.length === 0 && (
+        {!isLoading && (!resources || resources.length === 0) && (
           <Box
             sx={{
               textAlign: 'center',

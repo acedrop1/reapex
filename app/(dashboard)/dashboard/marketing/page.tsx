@@ -7,11 +7,9 @@ import {
   Alert,
   CircularProgress,
 } from '@mui/material';
-import { Typography } from '@mui/material';
 import { dashboardStyles } from '@/lib/theme/dashboardStyles';
 import { isAdmin as checkIsAdmin } from '@/lib/utils/auth';
 import TemplateGallery from '@/components/marketing/TemplateGallery';
-import ResourceGrid from '@/components/shared/ResourceGrid';
 import { createClient } from '@/lib/supabase/client';
 
 interface CanvaTemplate {
@@ -55,30 +53,6 @@ export default function MarketingPage() {
     },
   });
 
-  // Fetch external links categorized under Marketing & Branding
-  const { data: externalLinks = [] } = useQuery({
-    queryKey: ['external-links-marketing'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('external_links')
-        .select('*')
-        .eq('is_active', true)
-        .eq('category', 'Marketing & Branding')
-        .order('display_order', { ascending: true });
-      if (error) throw error;
-      return (data || []).map((link: any) => ({
-        id: link.id,
-        title: link.title,
-        description: link.description,
-        type: 'link' as const,
-        url: link.url,
-        logo_url: link.icon_url || link.logo_url || null,
-        color: link.color_hex || link.color,
-        created_at: link.created_at,
-      }));
-    },
-  });
-
   return (
     <Container maxWidth="xl" sx={{ ...dashboardStyles.container, pt: 2, pb: 4 }}>
       {/* Loading State */}
@@ -103,20 +77,6 @@ export default function MarketingPage() {
         />
       )}
 
-      {/* External Links for Marketing & Branding */}
-      {externalLinks.length > 0 && (
-        <Box sx={{ mt: 4 }}>
-          <Typography variant="h6" sx={{ color: '#FFFFFF', fontWeight: 600, mb: 2, fontSize: '1rem' }}>
-            External Resources
-          </Typography>
-          <ResourceGrid
-            items={externalLinks}
-            onItemClick={(item) => {
-              if (item.url) window.open(item.url, '_blank', 'noopener,noreferrer');
-            }}
-          />
-        </Box>
-      )}
     </Container>
   );
 }

@@ -121,7 +121,7 @@ const ManageResources = () => {
         form: ['Forms', 'Training', 'Compliance', 'Other'],
         training: ['Onboarding', 'Tech', 'Compliance', 'Marketing', 'Sales'],
         marketing: ['Business Card', 'Property Flyer', 'Social Media', 'Yard Sign', 'Photography', 'Other'],
-        link: ['Forms & Compliance', 'Marketing & Branding', 'Training & Knowledge'],
+        link: ['Property Search', 'Utility', 'Government'],
     };
 
     // Determine current resource type
@@ -493,7 +493,7 @@ const ManageResources = () => {
                 const linkData: any = {
                     title: formData.title,
                     description: formData.description,
-                    category: formData.category,
+                    category: formData.category || null,
                     url: formData.link || editingItem?.url,
                     logo_url: iconUrl || editingItem?._original_logo_url || editingItem?._original_icon_url || autoLogo || null,
                     icon_url: iconUrl || editingItem?._original_icon_url || editingItem?._original_logo_url || autoLogo || null,
@@ -515,8 +515,8 @@ const ManageResources = () => {
             queryClient.invalidateQueries({ queryKey: ['admin-marketing'] });
             queryClient.invalidateQueries({ queryKey: ['admin-links'] });
             queryClient.invalidateQueries({ queryKey: ['brokerage-documents'] });
-            queryClient.invalidateQueries({ queryKey: ['external-links-forms'] });
-            queryClient.invalidateQueries({ queryKey: ['external-links-marketing'] });
+            queryClient.invalidateQueries({ queryKey: ['resources-external-links'] });
+            queryClient.invalidateQueries({ queryKey: ['external-links'] });
             queryClient.invalidateQueries({ queryKey: ['canva-templates'] });
             queryClient.invalidateQueries({ queryKey: ['training-resources'] });
 
@@ -578,8 +578,8 @@ const ManageResources = () => {
             queryClient.invalidateQueries({ queryKey: ['admin-marketing'] });
             queryClient.invalidateQueries({ queryKey: ['admin-links'] });
             queryClient.invalidateQueries({ queryKey: ['brokerage-documents'] });
-            queryClient.invalidateQueries({ queryKey: ['external-links-forms'] });
-            queryClient.invalidateQueries({ queryKey: ['external-links-marketing'] });
+            queryClient.invalidateQueries({ queryKey: ['resources-external-links'] });
+            queryClient.invalidateQueries({ queryKey: ['external-links'] });
             queryClient.invalidateQueries({ queryKey: ['canva-templates'] });
             queryClient.invalidateQueries({ queryKey: ['training-resources'] });
 
@@ -655,18 +655,19 @@ const ManageResources = () => {
             const config = tableMap[activeTab];
             if (!config) return;
 
-            // Get current order values - use the correct column name
             const orderColumn = config.column;
-            const itemOrder = item[orderColumn] ?? currentIndex;
-            const swapOrder = swapItem[orderColumn] ?? swapIndex;
 
-            // Swap the display orders correctly
-            const updates = [
-                supabase.from(config.table).update({ [orderColumn]: swapOrder }).eq('id', item.id),
-                supabase.from(config.table).update({ [orderColumn]: itemOrder }).eq('id', swapItem.id)
-            ];
+            // Use explicit index-based values so swapping always works
+            // even when existing rows have null order values
+            const itemOrder = currentIndex;
+            const swapOrder = swapIndex;
 
-            await Promise.all(updates);
+            // Swap: give the current item the swap position and vice versa
+            const { error: err1 } = await supabase.from(config.table).update({ [orderColumn]: swapOrder }).eq('id', item.id);
+            const { error: err2 } = await supabase.from(config.table).update({ [orderColumn]: itemOrder }).eq('id', swapItem.id);
+
+            if (err1) console.error('Reorder item failed:', err1);
+            if (err2) console.error('Reorder swap failed:', err2);
 
             // Invalidate cache
             queryClient.invalidateQueries({ queryKey: [`admin-${['links', 'forms', 'marketing', 'training'][activeTab]}`] });

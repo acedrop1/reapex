@@ -53,30 +53,6 @@ export default function FormsPage() {
 
   const isAdmin = checkIsAdmin(currentUser?.role);
 
-  // Fetch external links categorized under Forms & Compliance
-  const { data: externalLinks = [] } = useQuery({
-    queryKey: ['external-links-forms'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('external_links')
-        .select('*')
-        .eq('is_active', true)
-        .eq('category', 'Forms & Compliance')
-        .order('display_order', { ascending: true });
-      if (error) throw error;
-      return (data || []).map((link: any) => ({
-        id: link.id,
-        title: link.title,
-        description: link.description,
-        type: 'link' as const,
-        url: link.url,
-        logo_url: link.icon_url || link.logo_url || null,
-        color: link.color_hex || link.color,
-        created_at: link.created_at,
-      }));
-    },
-  });
-
   // Fetch brokerage documents (from admin brokerage documents upload)
   const { data: forms, isLoading } = useQuery({
     queryKey: ['brokerage-documents'],
@@ -210,7 +186,7 @@ export default function FormsPage() {
 
 
         {/* Forms Section */}
-        <Box sx={{ backgroundColor: '#111111', p: 3, flex: 1 }}>
+        <Box sx={{ backgroundColor: '#000000', p: 3, flex: 1 }}>
           {isLoading ? (
             <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
               <Typography variant="body2" sx={{ color: '#808080' }}>
@@ -232,7 +208,6 @@ export default function FormsPage() {
                   file_type: form.file_name ? form.file_name.split('.').pop()?.toLowerCase() : 'unknown',
                   created_at: form.created_at,
                 })),
-                ...externalLinks,
               ]}
               onItemClick={(item) => {
                 if (item.type === 'link' && item.url) {
@@ -248,7 +223,7 @@ export default function FormsPage() {
             />
           )}
 
-          {(!isLoading && (!forms || forms.length === 0) && externalLinks.length === 0) && (
+          {(!isLoading && (!forms || forms.length === 0)) && (
             <Box sx={{ textAlign: 'center', py: 8 }}>
               <Typography variant="body2" sx={{ color: '#808080' }}>
                 No forms available yet.
