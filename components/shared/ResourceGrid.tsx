@@ -83,10 +83,10 @@ export default function ResourceGrid({
     compact = false,
 }: ResourceGridProps) {
 
-    const iconSize = compact ? 72 : 100;
-    const iconRadius = compact ? '16px' : '22px';
-    const iconInnerSize = compact ? 36 : 50;
-    const gridSpacing = compact ? 2.5 : 4;
+    const iconSize = 72;
+    const iconRadius = '16px';
+    const iconInnerSize = 36;
+    const gridSpacing = 2.5;
 
     // Helper to get icon based on type
     const getIcon = (item: ResourceItem, size = iconInnerSize) => {
