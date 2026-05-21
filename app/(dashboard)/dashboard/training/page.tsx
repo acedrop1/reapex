@@ -101,6 +101,7 @@ export default function TrainingPage() {
       const { data } = await supabase
         .from('training_resources')
         .select('*')
+        .order('order_index', { ascending: true })
         .order('created_at', { ascending: false });
       return data;
     },

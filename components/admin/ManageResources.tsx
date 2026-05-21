@@ -669,8 +669,20 @@ const ManageResources = () => {
             if (err1) console.error('Reorder item failed:', err1);
             if (err2) console.error('Reorder swap failed:', err2);
 
-            // Invalidate cache
-            queryClient.invalidateQueries({ queryKey: [`admin-${['links', 'forms', 'marketing', 'training'][activeTab]}`] });
+            // Invalidate admin + agent-facing caches
+            const adminKey = `admin-${['links', 'forms', 'marketing', 'training'][activeTab]}`;
+            queryClient.invalidateQueries({ queryKey: [adminKey] });
+
+            // Also invalidate the agent-facing page queries so new order reflects immediately
+            const agentKeys: Record<number, string[]> = {
+                0: ['resources-external-links', 'external-links'],
+                1: ['brokerage-documents'],
+                2: ['canva-templates'],
+                3: ['training-resources'],
+            };
+            (agentKeys[activeTab] || []).forEach(key => {
+                queryClient.invalidateQueries({ queryKey: [key] });
+            });
 
         } catch (error) {
             console.error('Reorder failed', error);

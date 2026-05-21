@@ -71,6 +71,7 @@ interface ResourceGridProps {
     onDelete?: (item: ResourceItem) => void;
     onEdit?: (item: ResourceItem) => void;
     cardHeight?: number;
+    compact?: boolean;
 }
 
 export default function ResourceGrid({
@@ -79,10 +80,16 @@ export default function ResourceGrid({
     isAdmin,
     onDelete,
     onEdit,
+    compact = false,
 }: ResourceGridProps) {
 
+    const iconSize = compact ? 72 : 100;
+    const iconRadius = compact ? '16px' : '22px';
+    const iconInnerSize = compact ? 36 : 50;
+    const gridSpacing = compact ? 2.5 : 4;
+
     // Helper to get icon based on type
-    const getIcon = (item: ResourceItem, size = 50) => {
+    const getIcon = (item: ResourceItem, size = iconInnerSize) => {
         const type = item.type || 'document';
         const weight = 'duotone';
 
@@ -115,7 +122,7 @@ export default function ResourceGrid({
     };
 
     return (
-        <Grid container spacing={4}>
+        <Grid container spacing={gridSpacing}>
             {items.map((item) => {
                 const color = getColor(item);
 
@@ -172,9 +179,9 @@ export default function ResourceGrid({
                             <Box
                                 className="icon-container"
                                 sx={{
-                                    width: 100,
-                                    height: 100,
-                                    borderRadius: '22px', // iOS-style rounded corners
+                                    width: iconSize,
+                                    height: iconSize,
+                                    borderRadius: iconRadius, // iOS-style rounded corners
                                     backgroundColor: '#121212',
                                     display: 'flex',
                                     alignItems: 'center',
@@ -194,7 +201,7 @@ export default function ResourceGrid({
                                             width: '100%',
                                             height: '100%',
                                             objectFit: 'cover',
-                                            borderRadius: '22px',
+                                            borderRadius: iconRadius,
                                         }}
                                         onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
                                             // If image fails to load, hide it and show icon instead

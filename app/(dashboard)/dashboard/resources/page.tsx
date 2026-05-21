@@ -115,6 +115,7 @@ export default function ResourcesPage() {
               <Box sx={{ mb: sortedCategories.length > 0 ? 5 : 0 }}>
                 <ResourceGrid
                   items={toGridItems(uncategorized)}
+                  compact
                   onItemClick={(item) => {
                     if (item.url) window.open(item.url, '_blank', 'noopener,noreferrer');
                   }}
@@ -140,6 +141,7 @@ export default function ResourcesPage() {
                 </Typography>
                 <ResourceGrid
                   items={toGridItems(grouped[cat])}
+                  compact
                   onItemClick={(item) => {
                     if (item.url) window.open(item.url, '_blank', 'noopener,noreferrer');
                   }}
