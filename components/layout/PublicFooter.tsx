@@ -91,7 +91,7 @@ export function PublicFooter() {
               Fort Lee, NJ 07024
             </Typography>
             <Typography variant="body2" sx={{ color: '#999999', mt: 1.5 }}>
-              info@re-apex.com
+              admin@re-apex.com
             </Typography>
           </Grid>
         </Grid>

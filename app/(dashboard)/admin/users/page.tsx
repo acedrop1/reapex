@@ -36,6 +36,8 @@ import {
   FileText as FileTextIcon,
   Eye as EyeIcon,
   EyeSlash as EyeSlashIcon,
+  CaretUp,
+  CaretDown,
 } from '@phosphor-icons/react';
 import { createClient } from '@/lib/supabase/client';
 import { format } from 'date-fns';
@@ -213,6 +215,22 @@ export default function AdminUsersPage() {
     }
   };
 
+  const handleReorderUser = async (userId: string, direction: 'up' | 'down') => {
+    const idx = filteredUsers.findIndex((u) => u.id === userId);
+    if (idx === -1) return;
+    const swapIdx = direction === 'up' ? idx - 1 : idx + 1;
+    if (swapIdx < 0 || swapIdx >= filteredUsers.length) return;
+
+    const swapUser = filteredUsers[swapIdx];
+    try {
+      await supabase.from('users').update({ display_order: swapIdx }).eq('id', userId);
+      await supabase.from('users').update({ display_order: idx }).eq('id', swapUser.id);
+      fetchUsers();
+    } catch (err) {
+      console.error('Reorder failed:', err);
+    }
+  };
+
   const handleDeleteUser = async (id: string, userEmail: string) => {
     if (!confirm(`Are you sure you want to delete ${userEmail}? This action cannot be undone.`)) {
       return;
@@ -323,6 +341,7 @@ export default function AdminUsersPage() {
               <TableCell sx={dashboardStyles.table}>Last Login</TableCell>
               <TableCell sx={dashboardStyles.table}>Card on File</TableCell>
               <TableCell sx={dashboardStyles.table}>Visibility</TableCell>
+              <TableCell sx={dashboardStyles.table}>Order</TableCell>
               <TableCell sx={dashboardStyles.table}>Created</TableCell>
               <TableCell sx={dashboardStyles.table}>Actions</TableCell>
             </TableRow>
@@ -330,7 +349,7 @@ export default function AdminUsersPage() {
           <TableBody sx={dashboardStyles.table}>
             {filteredUsers.length === 0 ? (
               <TableRow sx={dashboardStyles.table}>
-                <TableCell colSpan={9} align="center" sx={{ ...dashboardStyles.table, py: 4 }}>
+                <TableCell colSpan={10} align="center" sx={{ ...dashboardStyles.table, py: 4 }}>
                   <Typography variant="body1" sx={{ color: '#808080' }}>
                     {searchTerm || statusFilter !== 'all'
                       ? 'No users match your filters'
@@ -408,6 +427,20 @@ export default function AdminUsersPage() {
                         color="success"
                       />
                     )}
+                  </TableCell>
+                  <TableCell sx={dashboardStyles.table}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0 }}>
+                      <Tooltip title="Move Up">
+                        <IconButton size="small" onClick={() => handleReorderUser(user.id, 'up')} sx={{ color: '#808080', '&:hover': { color: '#E2C05A' }, p: 0.25 }}>
+                          <CaretUp size={16} weight="bold" />
+                        </IconButton>
+                      </Tooltip>
+                      <Tooltip title="Move Down">
+                        <IconButton size="small" onClick={() => handleReorderUser(user.id, 'down')} sx={{ color: '#808080', '&:hover': { color: '#E2C05A' }, p: 0.25 }}>
+                          <CaretDown size={16} weight="bold" />
+                        </IconButton>
+                      </Tooltip>
+                    </Box>
                   </TableCell>
                   <TableCell sx={dashboardStyles.table}>
                     <Typography variant="body2" sx={{ color: '#FFFFFF' }}>

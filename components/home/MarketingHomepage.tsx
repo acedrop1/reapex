@@ -959,17 +959,16 @@ export default function MarketingHomepage({ agents = [] }: { agents?: TeamAgent[
                 <Link href="/sell">Sell</Link>
                 <Link href="/listings">Buy</Link>
                 <Link href="/agents">Our Agents</Link>
-                <Link href="/contact">Contact Us</Link>
               </div>
               <div className="footer-col">
                 <h4>Company</h4>
                 <Link href="/join">Join Us</Link>
-                <a href="mailto:info@re-apex.com">Contact Us</a>
+                <a href="mailto:admin@re-apex.com">Contact Us</a>
               </div>
               <div className="footer-col">
                 <h4>Contact</h4>
                 <span style={{ display: 'block', fontSize: 14, color: 'var(--g500)', marginBottom: 10 }}>260 Columbia Ave, Suite 20<br />Fort Lee, NJ 07024</span>
-                <a href="mailto:info@re-apex.com">info@re-apex.com</a>
+                <a href="mailto:admin@re-apex.com">admin@re-apex.com</a>
               </div>
             </div>
             <div className="footer-bottom">&copy; Reapex &middot; All rights reserved</div>

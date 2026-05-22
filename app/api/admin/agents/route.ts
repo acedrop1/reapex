@@ -57,7 +57,8 @@ export async function GET(request: Request) {
     const { data, error } = await supabaseAdmin
       .from('users')
       .select('*')
-      .order('created_at', { ascending: false });
+      .order('display_order', { ascending: true })
+      .order('full_name', { ascending: true });
 
     if (error) {
       console.error('Error fetching users:', error);

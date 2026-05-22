@@ -84,6 +84,8 @@ export default async function HomePage() {
       .in('role', ['agent', 'admin'])
       .eq('account_status', 'approved')
       .eq('hide_from_listing', false)
+      .not('headshot_url', 'is', null)
+      .neq('headshot_url', '')
       .order('display_order', { ascending: true })
       .order('full_name', { ascending: true });
 
