@@ -7,19 +7,9 @@ import {
   Typography,
   Box,
   Button,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  IconButton,
-  Chip,
 } from '@mui/material';
 import { dashboardStyles } from '@/lib/theme/dashboardStyles';
 import {
-  Trash,
-  DownloadSimple,
   Info,
 } from '@phosphor-icons/react';
 import { useState } from 'react';
@@ -33,6 +23,13 @@ export default function FormsPage() {
 
   const [selectedFile, setSelectedFile] = useState<any>(null);
   const [previewModalOpen, setPreviewModalOpen] = useState(false);
+
+  // Resolve storage paths to public URLs
+  const resolveUrl = (path: string | null | undefined) => {
+    if (!path) return null;
+    if (path.startsWith('/') || path.startsWith('http')) return path;
+    return supabase.storage.from('documents').getPublicUrl(path).data.publicUrl;
+  };
 
   // Get current user and check if admin
   const { data: currentUser } = useQuery({
@@ -69,6 +66,41 @@ export default function FormsPage() {
     },
   });
 
+  // Fetch external links categorized under Forms & Compliance
+  const { data: formLinks = [] } = useQuery({
+    queryKey: ['form-links'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('external_links')
+        .select('*')
+        .eq('is_active', true)
+        .eq('category', 'Forms & Compliance')
+        .order('display_order', { ascending: true });
+      if (error) throw error;
+
+      // Helper to get favicon as fallback
+      const getFavicon = (url: string) => {
+        try {
+          const domain = new URL(url).hostname;
+          return `https://www.google.com/s2/favicons?domain=${domain}&sz=128`;
+        } catch {
+          return null;
+        }
+      };
+
+      return (data || []).map((link: any) => ({
+        id: link.id,
+        title: link.title,
+        description: link.description,
+        type: 'link' as const,
+        url: link.url,
+        logo_url: resolveUrl(link.icon_url) || resolveUrl(link.logo_url) || getFavicon(link.url),
+        color: link.color_hex || link.color,
+        created_at: link.created_at,
+      }));
+    },
+  });
+
 
   // Delete brokerage document mutation
   const deleteFormMutation = useMutation({
@@ -86,20 +118,6 @@ export default function FormsPage() {
     },
   });
 
-
-  const getCategoryColor = (category: string) => {
-    const colors: Record<string, string> = {
-      'Templates': '#4CAF50',
-      'Compliance': '#E2C05A',
-      'Listing Forms': '#4CAF50',
-      'Buyer Forms': '#E2C05A',
-      'Transaction Forms': '#FF9800',
-      'Compliance Forms': '#F44336',
-      'Brokerage Operations': '#c49d2f',
-      'Misc': '#607D8B',
-    };
-    return colors[category] || '#757575';
-  };
 
   const handlePreviewPane = async (form: any) => {
     // Normalize the field name - FilePreviewModal expects 'url' but brokerage_documents uses 'file_url'
@@ -202,12 +220,13 @@ export default function FormsPage() {
                   description: form.description,
                   category: form.category,
                   type: 'document' as const,
-                  url: form.file_url,
-                  logo_url: form.icon_url || form.logo_url || null,
+                  url: resolveUrl(form.file_url) || form.file_url,
+                  logo_url: resolveUrl(form.icon_url) || resolveUrl(form.logo_url) || null,
                   file_name: form.file_name,
                   file_type: form.file_name ? form.file_name.split('.').pop()?.toLowerCase() : 'unknown',
                   created_at: form.created_at,
                 })),
+                ...formLinks,
               ]}
               onItemClick={(item) => {
                 if (item.type === 'link' && item.url) {
@@ -223,7 +242,7 @@ export default function FormsPage() {
             />
           )}
 
-          {(!isLoading && (!forms || forms.length === 0)) && (
+          {(!isLoading && (!forms || forms.length === 0) && formLinks.length === 0) && (
             <Box sx={{ textAlign: 'center', py: 8 }}>
               <Typography variant="body2" sx={{ color: '#808080' }}>
                 No forms available yet.

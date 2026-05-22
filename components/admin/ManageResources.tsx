@@ -121,7 +121,7 @@ const ManageResources = () => {
         form: ['Forms', 'Training', 'Compliance', 'Other'],
         training: ['Onboarding', 'Tech', 'Compliance', 'Marketing', 'Sales'],
         marketing: ['Business Card', 'Property Flyer', 'Social Media', 'Yard Sign', 'Photography', 'Other'],
-        link: ['Property Search', 'Utility', 'Government'],
+        link: ['Property Search', 'Utility', 'Government', 'Forms & Compliance'],
     };
 
     // Determine current resource type
@@ -517,6 +517,7 @@ const ManageResources = () => {
             queryClient.invalidateQueries({ queryKey: ['brokerage-documents'] });
             queryClient.invalidateQueries({ queryKey: ['resources-external-links'] });
             queryClient.invalidateQueries({ queryKey: ['external-links'] });
+            queryClient.invalidateQueries({ queryKey: ['form-links'] });
             queryClient.invalidateQueries({ queryKey: ['canva-templates'] });
             queryClient.invalidateQueries({ queryKey: ['training-resources'] });
 
@@ -580,6 +581,7 @@ const ManageResources = () => {
             queryClient.invalidateQueries({ queryKey: ['brokerage-documents'] });
             queryClient.invalidateQueries({ queryKey: ['resources-external-links'] });
             queryClient.invalidateQueries({ queryKey: ['external-links'] });
+            queryClient.invalidateQueries({ queryKey: ['form-links'] });
             queryClient.invalidateQueries({ queryKey: ['canva-templates'] });
             queryClient.invalidateQueries({ queryKey: ['training-resources'] });
 
