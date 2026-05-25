@@ -154,8 +154,9 @@ const ManageResources = () => {
         if (error) throw error;
 
         // Convert storage paths to public URLs (keep originals for save-back)
-        return data?.map(doc => ({
+        const docs = data?.map(doc => ({
             ...doc,
+            _isLink: false,
             _original_file_url: doc.file_url,
             _original_icon_url: doc.icon_url,
             _original_logo_url: doc.logo_url,
@@ -163,6 +164,29 @@ const ManageResources = () => {
             icon_url: resolveStorageUrl(doc.icon_url) || doc.icon_url,
             logo_url: resolveStorageUrl(doc.logo_url) || doc.logo_url,
         })) || [];
+
+        // Also fetch external links categorized under Forms & Compliance
+        const { data: linkData, error: linkError } = await supabase
+            .from('external_links')
+            .select('*')
+            .eq('category', 'Forms & Compliance')
+            .order('display_order', { ascending: true });
+        if (linkError) throw linkError;
+
+        const links = (linkData || []).map(link => ({
+            id: link.id,
+            title: link.title,
+            description: link.description,
+            file_url: link.url,
+            _isLink: true,
+            _original_icon_url: link.icon_url,
+            icon_url: resolveStorageUrl(link.icon_url) || link.icon_url,
+            logo_url: resolveStorageUrl(link.logo_url) || link.logo_url,
+            created_at: link.created_at,
+            url: link.url,
+        }));
+
+        return [...docs, ...links];
     };
 
     const fetchTraining = async () => {
@@ -325,44 +349,76 @@ const ManageResources = () => {
 
             // Upload files based on resource type
             if (currentType === 'form') {
-                if (!formData.file && !editingItem) {
-                    throw new Error('Please select a file');
-                }
-                if (formData.file) {
-                    const fileName = `${Date.now()}-${formData.file.name}`;
-                    fileUrl = await uploadFile(formData.file, 'forms', fileName);  // forms/ folder
-                }
-                if (formData.icon) {
-                    const iconName = `${Date.now()}-${formData.icon.name}`;
-                    iconUrl = await uploadFile(formData.icon, 'forms', iconName);  // forms/ folder for icons
+                const linkValue = formData.link?.trim() || '';
+                const isLinkOnly = linkValue && !formData.file;
+
+                if (!formData.file && !linkValue && !editingItem) {
+                    throw new Error('Please provide a link or upload a file');
                 }
 
-                // Insert/update brokerage_document
-                const docData: any = {
-                    title: formData.title,
-                    description: formData.description,
-                    category: formData.category,
-                    uploaded_by: user.id,
-                };
+                if (isLinkOnly) {
+                    // Save as an external_link with category 'Forms & Compliance'
+                    if (formData.icon) {
+                        const iconName = `${Date.now()}-${formData.icon.name}`;
+                        iconUrl = await uploadFile(formData.icon, 'forms', iconName);
+                    }
 
-                if (fileUrl) {
-                    docData.file_url = fileUrl;
-                    docData.file_name = formData.file!.name;
-                    docData.file_size = formData.file!.size;
-                }
-                if (iconUrl) {
-                    docData.icon_url = iconUrl;
-                } else if (editingItem?._original_icon_url) {
-                    // Keep existing storage path (not the resolved public URL)
-                    docData.icon_url = editingItem._original_icon_url;
-                }
+                    const linkData: any = {
+                        title: formData.title,
+                        description: formData.description,
+                        url: linkValue,
+                        category: 'Forms & Compliance',
+                        is_active: true,
+                    };
+                    if (iconUrl) {
+                        linkData.icon_url = iconUrl;
+                    } else if (editingItem?._original_icon_url) {
+                        linkData.icon_url = editingItem._original_icon_url;
+                    }
 
-                if (editingItem) {
-                    const { error: dbError } = await supabase.from('brokerage_documents').update(docData).eq('id', editingItem.id);
-                    if (dbError) throw dbError;
+                    if (editingItem && editingItem._isLink) {
+                        const { error: dbError } = await supabase.from('external_links').update(linkData).eq('id', editingItem.id);
+                        if (dbError) throw dbError;
+                    } else {
+                        const { error: dbError } = await supabase.from('external_links').insert(linkData);
+                        if (dbError) throw dbError;
+                    }
                 } else {
-                    const { error: dbError } = await supabase.from('brokerage_documents').insert(docData);
-                    if (dbError) throw dbError;
+                    // File-based form document
+                    if (formData.file) {
+                        const fileName = `${Date.now()}-${formData.file.name}`;
+                        fileUrl = await uploadFile(formData.file, 'forms', fileName);
+                    }
+                    if (formData.icon) {
+                        const iconName = `${Date.now()}-${formData.icon.name}`;
+                        iconUrl = await uploadFile(formData.icon, 'forms', iconName);
+                    }
+
+                    const docData: any = {
+                        title: formData.title,
+                        description: formData.description,
+                        category: formData.category,
+                        uploaded_by: user.id,
+                    };
+
+                    if (fileUrl) {
+                        docData.file_url = fileUrl;
+                        docData.file_name = formData.file!.name;
+                        docData.file_size = formData.file!.size;
+                    }
+                    if (iconUrl) {
+                        docData.icon_url = iconUrl;
+                    } else if (editingItem?._original_icon_url) {
+                        docData.icon_url = editingItem._original_icon_url;
+                    }
+
+                    if (editingItem) {
+                        const { error: dbError } = await supabase.from('brokerage_documents').update(docData).eq('id', editingItem.id);
+                        if (dbError) throw dbError;
+                    } else {
+                        const { error: dbError } = await supabase.from('brokerage_documents').insert(docData);
+                        if (dbError) throw dbError;
+                    }
                 }
             } else if (currentType === 'training') {
                 if (!formData.file && !formData.link && !editingItem) {
@@ -546,8 +602,8 @@ const ManageResources = () => {
                 table = 'external_links';
                 if (itemToDelete.logo_url) filesToDelete.push(itemToDelete.logo_url);  // Has logos/ prefix
             } else if (activeTab === 1) {
-                table = 'brokerage_documents';
-                if (itemToDelete.file_url) filesToDelete.push(itemToDelete.file_url);  // Already has forms/ prefix
+                table = itemToDelete._isLink ? 'external_links' : 'brokerage_documents';
+                if (!itemToDelete._isLink && itemToDelete.file_url) filesToDelete.push(itemToDelete.file_url);  // Already has forms/ prefix
             } else if (activeTab === 2) {
                 table = 'canva_templates';
                 if (itemToDelete.preview_image_url) filesToDelete.push(itemToDelete.preview_image_url);  // Has marketing/ prefix
@@ -659,14 +715,20 @@ const ManageResources = () => {
 
             const orderColumn = config.column;
 
+            // For the Forms tab, items can be from brokerage_documents OR external_links
+            const getTable = (i: any) => {
+                if (activeTab === 1 && i._isLink) return 'external_links';
+                return config.table;
+            };
+
             // Use explicit index-based values so swapping always works
             // even when existing rows have null order values
             const itemOrder = currentIndex;
             const swapOrder = swapIndex;
 
             // Swap: give the current item the swap position and vice versa
-            const { error: err1 } = await supabase.from(config.table).update({ [orderColumn]: swapOrder }).eq('id', item.id);
-            const { error: err2 } = await supabase.from(config.table).update({ [orderColumn]: itemOrder }).eq('id', swapItem.id);
+            const { error: err1 } = await supabase.from(getTable(item)).update({ [orderColumn]: swapOrder }).eq('id', item.id);
+            const { error: err2 } = await supabase.from(getTable(swapItem)).update({ [orderColumn]: itemOrder }).eq('id', swapItem.id);
 
             if (err1) console.error('Reorder item failed:', err1);
             if (err2) console.error('Reorder swap failed:', err2);
@@ -678,7 +740,7 @@ const ManageResources = () => {
             // Also invalidate the agent-facing page queries so new order reflects immediately
             const agentKeys: Record<number, string[]> = {
                 0: ['resources-external-links', 'external-links'],
-                1: ['brokerage-documents'],
+                1: ['brokerage-documents', 'form-links'],
                 2: ['canva-templates'],
                 3: ['training-resources'],
             };
@@ -807,7 +869,12 @@ const ManageResources = () => {
                                                 </Box>
                                             )}
                                             <Box>
-                                                {item.title || item.name}
+                                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                                    {item.title || item.name}
+                                                    {item._isLink && (
+                                                        <Chip label="Link" size="small" sx={{ height: 18, fontSize: '0.6rem', backgroundColor: 'rgba(100, 180, 255, 0.15)', color: '#64B4FF' }} />
+                                                    )}
+                                                </Box>
                                                 {item.description && (
                                                     <Typography variant="body2" noWrap sx={{ color: '#808080', fontSize: '0.75rem', maxWidth: 400, display: 'block' }}>
                                                         {item.description}
@@ -837,7 +904,7 @@ const ManageResources = () => {
                                                         if (activeTab === 2 && (item.canva_url || item.file_url)) {
                                                             if (item.canva_url) window.open(item.canva_url, '_blank', 'noopener,noreferrer');
                                                             else openPreview(item);
-                                                        } else if (activeTab === 0 && (item.url || item.file_url)) {
+                                                        } else if ((activeTab === 0 || item._isLink) && (item.url || item.file_url)) {
                                                             const url = item.url?.startsWith('http') ? item.url : getViewableUrl(item);
                                                             if (url) window.open(url, '_blank', 'noopener,noreferrer');
                                                         } else {
@@ -942,7 +1009,21 @@ const ManageResources = () => {
                         {currentType === 'form' && (
                             <Box>
                                 <Typography variant="body2" sx={{ color: '#B0B0B0', mb: 1 }}>
-                                    File {editingItem && '*Optional when editing'}
+                                    External Link (optional — or upload a file below)
+                                </Typography>
+                                <TextField
+                                    label="Link URL"
+                                    fullWidth
+                                    size="small"
+                                    value={formData.link}
+                                    onChange={(e) => setFormData(prev => ({ ...prev, link: e.target.value }))}
+                                    sx={{ ...dashboardStyles.textField, mb: 2 }}
+                                    placeholder="https://example.com/form-resource"
+                                    helperText="Paste a link to an external form or resource"
+                                    FormHelperTextProps={{ sx: { color: '#666' } }}
+                                />
+                                <Typography variant="body2" sx={{ color: '#B0B0B0', mb: 1 }}>
+                                    File Upload {editingItem && '*Optional when editing'}
                                 </Typography>
                                 <Box
                                     {...getFileRootProps()}
