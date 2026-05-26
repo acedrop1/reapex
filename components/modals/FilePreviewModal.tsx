@@ -52,89 +52,53 @@ function FilePreviewModalContent({ open, onClose, selectedFile }: FilePreviewMod
   const [selectedFileUrl, setSelectedFileUrl] = useState<string | null>(null);
   const [isLoadingUrl, setIsLoadingUrl] = useState(false);
 
-  // Generate signed URL when file changes
+  // Generate viewable URL when file changes
   useEffect(() => {
     if (selectedFile?.url) {
-      console.log('[FilePreviewModal] Attempting to generate signed URL for file:', {
-        fileName: selectedFile.file_name,
-        fileId: selectedFile.id,
-        fileUrl: selectedFile.url,
-        category: selectedFile.category,
-        timestamp: new Date().toISOString()
-      });
-
       setIsLoadingUrl(true);
       setSelectedFileUrl(null);
 
-      const fetchPublicUrl = async () => {
+      const fetchViewableUrl = async () => {
         try {
-          // Use signed URL for authenticated access (documents bucket requires authentication)
+          const fileUrl = selectedFile.url;
+
+          // If the URL is already a full public URL, use it directly
+          if (fileUrl.startsWith('http://') || fileUrl.startsWith('https://')) {
+            setSelectedFileUrl(fileUrl);
+            return;
+          }
+
+          // It's a raw storage path — create a signed URL from the documents bucket
           const { data, error } = await supabase.storage
             .from('documents')
-            .createSignedUrl(selectedFile.url, 3600); // 1 hour expiry
+            .createSignedUrl(fileUrl, 3600); // 1 hour expiry
 
           if (error) {
-            console.error('[FilePreviewModal] Error creating signed URL:', {
-              error,
-              fileName: selectedFile.file_name,
-              fileUrl: selectedFile.url,
-              errorMessage: error.message,
-              timestamp: new Date().toISOString()
-            });
+            console.error('[FilePreviewModal] Error creating signed URL:', error.message);
+            // Fallback: try public URL
+            const { data: pubData } = supabase.storage.from('documents').getPublicUrl(fileUrl);
+            if (pubData?.publicUrl) {
+              setSelectedFileUrl(pubData.publicUrl);
+            }
             return;
           }
 
           if (data?.signedUrl) {
-            console.log('[FilePreviewModal] Successfully generated signed URL:', {
-              fileName: selectedFile.file_name,
-              signedUrlLength: data.signedUrl.length,
-              timestamp: new Date().toISOString()
-            });
             setSelectedFileUrl(data.signedUrl);
-          } else {
-            console.warn('[FilePreviewModal] No signed URL returned from storage API:', {
-              fileName: selectedFile.file_name,
-              fileUrl: selectedFile.url,
-              data,
-              timestamp: new Date().toISOString()
-            });
           }
         } catch (error) {
-          console.error('[FilePreviewModal] Exception generating signed URL:', {
-            error,
-            fileName: selectedFile.file_name,
-            fileUrl: selectedFile.url,
-            errorMessage: error instanceof Error ? error.message : 'Unknown error',
-            errorStack: error instanceof Error ? error.stack : undefined,
-            timestamp: new Date().toISOString()
-          });
+          console.error('[FilePreviewModal] Exception generating URL:', error);
         } finally {
           setIsLoadingUrl(false);
         }
       };
 
-      fetchPublicUrl();
-    } else {
-      console.warn('[FilePreviewModal] No file URL available:', {
-        selectedFile,
-        hasUrl: !!selectedFile?.url,
-        timestamp: new Date().toISOString()
-      });
+      fetchViewableUrl();
     }
   }, [selectedFile, supabase]);
 
   const handleDownload = async () => {
-    if (!selectedFile) {
-      console.warn('[FilePreviewModal] Download attempted with no selected file');
-      return;
-    }
-
-    console.log('[FilePreviewModal] Starting download for file:', {
-      fileName: selectedFile.file_name,
-      fileId: selectedFile.id,
-      fileUrl: selectedFile.url,
-      timestamp: new Date().toISOString()
-    });
+    if (!selectedFile) return;
 
     try {
       // Log download action
@@ -147,47 +111,28 @@ function FilePreviewModalContent({ open, onClose, selectedFile }: FilePreviewMod
           ip_address: null,
           user_agent: navigator.userAgent,
         });
-        console.log('[FilePreviewModal] Download action logged for user:', user.id);
       }
 
-      // Generate download URL
-      const { data, error } = await supabase.storage
-        .from('documents')
-        .createSignedUrl(selectedFile.url, 60); // 1 minute expiry
+      const fileUrl = selectedFile.url;
 
-      if (error) {
-        console.error('[FilePreviewModal] Download URL generation error:', {
-          error,
-          fileName: selectedFile.file_name,
-          fileUrl: selectedFile.url,
-          errorMessage: error.message,
-          timestamp: new Date().toISOString()
-        });
+      // If already a full URL, open directly
+      if (fileUrl?.startsWith('http://') || fileUrl?.startsWith('https://')) {
+        window.open(fileUrl, '_blank');
         return;
       }
 
-      if (data?.signedUrl) {
-        console.log('[FilePreviewModal] Opening download URL:', {
-          fileName: selectedFile.file_name,
-          timestamp: new Date().toISOString()
-        });
-        window.open(data.signedUrl, '_blank');
-      } else {
-        console.warn('[FilePreviewModal] No download URL generated:', {
-          fileName: selectedFile.file_name,
-          data,
-          timestamp: new Date().toISOString()
-        });
+      // Storage path — generate signed URL
+      if (fileUrl) {
+        const { data, error } = await supabase.storage
+          .from('documents')
+          .createSignedUrl(fileUrl, 60);
+
+        if (!error && data?.signedUrl) {
+          window.open(data.signedUrl, '_blank');
+        }
       }
     } catch (error) {
-      console.error('[FilePreviewModal] Download exception:', {
-        error,
-        fileName: selectedFile.file_name,
-        fileUrl: selectedFile.url,
-        errorMessage: error instanceof Error ? error.message : 'Unknown error',
-        errorStack: error instanceof Error ? error.stack : undefined,
-        timestamp: new Date().toISOString()
-      });
+      console.error('[FilePreviewModal] Download error:', error);
     }
   };
 

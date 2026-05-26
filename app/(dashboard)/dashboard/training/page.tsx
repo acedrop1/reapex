@@ -57,6 +57,14 @@ import {
 export default function TrainingPage() {
   const supabase = createClient();
   const queryClient = useQueryClient();
+
+  // Resolve storage paths to public URLs (handles both documents and training-resources buckets)
+  const resolveUrl = (path: string | null | undefined): string | null => {
+    if (!path) return null;
+    if (path.startsWith('/') || path.startsWith('http')) return path;
+    // Storage paths from admin uploads go to 'documents' bucket
+    return supabase.storage.from('documents').getPublicUrl(path).data.publicUrl;
+  };
   const [openDialog, setOpenDialog] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
@@ -448,22 +456,33 @@ export default function TrainingPage() {
         });
       }
 
-      let path = resource.file_url;
-      // If it's a full URL (e.g. storage public URL), use it directly?
-      // Usually file_url is the path in bucket.
-      // If it starts with http, open it.
+      // Try file_url first, then url (admin uploads save to url field)
+      let path = resource.file_url || resource.url;
+
+      // If it's a full URL, open directly
       if (path && path.startsWith('http')) {
         window.open(path, '_blank');
         return;
       }
 
+      // Storage path — try documents bucket first (admin uploads), then training-resources
       if (path) {
-        const { data } = await supabase.storage
+        const { data, error } = await supabase.storage
+          .from('documents')
+          .createSignedUrl(path, 60);
+
+        if (!error && data?.signedUrl) {
+          window.open(data.signedUrl, '_blank');
+          return;
+        }
+
+        // Fallback: try training-resources bucket
+        const { data: data2 } = await supabase.storage
           .from('training-resources')
           .createSignedUrl(path, 60);
 
-        if (data?.signedUrl) {
-          window.open(data.signedUrl, '_blank');
+        if (data2?.signedUrl) {
+          window.open(data2.signedUrl, '_blank');
         }
       }
     } catch (err) {
@@ -508,19 +527,19 @@ export default function TrainingPage() {
                 description: resource.description,
                 category: resource.category,
                 type: resource.resource_type || 'document',
-                url: resource.url || resource.video_url || resource.file_url,
+                url: resolveUrl(resource.url) || resource.url || resource.video_url || resolveUrl(resource.file_url) || resource.file_url,
                 video_url: resource.video_url,
-                thumbnail_url: resource.thumbnail_url,
+                thumbnail_url: resolveUrl(resource.thumbnail_url) || resource.thumbnail_url,
                 created_at: resource.created_at,
               })),
             ]}
             onItemClick={(item) => {
               const url = item.url || item.video_url || '';
-              // External links (YouTube, courses, etc.) — open in new tab
+              // All resolved URLs (including storage public URLs) open in new tab
               if (url.startsWith('http://') || url.startsWith('https://')) {
                 window.open(url, '_blank', 'noopener,noreferrer');
               } else if (url) {
-                // Storage file — download it
+                // Raw storage path — download it
                 const resourceObj = resources?.find((r: any) => r.id === item.id);
                 if (resourceObj) handleDownload(resourceObj);
               }

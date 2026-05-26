@@ -82,6 +82,12 @@ export default function ResourceGrid({
     onEdit,
     compact = false,
 }: ResourceGridProps) {
+    const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
+
+    // Reset failed images when items change
+    useEffect(() => {
+        setFailedImages(new Set());
+    }, [items]);
 
     const iconSize = 72;
     const iconRadius = '16px';
@@ -192,26 +198,31 @@ export default function ResourceGrid({
                                 }}
                             >
                                 {/* Display image/logo if available, or auto-thumbnail from URL */}
-                                {(item.thumbnail_url || item.preview_url || item.logo_url || getAutoThumbnail(item.url) || getAutoThumbnail(item.video_url)) ? (
-                                    <Box
-                                        component="img"
-                                        src={item.thumbnail_url || item.preview_url || item.logo_url || getAutoThumbnail(item.url) || getAutoThumbnail(item.video_url) || ''}
-                                        alt={item.title}
-                                        sx={{
-                                            width: '100%',
-                                            height: '100%',
-                                            objectFit: 'cover',
-                                            borderRadius: iconRadius,
-                                        }}
-                                        onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
-                                            // If image fails to load, hide it and show icon instead
-                                            e.currentTarget.style.display = 'none';
-                                        }}
-                                    />
-                                ) : (
-                                    // Show icon
-                                    getIcon(item, 50)
-                                )}
+                                {(() => {
+                                    const imgSrc = item.thumbnail_url || item.preview_url || item.logo_url || getAutoThumbnail(item.url) || getAutoThumbnail(item.video_url);
+                                    const hasValidImage = imgSrc && !failedImages.has(item.id);
+
+                                    if (hasValidImage) {
+                                        return (
+                                            <Box
+                                                component="img"
+                                                src={imgSrc}
+                                                alt={item.title}
+                                                sx={{
+                                                    width: '100%',
+                                                    height: '100%',
+                                                    objectFit: 'cover',
+                                                    borderRadius: iconRadius,
+                                                }}
+                                                onError={() => {
+                                                    setFailedImages(prev => new Set(prev).add(item.id));
+                                                }}
+                                            />
+                                        );
+                                    }
+
+                                    return getIcon(item, 50);
+                                })()}
                             </Box>
 
                             {/* Resource Name */}
