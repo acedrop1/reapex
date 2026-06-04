@@ -111,7 +111,15 @@ export default function ListingsTab() {
                 .order('created_at', { ascending: false });
 
             if (error) throw error;
-            return data || [];
+
+            // Resolve cover_image storage paths to public URLs
+            return (data || []).map((listing: any) => {
+                let img = listing.cover_image;
+                if (img && !img.startsWith('/') && !img.startsWith('http')) {
+                    img = supabase.storage.from('documents').getPublicUrl(img).data.publicUrl;
+                }
+                return { ...listing, cover_image: img };
+            });
         },
     });
 

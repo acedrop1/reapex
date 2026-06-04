@@ -43,7 +43,6 @@ import {
   Check,
   Megaphone,
 } from '@phosphor-icons/react';
-import Image from 'next/image';
 import { createClient } from '@/lib/supabase/client';
 import OnboardingWizard from '@/components/onboarding/OnboardingWizard';
 import { StaggerContainer, StaggerItem } from '@/components/motion/StaggeredEntrance';
@@ -72,7 +71,6 @@ export default function DashboardPage() {
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [selectedEvent, setSelectedEvent] = useState<any>(null);
   const [calendarView, setCalendarView] = useState<'week' | 'month'>('month');
-  const [listingScroll, setListingScroll] = useState(0);
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
   const [onboardingOpen, setOnboardingOpen] = useState(false);
@@ -140,9 +138,18 @@ export default function DashboardPage() {
         .select('id, property_address, property_city, price, cover_image, status')
         .eq('agent_id', session.user.id)
         .eq('status', 'active')
-        .order('created_at', { ascending: false })
-        .limit(10);
-      setListings(listingsData || []);
+        .order('created_at', { ascending: false });
+
+      // Resolve cover_image URLs: could be local path, storage path, or full URL
+      const resolvedListings = (listingsData || []).map((listing: any) => {
+        let img = listing.cover_image;
+        if (img && !img.startsWith('/') && !img.startsWith('http')) {
+          // Storage path — resolve to public URL via documents bucket
+          img = supabase.storage.from('documents').getPublicUrl(img).data.publicUrl;
+        }
+        return { ...listing, cover_image: img };
+      });
+      setListings(resolvedListings);
 
       // Fetch transactions (3 latest active deals)
       const { data: transactionsData } = await supabase
@@ -300,19 +307,6 @@ export default function DashboardPage() {
       setCurrentYear(currentYear + 1);
     } else {
       setCurrentMonth(currentMonth + 1);
-    }
-  };
-
-  const scrollListings = (direction: 'left' | 'right') => {
-    const container = document.getElementById('listings-carousel');
-    if (container) {
-      const scrollAmount = 300;
-      const newScroll = direction === 'left'
-        ? Math.max(0, listingScroll - scrollAmount)
-        : Math.min(container.scrollWidth - container.clientWidth, listingScroll + scrollAmount);
-
-      container.scrollTo({ left: newScroll, behavior: 'smooth' });
-      setListingScroll(newScroll);
     }
   };
 
@@ -655,129 +649,105 @@ export default function DashboardPage() {
             </Box>
 
             {listings && listings.length > 0 ? (
-              <>
-                <Box
-                  id="listings-carousel"
-                  sx={{
-                    display: 'flex',
-                    flexDirection: 'row',
-                    gap: 1.5,
-                    overflowX: 'auto',
-                    flex: 1,
-                    pb: 2,
-                    scrollSnapType: 'x mandatory',
-                    scrollBehavior: 'smooth',
-                    '&::-webkit-scrollbar': { display: 'none' },
-                    msOverflowStyle: 'none',
-                    scrollbarWidth: 'none',
-                  }}
-                  onScroll={(e) => {
-                    const container = e.target as HTMLElement;
-                    const scrollLeft = container.scrollLeft;
-                    const cardWidth = 165; // minWidth + gap
-                    const currentIndex = Math.round(scrollLeft / cardWidth);
-                    setListingScroll(currentIndex);
-                  }}
-                >
-                  {listings.map((listing) => (
-                    <Box
-                      key={listing.id}
-                      component={Link}
-                      href="/dashboard/business?tab=listings"
-                      sx={{
-                        p: 1,
-                        backgroundColor: '#000000',
-                        borderRadius: '8px',
-                        border: '1px solid #3A3A3A',
-                        transition: 'all 200ms ease',
-                        textDecoration: 'none',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        gap: 0.75,
-                        minWidth: 160,
-                        maxWidth: 160,
-                        flexShrink: 0,
-                        scrollSnapAlign: 'start',
-                        '&:hover': {
-                          borderColor: '#E2C05A',
-                          boxShadow: '0 4px 12px rgba(226, 192, 90, 0.2)',
-                        },
-                      }}
-                    >
+              <Box>
+                <Grid container spacing={1.5}>
+                  {listings.slice(0, 8).map((listing) => (
+                    <Grid item xs={6} sm={4} md={3} key={listing.id}>
                       <Box
+                        component={Link}
+                        href="/dashboard/business?tab=listings"
                         sx={{
-                          position: 'relative',
-                          width: '100%',
-                          height: 75,
-                          borderRadius: '6px',
-                          overflow: 'hidden',
-                          backgroundColor: '#2A2A2A',
-                          flexShrink: 0,
+                          p: 1,
+                          backgroundColor: '#000000',
+                          borderRadius: '8px',
+                          border: '1px solid #3A3A3A',
+                          transition: 'all 200ms ease',
+                          textDecoration: 'none',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          gap: 0.75,
+                          '&:hover': {
+                            borderColor: '#E2C05A',
+                            boxShadow: '0 4px 12px rgba(226, 192, 90, 0.2)',
+                          },
                         }}
                       >
-                        {listing.cover_image ? (
-                          <Image
-                            src={listing.cover_image}
-                            alt={listing.property_address}
-                            fill
-                            style={{ objectFit: 'cover' }}
-                          />
-                        ) : (
+                        <Box
+                          sx={{
+                            position: 'relative',
+                            width: '100%',
+                            height: 80,
+                            borderRadius: '6px',
+                            overflow: 'hidden',
+                            backgroundColor: '#2A2A2A',
+                            flexShrink: 0,
+                          }}
+                        >
+                          {listing.cover_image ? (
+                            <Box
+                              component="img"
+                              src={listing.cover_image}
+                              alt={listing.property_address}
+                              sx={{
+                                width: '100%',
+                                height: '100%',
+                                objectFit: 'cover',
+                                display: 'block',
+                              }}
+                              onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
+                                e.currentTarget.style.display = 'none';
+                                // Show the placeholder sibling
+                                const placeholder = e.currentTarget.nextElementSibling as HTMLElement;
+                                if (placeholder) placeholder.style.display = 'flex';
+                              }}
+                            />
+                          ) : null}
                           <Box
                             sx={{
                               width: '100%',
                               height: '100%',
-                              display: 'flex',
+                              display: listing.cover_image ? 'none' : 'flex',
                               alignItems: 'center',
                               justifyContent: 'center',
+                              position: listing.cover_image ? 'absolute' : 'relative',
+                              top: 0,
+                              left: 0,
                             }}
                           >
                             <House size={28} color="#4A4A4A" weight="duotone" />
                           </Box>
-                        )}
-                      </Box>
+                        </Box>
 
-                      <Box>
-                        <Typography variant="body2" sx={{ fontWeight: 600, color: '#FFFFFF', mb: 0.3, fontSize: '0.75rem', lineHeight: 1.1 }} noWrap>
-                          {listing.property_address}
-                        </Typography>
-                        <Typography variant="caption" sx={{ color: '#808080', display: 'block', mb: 0.3, fontSize: '0.6rem', lineHeight: 1.1 }} noWrap>
-                          {listing.property_city}
-                        </Typography>
-                        <Typography variant="body2" sx={{ fontWeight: 600, color: '#E2C05A', fontSize: '0.75rem', lineHeight: 1.1, fontFamily: '"JetBrains Mono", monospace' }}>
-                          ${listing.price?.toLocaleString()}
-                        </Typography>
+                        <Box>
+                          <Typography variant="body2" sx={{ fontWeight: 600, color: '#FFFFFF', mb: 0.3, fontSize: '0.75rem', lineHeight: 1.1 }} noWrap>
+                            {listing.property_address}
+                          </Typography>
+                          <Typography variant="caption" sx={{ color: '#808080', display: 'block', mb: 0.3, fontSize: '0.6rem', lineHeight: 1.1 }} noWrap>
+                            {listing.property_city}
+                          </Typography>
+                          <Typography variant="body2" sx={{ fontWeight: 600, color: '#E2C05A', fontSize: '0.75rem', lineHeight: 1.1, fontFamily: '"JetBrains Mono", monospace' }}>
+                            ${listing.price?.toLocaleString()}
+                          </Typography>
+                        </Box>
                       </Box>
-                    </Box>
+                    </Grid>
                   ))}
-                </Box>
+                </Grid>
 
-                {/* Carousel Dots */}
-                {listings.length > 1 && (
-                  <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1, mt: 1 }}>
-                    {Array.from({ length: Math.min(5, listings.length) }).map((_, index) => (
-                      <Box
-                        key={index}
-                        sx={{
-                          width: 6,
-                          height: 6,
-                          borderRadius: '50%',
-                          backgroundColor: listingScroll === index ? '#E2C05A' : '#3A3A3A',
-                          transition: 'background-color 200ms ease',
-                          cursor: 'pointer',
-                        }}
-                        onClick={() => {
-                          const container = document.getElementById('listings-carousel');
-                          if (container) {
-                            const cardWidth = 165;
-                            container.scrollTo({ left: index * cardWidth, behavior: 'smooth' });
-                          }
-                        }}
-                      />
-                    ))}
+                {/* Show count if more than 8 */}
+                {listings.length > 8 && (
+                  <Box sx={{ textAlign: 'center', mt: 1.5 }}>
+                    <Button
+                      component={Link}
+                      href="/dashboard/business?tab=listings"
+                      size="small"
+                      sx={{ color: '#E2C05A', textTransform: 'none', fontSize: '0.75rem' }}
+                    >
+                      +{listings.length - 8} more — View All
+                    </Button>
                   </Box>
                 )}
-              </>
+              </Box>
             ) : (
               <Box sx={{ textAlign: 'center', py: 3, backgroundColor: '#000000', borderRadius: '8px', border: '1px solid #3A3A3A' }}>
                 <House size={32} color="#4A4A4A" weight="duotone" />
