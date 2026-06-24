@@ -87,6 +87,22 @@ export async function createClient() {
   return createServerComponentClient();
 }
 
+// Anonymous client for public pages — queries always run as 'anon' role
+// regardless of whether the visitor is logged in. Use this for public-facing
+// pages like /agent/[slug], /listings, /agents etc. so RLS anon policies apply.
+export function createAnonClient() {
+  return createSupabaseClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false,
+      },
+    }
+  );
+}
+
 // Service role client for bypassing RLS (use with caution!)
 // Uses createClient from @supabase/supabase-js directly without cookies
 // This ensures the service role key is used for authentication, not JWT tokens

@@ -1,4 +1,4 @@
-import { createServerComponentClient } from '@/lib/supabase/server';
+import { createAnonClient } from '@/lib/supabase/server';
 import { Container, Typography, Box, Grid, Card, CardContent, CardMedia, Chip, Button, TextField, InputAdornment } from '@mui/material';
 import { MagnifyingGlass, Bed, Bathtub, MapPin } from '@phosphor-icons/react/dist/ssr';
 import { SquareFoot } from '@mui/icons-material';
@@ -38,7 +38,7 @@ export default async function PublicListingsPage({
     max_price?: string;
   };
 }) {
-  const supabase = await createServerComponentClient();
+  const supabase = createAnonClient();
 
   // Build query for public listings (show active and sold)
   let query = supabase

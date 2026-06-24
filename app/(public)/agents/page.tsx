@@ -1,4 +1,4 @@
-import { createServerComponentClient } from '@/lib/supabase/server';
+import { createAnonClient } from '@/lib/supabase/server';
 import {
   Container,
   Typography,
@@ -64,7 +64,7 @@ const getInitials = (fullName: string): string => {
 };
 
 export default async function AgentsPage() {
-  const supabase = await createServerComponentClient();
+  const supabase = createAnonClient();
 
   // Get all approved agents (including brokers and admins), excluding hidden
   const { data: agents, error } = await supabase

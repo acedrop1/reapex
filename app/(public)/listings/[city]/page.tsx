@@ -1,4 +1,4 @@
-import { createServerComponentClient } from '@/lib/supabase/server';
+import { createAnonClient } from '@/lib/supabase/server';
 import { Container, Typography, Box, Grid, Card, CardContent, CardMedia, Chip, Button, TextField, InputAdornment, FormControl, InputLabel, Select, MenuItem, Tabs, Tab } from '@mui/material';
 import { Search, Home, Tune } from '@mui/icons-material';
 import { FeaturedListingsCarousel } from '@/components/listings/FeaturedListingsCarousel';
@@ -48,7 +48,7 @@ export default async function CityListingsPage({
     gym?: string;
   };
 }) {
-  const supabase = await createServerComponentClient();
+  const supabase = createAnonClient();
   const cityParam = params.city;
   const displayCity = denormalizeCity(cityParam);
 

@@ -1,4 +1,4 @@
-import { createServerComponentClient } from '@/lib/supabase/server';
+import { createAnonClient } from '@/lib/supabase/server';
 import type { Metadata } from 'next';
 import Script from 'next/script';
 import MarketingHomepage from '@/components/home/MarketingHomepage';
@@ -52,7 +52,7 @@ export default async function HomePage() {
   let featuredAgents: any[] = [];
 
   try {
-    const supabase = await createServerComponentClient();
+    const supabase = createAnonClient();
 
     // Get unique cities from active listings for search bar
     const { data: citiesData, error: citiesError } = await supabase

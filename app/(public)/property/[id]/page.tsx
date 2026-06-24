@@ -1,4 +1,4 @@
-import { createServerComponentClient } from '@/lib/supabase/server';
+import { createAnonClient } from '@/lib/supabase/server';
 import { redirect, notFound } from 'next/navigation';
 
 export const dynamic = 'force-dynamic';
@@ -24,7 +24,7 @@ export default async function PropertyDetailPage({
 }: {
   params: { id: string };
 }) {
-  const supabase = await createServerComponentClient();
+  const supabase = createAnonClient();
 
   // Fetch listing by ID to get slug and city for redirect
   const { data: listing, error } = await supabase

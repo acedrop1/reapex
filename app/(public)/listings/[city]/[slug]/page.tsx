@@ -1,4 +1,4 @@
-import { createServerComponentClient } from '@/lib/supabase/server';
+import { createAnonClient } from '@/lib/supabase/server';
 import { Container, Typography, Box, Grid, Card, CardContent, Chip, Button, Divider, Avatar } from '@mui/material';
 import { Home, Bed, Bathroom, Garage, SquareFoot, LocationOn, Phone, Email, CalendarMonth, Description } from '@mui/icons-material';
 import { notFound } from 'next/navigation';
@@ -37,7 +37,7 @@ export default async function ListingDetailPage({
 }: {
   params: { city: string; slug: string };
 }) {
-  const supabase = await createServerComponentClient();
+  const supabase = createAnonClient();
   const { city, slug } = params;
   const displayCity = denormalizeCity(city);
 

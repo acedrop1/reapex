@@ -1,4 +1,4 @@
-import { createServerComponentClient } from '@/lib/supabase/server';
+import { createAnonClient } from '@/lib/supabase/server';
 import {
   Container,
   Box,
@@ -33,7 +33,7 @@ export default async function AgentDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const resolvedParams = await params;
-  const supabase = await createServerComponentClient();
+  const supabase = createAnonClient();
 
   // Fetch agent data (including brokers)
   const { data: agent, error: agentError } = await supabase
