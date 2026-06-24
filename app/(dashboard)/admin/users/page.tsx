@@ -25,6 +25,7 @@ import {
   Select,
   MenuItem,
   Tooltip,
+  Snackbar,
 } from '@mui/material';
 import {
   PencilSimple as EditIcon,
@@ -38,6 +39,7 @@ import {
   EyeSlash as EyeSlashIcon,
   CaretUp,
   CaretDown,
+  Key as KeyIcon,
 } from '@phosphor-icons/react';
 import { createClient } from '@/lib/supabase/client';
 import { format } from 'date-fns';
@@ -80,6 +82,8 @@ export default function AdminUsersPage() {
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [loginMap, setLoginMap] = useState<Record<string, string | null>>({});
   const [cardMap, setCardMap] = useState<Record<string, { brand: string; last4: string; expMonth: number; expYear: number } | null>>({});
+  const [resetSnackbar, setResetSnackbar] = useState<{ open: boolean; message: string; severity: 'success' | 'error' }>({ open: false, message: '', severity: 'success' });
+  const [resettingUserId, setResettingUserId] = useState<string | null>(null);
 
   const supabase = createClient();
 
@@ -251,6 +255,41 @@ export default function AdminUsersPage() {
     } catch (err: any) {
       console.error('Error deleting user:', err);
       alert('Failed to delete user: ' + err.message);
+    }
+  };
+
+  const handleResetPassword = async (user: User) => {
+    if (!confirm(`Send a password reset email to ${user.email}?`)) return;
+
+    setResettingUserId(user.id);
+    try {
+      const response = await fetch('/api/admin/reset-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: user.id,
+          email: user.email,
+          fullName: user.full_name || user.email,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to send reset email');
+      }
+
+      if (result.emailSent) {
+        setResetSnackbar({ open: true, message: `Password reset email sent to ${user.email}`, severity: 'success' });
+      } else if (result.resetLink) {
+        // Email failed but we have the link — copy to clipboard
+        await navigator.clipboard.writeText(result.resetLink);
+        setResetSnackbar({ open: true, message: 'Email failed to send. Reset link copied to clipboard — share it manually.', severity: 'error' });
+      }
+    } catch (err: any) {
+      setResetSnackbar({ open: true, message: err.message || 'Failed to reset password', severity: 'error' });
+    } finally {
+      setResettingUserId(null);
     }
   };
 
@@ -509,6 +548,25 @@ export default function AdminUsersPage() {
                           <FileTextIcon size={20} />
                         </IconButton>
                       </Tooltip>
+                      <Tooltip title="Send Password Reset">
+                        <IconButton
+                          size="small"
+                          onClick={() => handleResetPassword(user)}
+                          disabled={resettingUserId === user.id}
+                          sx={{
+                            color: '#64B5F6',
+                            '&:hover': {
+                              backgroundColor: 'rgba(100, 181, 246, 0.08)',
+                            },
+                          }}
+                        >
+                          {resettingUserId === user.id ? (
+                            <CircularProgress size={18} sx={{ color: '#64B5F6' }} />
+                          ) : (
+                            <KeyIcon size={20} />
+                          )}
+                        </IconButton>
+                      </Tooltip>
                       <Tooltip title="Edit">
                         <IconButton
                           size="small"
@@ -574,6 +632,22 @@ export default function AdminUsersPage() {
           agentName={selectedAgentForAgreements.name}
         />
       )}
+
+      {/* Password Reset Snackbar */}
+      <Snackbar
+        open={resetSnackbar.open}
+        autoHideDuration={6000}
+        onClose={() => setResetSnackbar(prev => ({ ...prev, open: false }))}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert
+          onClose={() => setResetSnackbar(prev => ({ ...prev, open: false }))}
+          severity={resetSnackbar.severity}
+          sx={{ width: '100%' }}
+        >
+          {resetSnackbar.message}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 }
