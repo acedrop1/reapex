@@ -144,8 +144,9 @@ export default function DashboardPage() {
       const resolvedListings = (listingsData || []).map((listing: any) => {
         let img = listing.cover_image;
         if (img && !img.startsWith('/') && !img.startsWith('http')) {
-          // Storage path — resolve to public URL via documents bucket
-          img = supabase.storage.from('documents').getPublicUrl(img).data.publicUrl;
+          // Storage path — resolve to public URL
+          const bucket = img.startsWith('listings/') ? 'listing-photos' : 'listing-images';
+          img = supabase.storage.from(bucket).getPublicUrl(img).data.publicUrl;
         }
         return { ...listing, cover_image: img };
       });

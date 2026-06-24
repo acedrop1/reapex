@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { Box, Typography, Button, Alert, Card, TextField } from '@mui/material';
 import { ReapexLogo } from '@/components/ui/ReapexLogo';
 import { createClient } from '@/lib/supabase/client';
+import Link from 'next/link';
 
 function LoginContent() {
   const router = useRouter();
@@ -165,6 +166,21 @@ function LoginContent() {
                     '& .MuiInputLabel-root.Mui-focused': { color: '#d4af37' },
                   }}
                 />
+                <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 1.5 }}>
+                  <Typography
+                    component={Link}
+                    href="/forgot-password"
+                    variant="body2"
+                    sx={{
+                      color: '#d4af37',
+                      textDecoration: 'none',
+                      fontWeight: 500,
+                      '&:hover': { textDecoration: 'underline' },
+                    }}
+                  >
+                    Forgot password?
+                  </Typography>
+                </Box>
                 <Button
                   fullWidth
                   type="submit"

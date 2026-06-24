@@ -8,6 +8,14 @@ import Link from 'next/link';
 
 export const dynamic = 'force-dynamic';
 
+// Resolve listing image URLs — storage paths need to be converted to public URLs
+function resolveListingImage(path: string | null | undefined, supabase: any): string | null {
+  if (!path) return null;
+  if (path.startsWith('/') || path.startsWith('http')) return path;
+  const bucket = path.startsWith('listings/') ? 'listing-photos' : 'listing-images';
+  return supabase.storage.from(bucket).getPublicUrl(path).data.publicUrl;
+}
+
 // Helper function to normalize city name for URL
 function normalizeCity(city: string): string {
   return city
@@ -79,6 +87,13 @@ export default async function PublicListingsPage({
       .limit(5);
     carouselListings = fallbackListings || [];
   }
+
+  // Resolve carousel listing image URLs
+  carouselListings = carouselListings.map((l: any) => ({
+    ...l,
+    cover_image: resolveListingImage(l.cover_image, supabase),
+    images: (l.images || []).map((img: string) => resolveListingImage(img, supabase) || img),
+  }));
 
   return (
     <>
@@ -253,8 +268,9 @@ export default async function PublicListingsPage({
               }}
             >
               {listings.map((listing: any) => {
-                // Get display image
-                const displayImage = listing.cover_image || (listing.images && listing.images.length > 0 ? listing.images[0] : null);
+                // Get display image and resolve storage paths
+                const rawImage = listing.cover_image || (listing.images && listing.images.length > 0 ? listing.images[0] : null);
+                const displayImage = resolveListingImage(rawImage, supabase);
 
                 return (
                   <Link

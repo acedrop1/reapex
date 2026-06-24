@@ -16,6 +16,14 @@ import { generateListingSchema, generateBreadcrumbSchema } from '@/lib/seo/jsonL
 
 export const dynamic = 'force-dynamic';
 
+// Resolve listing image URLs — storage paths need to be converted to public URLs
+function resolveListingImage(path: string | null | undefined, supabase: any): string | null {
+  if (!path) return null;
+  if (path.startsWith('/') || path.startsWith('http')) return path;
+  const bucket = path.startsWith('listings/') ? 'listing-photos' : 'listing-images';
+  return supabase.storage.from(bucket).getPublicUrl(path).data.publicUrl;
+}
+
 // Helper function to denormalize city name for display
 function denormalizeCity(city: string): string {
   return city
@@ -59,6 +67,14 @@ export default async function ListingDetailPage({
 
   // Extract agent data - Supabase returns joined data as an array
   const agent = Array.isArray(listing.users) ? listing.users[0] : listing.users;
+
+  // Resolve image storage paths to public URLs
+  if (listing.cover_image) {
+    listing.cover_image = resolveListingImage(listing.cover_image, supabase) || listing.cover_image;
+  }
+  if (listing.images && Array.isArray(listing.images)) {
+    listing.images = listing.images.map((img: string) => resolveListingImage(img, supabase) || img);
+  }
 
   // Generate JSON-LD structured data
   const listingSchema = generateListingSchema({

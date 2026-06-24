@@ -116,7 +116,10 @@ export default function ListingsTab() {
             return (data || []).map((listing: any) => {
                 let img = listing.cover_image;
                 if (img && !img.startsWith('/') && !img.startsWith('http')) {
-                    img = supabase.storage.from('documents').getPublicUrl(img).data.publicUrl;
+                    // Try listing-images bucket first (manual uploads), falls back visually
+                    // Also try listing-photos bucket (MLS imports) via the URL pattern
+                    const bucket = img.startsWith('listings/') ? 'listing-photos' : 'listing-images';
+                    img = supabase.storage.from(bucket).getPublicUrl(img).data.publicUrl;
                 }
                 return { ...listing, cover_image: img };
             });

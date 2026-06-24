@@ -19,6 +19,14 @@ import { generateAgentSchema, generateBreadcrumbSchema } from '@/lib/seo/jsonLd'
 
 export const dynamic = 'force-dynamic';
 
+// Resolve listing image URLs — storage paths need to be converted to public URLs
+function resolveListingImage(path: string | null | undefined, supabase: any): string | null {
+  if (!path) return null;
+  if (path.startsWith('/') || path.startsWith('http')) return path;
+  const bucket = path.startsWith('listings/') ? 'listing-photos' : 'listing-images';
+  return supabase.storage.from(bucket).getPublicUrl(path).data.publicUrl;
+}
+
 export default async function AgentDetailPage({
   params,
 }: {
@@ -48,7 +56,13 @@ export default async function AgentDetailPage({
     .eq('status', 'active')
     .order('featured', { ascending: false })
     .order('created_at', { ascending: false });
-  const listings = listingsData || [];
+
+  // Resolve listing image storage paths to public URLs
+  const listings = (listingsData || []).map((l: any) => ({
+    ...l,
+    cover_image: resolveListingImage(l.cover_image, supabase) || l.cover_image,
+    images: (l.images || []).map((img: string) => resolveListingImage(img, supabase) || img),
+  }));
 
   // Fetch approved reviews
   const { data: reviewsData } = await supabase
