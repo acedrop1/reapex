@@ -265,6 +265,20 @@ export default function DashboardPage() {
     pauseTimeoutRef.current = setTimeout(() => setAnnouncementPaused(false), 10000);
   };
 
+  const handleAnnouncementPrev = () => {
+    setActiveAnnouncement((prev) => (prev - 1 + announcements.length) % announcements.length);
+    setAnnouncementPaused(true);
+    if (pauseTimeoutRef.current) clearTimeout(pauseTimeoutRef.current);
+    pauseTimeoutRef.current = setTimeout(() => setAnnouncementPaused(false), 10000);
+  };
+
+  const handleAnnouncementNext = () => {
+    setActiveAnnouncement((prev) => (prev + 1) % announcements.length);
+    setAnnouncementPaused(true);
+    if (pauseTimeoutRef.current) clearTimeout(pauseTimeoutRef.current);
+    pauseTimeoutRef.current = setTimeout(() => setAnnouncementPaused(false), 10000);
+  };
+
   // Plan-based cap calculation
   const userPlan = user?.subscription_plan || 'launch';
   const planCaps = {
@@ -539,27 +553,51 @@ export default function DashboardPage() {
                   ))}
                 </Box>
 
-                {/* Gold navigation dots */}
+                {/* Arrow navigation + dots */}
                 {announcements.length > 1 && (
-                  <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1, mt: 1.5 }}>
-                    {announcements.map((_: any, index: number) => (
-                      <Box
-                        key={index}
-                        onClick={() => handleDotClick(index)}
-                        sx={{
-                          width: 8,
-                          height: 8,
-                          borderRadius: '50%',
-                          backgroundColor: index === activeAnnouncement ? '#E2C05A' : 'rgba(226, 192, 90, 0.3)',
-                          cursor: 'pointer',
-                          transition: 'all 0.3s ease',
-                          '&:hover': {
-                            backgroundColor: index === activeAnnouncement ? '#E2C05A' : 'rgba(226, 192, 90, 0.5)',
-                            transform: 'scale(1.2)',
-                          },
-                        }}
-                      />
-                    ))}
+                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1.5, mt: 1.5 }}>
+                    <IconButton
+                      size="small"
+                      onClick={handleAnnouncementPrev}
+                      sx={{
+                        p: 0.5,
+                        color: '#808080',
+                        '&:hover': { color: '#E2C05A', backgroundColor: 'rgba(226, 192, 90, 0.1)' },
+                      }}
+                    >
+                      <CaretLeft size={16} weight="bold" />
+                    </IconButton>
+                    <Box sx={{ display: 'flex', gap: 0.75 }}>
+                      {announcements.map((_: any, index: number) => (
+                        <Box
+                          key={index}
+                          onClick={() => handleDotClick(index)}
+                          sx={{
+                            width: 8,
+                            height: 8,
+                            borderRadius: '50%',
+                            backgroundColor: index === activeAnnouncement ? '#E2C05A' : 'rgba(226, 192, 90, 0.3)',
+                            cursor: 'pointer',
+                            transition: 'all 0.3s ease',
+                            '&:hover': {
+                              backgroundColor: index === activeAnnouncement ? '#E2C05A' : 'rgba(226, 192, 90, 0.5)',
+                              transform: 'scale(1.2)',
+                            },
+                          }}
+                        />
+                      ))}
+                    </Box>
+                    <IconButton
+                      size="small"
+                      onClick={handleAnnouncementNext}
+                      sx={{
+                        p: 0.5,
+                        color: '#808080',
+                        '&:hover': { color: '#E2C05A', backgroundColor: 'rgba(226, 192, 90, 0.1)' },
+                      }}
+                    >
+                      <CaretRight size={16} weight="bold" />
+                    </IconButton>
                   </Box>
                 )}
               </Box>
@@ -572,7 +610,7 @@ export default function DashboardPage() {
           </StaggerItem>
 
           {/* Active Deals */}
-          <StaggerItem style={{ flex: 1, minHeight: 0 }}>
+          <StaggerItem>
           <Box
             sx={{
               p: 2,
@@ -581,8 +619,8 @@ export default function DashboardPage() {
               border: '1px solid #3A3A3A',
               display: (isMobile && mobileTab !== 0) ? 'none' : 'flex',
               flexDirection: 'column',
-              flex: 1,
-              minHeight: 0,
+              flexShrink: 0,
+              maxHeight: 220,
               overflow: 'hidden',
             }}
           >
@@ -684,7 +722,7 @@ export default function DashboardPage() {
           </StaggerItem>
 
           {/* My Listings — horizontal card list */}
-          <StaggerItem style={{ flex: 1, minHeight: 0 }}>
+          <StaggerItem style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
           <Box
             sx={{
               p: 2,
@@ -692,7 +730,7 @@ export default function DashboardPage() {
               borderRadius: '12px',
               border: '1px solid #3A3A3A',
               flex: 1,
-              minHeight: 0,
+              minHeight: 120,
               display: (isMobile && mobileTab !== 1) ? 'none' : 'flex',
               flexDirection: 'column',
               overflow: 'hidden',
@@ -1103,10 +1141,10 @@ export default function DashboardPage() {
                 </Box>
 
                 {/* Calendar Grid */}
-                <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 0.5, flex: 1 }}>
+                <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 0.5 }}>
                   {/* Empty cells for days before month starts */}
                   {Array.from({ length: getFirstDayOfMonth(currentMonth, currentYear) }).map((_, index) => (
-                    <Box key={`empty-${index}`} sx={{ aspectRatio: '1', backgroundColor: 'transparent' }} />
+                    <Box key={`empty-${index}`} sx={{ py: 1.5, backgroundColor: 'transparent' }} />
                   ))}
 
                   {/* Days of the month */}
@@ -1122,7 +1160,7 @@ export default function DashboardPage() {
                       <Box
                         key={date}
                         sx={{
-                          aspectRatio: '1',
+                          py: 1.5,
                           backgroundColor: isToday ? 'rgba(226, 192, 90, 0.1)' : '#121212',
                           border: isToday ? '2px solid #E2C05A' : '1px solid rgba(226, 192, 90, 0.08)',
                           borderRadius: '6px',
