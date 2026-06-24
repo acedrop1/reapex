@@ -22,6 +22,10 @@ const nextConfig = {
       },
       {
         protocol: 'https',
+        hostname: 'fspdniykbkthwkezqwwo.supabase.co',
+      },
+      {
+        protocol: 'https',
         hostname: 'photos.zillowstatic.com',
       },
     ],
