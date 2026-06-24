@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
@@ -78,6 +78,9 @@ export default function DashboardPage() {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [mobileTab, setMobileTab] = useState(0);
+  const [activeAnnouncement, setActiveAnnouncement] = useState(0);
+  const [announcementPaused, setAnnouncementPaused] = useState(false);
+  const pauseTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const getDefaultCta = (type: string) => {
     switch (type) {
@@ -246,6 +249,22 @@ export default function DashboardPage() {
     }
   };
 
+  // Announcements carousel auto-rotation
+  useEffect(() => {
+    if (announcements.length <= 1 || announcementPaused) return;
+    const timer = setInterval(() => {
+      setActiveAnnouncement((prev) => (prev + 1) % announcements.length);
+    }, 3000);
+    return () => clearInterval(timer);
+  }, [announcements.length, announcementPaused]);
+
+  const handleDotClick = (index: number) => {
+    setActiveAnnouncement(index);
+    setAnnouncementPaused(true);
+    if (pauseTimeoutRef.current) clearTimeout(pauseTimeoutRef.current);
+    pauseTimeoutRef.current = setTimeout(() => setAnnouncementPaused(false), 10000);
+  };
+
   // Plan-based cap calculation
   const userPlan = user?.subscription_plan || 'launch';
   const planCaps = {
@@ -329,7 +348,7 @@ export default function DashboardPage() {
   };
 
   return (
-    <Container maxWidth="xl" sx={{ py: 4, minHeight: '100%', display: 'flex', flexDirection: 'column' }}>
+    <Container maxWidth="xl" sx={{ py: 2, height: 'calc(100vh - 64px)', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
       <StaggerContainer delay={1.0}>
 
       {/* Notifications Popover */}
@@ -414,104 +433,135 @@ export default function DashboardPage() {
           </Tabs>
         </Box>
       )}
-      <Grid container spacing={2} sx={{ flex: 1, minHeight: 0 }}>
+      <Grid container spacing={2} sx={{ flex: 1, minHeight: 0, height: '100%', overflow: 'hidden' }}>
         {/* Left Side - Announcements, Active Deals, Listings stacked */}
-        <Grid item xs={12} md={7} sx={{ height: isMobile ? 'auto' : '100%', display: (isMobile && mobileTab === 2) ? 'none' : 'flex', flexDirection: 'column', gap: 2 }}>
-          {/* Announcements */}
+        <Grid item xs={12} md={5} sx={{ height: isMobile ? 'auto' : '100%', display: (isMobile && mobileTab === 2) ? 'none' : 'flex', flexDirection: 'column', gap: 1.5, overflow: 'hidden' }}>
+          {/* Announcements Carousel */}
           <StaggerItem>
           <Box
             sx={{
-              p: 2.5,
+              p: 2,
               backgroundColor: '#000000',
               borderRadius: '12px',
               border: '1px solid #3A3A3A',
               display: (isMobile && mobileTab !== 0) ? 'none' : 'flex',
               flexDirection: 'column',
+              flexShrink: 0,
             }}
           >
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
               <Megaphone size={18} color="#E2C05A" weight="duotone" />
               <Typography variant="subtitle1" sx={{ fontWeight: 600, color: '#FFFFFF', fontSize: '0.95rem' }}>
                 Announcements
               </Typography>
             </Box>
             {announcements && announcements.length > 0 ? (
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
-                {announcements.map((announcement: any) => (
-                  <Box
-                    key={announcement.id}
-                    sx={{
-                      display: 'flex',
-                      flexDirection: 'column',
-                      gap: 0.5,
-                      p: 2,
-                      backgroundColor: '#111111',
-                      border: '1px solid rgba(226, 192, 90, 0.08)',
-                      borderRadius: '8px',
-                      transition: 'all 0.2s ease',
-                      '&:hover': {
-                        borderColor: 'rgba(226, 192, 90, 0.2)',
-                      },
-                    }}
-                  >
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <Typography variant="body2" sx={{ fontWeight: 600, color: '#FFFFFF', fontSize: '0.875rem' }}>
-                        {announcement.title}
+              <Box>
+                {/* Single announcement display with crossfade */}
+                <Box sx={{ position: 'relative', minHeight: 80 }}>
+                  {announcements.map((announcement: any, index: number) => (
+                    <Box
+                      key={announcement.id}
+                      sx={{
+                        position: index === activeAnnouncement ? 'relative' : 'absolute',
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        opacity: index === activeAnnouncement ? 1 : 0,
+                        transition: 'opacity 0.5s ease-in-out',
+                        pointerEvents: index === activeAnnouncement ? 'auto' : 'none',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: 0.5,
+                        p: 1.5,
+                        backgroundColor: '#111111',
+                        border: '1px solid rgba(226, 192, 90, 0.08)',
+                        borderRadius: '8px',
+                      }}
+                    >
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <Typography variant="body2" sx={{ fontWeight: 600, color: '#FFFFFF', fontSize: '0.875rem' }}>
+                          {announcement.title}
+                        </Typography>
+                        {announcement.priority === 'high' && (
+                          <Box sx={{
+                            px: 1,
+                            py: 0.25,
+                            backgroundColor: 'rgba(239, 83, 80, 0.15)',
+                            borderRadius: '4px',
+                            border: '1px solid rgba(239, 83, 80, 0.3)'
+                          }}>
+                            <Typography variant="caption" sx={{ color: '#EF5350', fontSize: '0.7rem', fontWeight: 600 }}>
+                              HIGH
+                            </Typography>
+                          </Box>
+                        )}
+                      </Box>
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          color: '#aaaaaa',
+                          fontSize: '0.8rem',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          display: '-webkit-box',
+                          WebkitLineClamp: 2,
+                          WebkitBoxOrient: 'vertical',
+                        }}
+                      >
+                        {announcement.content}
                       </Typography>
-                      {announcement.priority === 'high' && (
-                        <Box sx={{
-                          px: 1,
-                          py: 0.25,
-                          backgroundColor: 'rgba(239, 83, 80, 0.15)',
-                          borderRadius: '4px',
-                          border: '1px solid rgba(239, 83, 80, 0.3)'
-                        }}>
-                          <Typography variant="caption" sx={{ color: '#EF5350', fontSize: '0.7rem', fontWeight: 600 }}>
-                            HIGH
-                          </Typography>
+                      {announcement.related_type && announcement.related_title && (
+                        <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 0.5 }}>
+                          <Button
+                            size="small"
+                            variant="outlined"
+                            href={announcement.related_url || '#'}
+                            sx={{
+                              fontSize: '0.7rem',
+                              py: 0.25,
+                              px: 1,
+                              minHeight: 0,
+                              borderColor: 'rgba(226, 192, 90, 0.5)',
+                              color: '#E2C05A',
+                              textTransform: 'none',
+                              '&:hover': {
+                                borderColor: '#E2C05A',
+                                backgroundColor: 'rgba(226, 192, 90, 0.1)',
+                              },
+                            }}
+                          >
+                            {announcement.related_cta_text || getDefaultCta(announcement.related_type)}
+                          </Button>
                         </Box>
                       )}
                     </Box>
-                    <Typography
-                      variant="body2"
-                      sx={{
-                        color: '#aaaaaa',
-                        fontSize: '0.8rem',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        display: '-webkit-box',
-                        WebkitLineClamp: 2,
-                        WebkitBoxOrient: 'vertical',
-                      }}
-                    >
-                      {announcement.content}
-                    </Typography>
-                    {announcement.related_type && announcement.related_title && (
-                      <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 0.5 }}>
-                        <Button
-                          size="small"
-                          variant="outlined"
-                          href={announcement.related_url || '#'}
-                          sx={{
-                            fontSize: '0.7rem',
-                            py: 0.25,
-                            px: 1,
-                            minHeight: 0,
-                            borderColor: 'rgba(226, 192, 90, 0.5)',
-                            color: '#E2C05A',
-                            textTransform: 'none',
-                            '&:hover': {
-                              borderColor: '#E2C05A',
-                              backgroundColor: 'rgba(226, 192, 90, 0.1)',
-                            },
-                          }}
-                        >
-                          {announcement.related_cta_text || getDefaultCta(announcement.related_type)}
-                        </Button>
-                      </Box>
-                    )}
+                  ))}
+                </Box>
+
+                {/* Gold navigation dots */}
+                {announcements.length > 1 && (
+                  <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1, mt: 1.5 }}>
+                    {announcements.map((_: any, index: number) => (
+                      <Box
+                        key={index}
+                        onClick={() => handleDotClick(index)}
+                        sx={{
+                          width: 8,
+                          height: 8,
+                          borderRadius: '50%',
+                          backgroundColor: index === activeAnnouncement ? '#E2C05A' : 'rgba(226, 192, 90, 0.3)',
+                          cursor: 'pointer',
+                          transition: 'all 0.3s ease',
+                          '&:hover': {
+                            backgroundColor: index === activeAnnouncement ? '#E2C05A' : 'rgba(226, 192, 90, 0.5)',
+                            transform: 'scale(1.2)',
+                          },
+                        }}
+                      />
+                    ))}
                   </Box>
-                ))}
+                )}
               </Box>
             ) : (
               <Typography variant="body2" sx={{ color: '#aaaaaa', fontSize: '0.85rem' }}>
@@ -522,7 +572,7 @@ export default function DashboardPage() {
           </StaggerItem>
 
           {/* Active Deals */}
-          <StaggerItem>
+          <StaggerItem style={{ flex: 1, minHeight: 0 }}>
           <Box
             sx={{
               p: 2,
@@ -531,6 +581,9 @@ export default function DashboardPage() {
               border: '1px solid #3A3A3A',
               display: (isMobile && mobileTab !== 0) ? 'none' : 'flex',
               flexDirection: 'column',
+              flex: 1,
+              minHeight: 0,
+              overflow: 'hidden',
             }}
           >
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5 }}>
@@ -630,9 +683,21 @@ export default function DashboardPage() {
           </Box>
           </StaggerItem>
 
-          {/* Listings Below - Full Width */}
+          {/* My Listings — horizontal card list */}
           <StaggerItem style={{ flex: 1, minHeight: 0 }}>
-          <Box sx={{ flex: 1, minHeight: 0, display: (isMobile && mobileTab !== 1) ? 'none' : 'flex', flexDirection: 'column' }}>
+          <Box
+            sx={{
+              p: 2,
+              backgroundColor: '#000000',
+              borderRadius: '12px',
+              border: '1px solid #3A3A3A',
+              flex: 1,
+              minHeight: 0,
+              display: (isMobile && mobileTab !== 1) ? 'none' : 'flex',
+              flexDirection: 'column',
+              overflow: 'hidden',
+            }}
+          >
             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 <House size={18} color="#E2C05A" weight="duotone" />
@@ -643,126 +708,128 @@ export default function DashboardPage() {
               <Button
                 component={Link}
                 href="/dashboard/business?tab=listings"
-                sx={{ color: '#E2C05A', textTransform: 'none', fontSize: '0.75rem' }}
+                sx={{ color: '#E2C05A', textTransform: 'none', fontSize: '0.75rem', p: 0, minWidth: 'auto' }}
               >
                 View All
               </Button>
             </Box>
 
-            {listings && listings.length > 0 ? (
-              <Box>
-                <Grid container spacing={1.5}>
-                  {listings.slice(0, 8).map((listing) => (
-                    <Grid item xs={6} sm={4} md={3} key={listing.id}>
+            <Box
+              sx={{
+                flex: 1,
+                minHeight: 0,
+                overflowY: 'auto',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 1,
+                '&::-webkit-scrollbar': { width: '8px' },
+                '&::-webkit-scrollbar-track': { backgroundColor: '#000000', borderRadius: '4px' },
+                '&::-webkit-scrollbar-thumb': {
+                  backgroundColor: '#2A2A2A',
+                  borderRadius: '4px',
+                  '&:hover': { backgroundColor: '#333333' },
+                },
+              }}
+            >
+              {listings && listings.length > 0 ? (
+                listings.map((listing) => (
+                  <Box
+                    key={listing.id}
+                    component={Link}
+                    href="/dashboard/business?tab=listings"
+                    sx={{
+                      p: 1,
+                      backgroundColor: '#111111',
+                      borderRadius: '6px',
+                      border: '1px solid #3A3A3A',
+                      transition: 'all 200ms ease',
+                      textDecoration: 'none',
+                      display: 'flex',
+                      flexDirection: 'row',
+                      gap: 1.5,
+                      alignItems: 'center',
+                      flexShrink: 0,
+                      '&:hover': {
+                        borderColor: '#E2C05A',
+                        boxShadow: '0 4px 12px rgba(226, 192, 90, 0.2)',
+                      },
+                    }}
+                  >
+                    {/* Thumbnail */}
+                    <Box
+                      sx={{
+                        position: 'relative',
+                        width: 72,
+                        height: 72,
+                        borderRadius: '6px',
+                        overflow: 'hidden',
+                        backgroundColor: '#2A2A2A',
+                        flexShrink: 0,
+                      }}
+                    >
+                      {listing.cover_image ? (
+                        <Box
+                          component="img"
+                          src={listing.cover_image}
+                          alt={listing.property_address}
+                          sx={{
+                            width: '100%',
+                            height: '100%',
+                            objectFit: 'cover',
+                            display: 'block',
+                          }}
+                          onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
+                            e.currentTarget.style.display = 'none';
+                            const placeholder = e.currentTarget.nextElementSibling as HTMLElement;
+                            if (placeholder) placeholder.style.display = 'flex';
+                          }}
+                        />
+                      ) : null}
                       <Box
-                        component={Link}
-                        href="/dashboard/business?tab=listings"
                         sx={{
-                          p: 1,
-                          backgroundColor: '#000000',
-                          borderRadius: '8px',
-                          border: '1px solid #3A3A3A',
-                          transition: 'all 200ms ease',
-                          textDecoration: 'none',
-                          display: 'flex',
-                          flexDirection: 'column',
-                          gap: 0.75,
-                          '&:hover': {
-                            borderColor: '#E2C05A',
-                            boxShadow: '0 4px 12px rgba(226, 192, 90, 0.2)',
-                          },
+                          width: '100%',
+                          height: '100%',
+                          display: listing.cover_image ? 'none' : 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          position: listing.cover_image ? 'absolute' : 'relative',
+                          top: 0,
+                          left: 0,
                         }}
                       >
-                        <Box
-                          sx={{
-                            position: 'relative',
-                            width: '100%',
-                            height: 80,
-                            borderRadius: '6px',
-                            overflow: 'hidden',
-                            backgroundColor: '#2A2A2A',
-                            flexShrink: 0,
-                          }}
-                        >
-                          {listing.cover_image ? (
-                            <Box
-                              component="img"
-                              src={listing.cover_image}
-                              alt={listing.property_address}
-                              sx={{
-                                width: '100%',
-                                height: '100%',
-                                objectFit: 'cover',
-                                display: 'block',
-                              }}
-                              onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
-                                e.currentTarget.style.display = 'none';
-                                // Show the placeholder sibling
-                                const placeholder = e.currentTarget.nextElementSibling as HTMLElement;
-                                if (placeholder) placeholder.style.display = 'flex';
-                              }}
-                            />
-                          ) : null}
-                          <Box
-                            sx={{
-                              width: '100%',
-                              height: '100%',
-                              display: listing.cover_image ? 'none' : 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              position: listing.cover_image ? 'absolute' : 'relative',
-                              top: 0,
-                              left: 0,
-                            }}
-                          >
-                            <House size={28} color="#4A4A4A" weight="duotone" />
-                          </Box>
-                        </Box>
-
-                        <Box>
-                          <Typography variant="body2" sx={{ fontWeight: 600, color: '#FFFFFF', mb: 0.3, fontSize: '0.75rem', lineHeight: 1.1 }} noWrap>
-                            {listing.property_address}
-                          </Typography>
-                          <Typography variant="caption" sx={{ color: '#808080', display: 'block', mb: 0.3, fontSize: '0.6rem', lineHeight: 1.1 }} noWrap>
-                            {listing.property_city}
-                          </Typography>
-                          <Typography variant="body2" sx={{ fontWeight: 600, color: '#E2C05A', fontSize: '0.75rem', lineHeight: 1.1, fontFamily: '"JetBrains Mono", monospace' }}>
-                            ${listing.price?.toLocaleString()}
-                          </Typography>
-                        </Box>
+                        <House size={28} color="#4A4A4A" weight="duotone" />
                       </Box>
-                    </Grid>
-                  ))}
-                </Grid>
+                    </Box>
 
-                {/* Show count if more than 8 */}
-                {listings.length > 8 && (
-                  <Box sx={{ textAlign: 'center', mt: 1.5 }}>
-                    <Button
-                      component={Link}
-                      href="/dashboard/business?tab=listings"
-                      size="small"
-                      sx={{ color: '#E2C05A', textTransform: 'none', fontSize: '0.75rem' }}
-                    >
-                      +{listings.length - 8} more — View All
-                    </Button>
+                    {/* Text content */}
+                    <Box sx={{ flex: 1, minWidth: 0 }}>
+                      <Typography variant="body2" sx={{ fontWeight: 600, color: '#FFFFFF', mb: 0.3, fontSize: '0.8rem', lineHeight: 1.2 }} noWrap>
+                        {listing.property_address}
+                      </Typography>
+                      <Typography variant="caption" sx={{ color: '#808080', display: 'block', mb: 0.3, fontSize: '0.7rem', lineHeight: 1.2 }} noWrap>
+                        {listing.property_city}
+                      </Typography>
+                      <Typography variant="body2" sx={{ fontWeight: 600, color: '#E2C05A', fontSize: '0.8rem', lineHeight: 1.2, fontFamily: '"JetBrains Mono", monospace' }}>
+                        ${listing.price?.toLocaleString()}
+                      </Typography>
+                    </Box>
                   </Box>
-                )}
-              </Box>
-            ) : (
-              <Box sx={{ textAlign: 'center', py: 3, backgroundColor: '#000000', borderRadius: '8px', border: '1px solid #3A3A3A' }}>
-                <House size={32} color="#4A4A4A" weight="duotone" />
-                <Typography variant="caption" sx={{ color: '#808080', mt: 1, display: 'block', fontSize: '0.7rem' }}>
-                  No active listings
-                </Typography>
-              </Box>
-            )}
+                ))
+              ) : (
+                <Box sx={{ textAlign: 'center', py: 3 }}>
+                  <House size={32} color="#4A4A4A" weight="duotone" />
+                  <Typography variant="caption" sx={{ color: '#808080', mt: 1, display: 'block', fontSize: '0.7rem' }}>
+                    No active listings
+                  </Typography>
+                </Box>
+              )}
+            </Box>
           </Box>
           </StaggerItem>
         </Grid>
 
         {/* Right Side - Cap Progress + Calendar */}
-        <Grid item xs={12} md={5} sx={{ height: isMobile ? 'auto' : '100%', display: (isMobile && mobileTab !== 2) ? 'none' : 'flex', flexDirection: 'column', gap: 2 }}>
+        <Grid item xs={12} md={7} sx={{ height: isMobile ? 'auto' : '100%', display: (isMobile && mobileTab !== 2) ? 'none' : 'flex', flexDirection: 'column', gap: 1.5, overflow: 'hidden' }}>
           {/* Progress to Cap (compact) */}
           <StaggerItem>
           <Box
