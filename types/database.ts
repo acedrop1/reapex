@@ -46,6 +46,9 @@ export interface Transaction {
   property_zip: string;
   listing_price: number | null;
   sale_price: number | null;
+  contract_price: number | null;
+  commission_amount: number | null;
+  commission_percentage: number | null;
   gci: number;
   agent_split_percentage: number;
   agent_commission: number;

@@ -41,6 +41,8 @@ import {
     useMediaQuery,
     Autocomplete,
     CircularProgress,
+    ToggleButton,
+    ToggleButtonGroup,
 } from '@mui/material';
 import { dashboardStyles } from '@/lib/theme/dashboardStyles';
 import { Add, Delete, Description, CheckCircle, RadioButtonUnchecked, Upload } from '@mui/icons-material';
@@ -136,9 +138,21 @@ export default function TransactionsTab({ userProfile }: TransactionsTabProps) {
     const [newPropertyCity, setNewPropertyCity] = useState('');
     const [newPropertyState, setNewPropertyState] = useState('');
     const [newPropertyZip, setNewPropertyZip] = useState('');
-    const [newPropertyType, setNewPropertyType] = useState('single_family_home');
+    const [newPropertyType, setNewPropertyType] = useState('residential');
     const [newPrice, setNewPrice] = useState('');
+    const [newContractPrice, setNewContractPrice] = useState('');
+    const [newCommissionMode, setNewCommissionMode] = useState<'manual' | 'percentage'>('manual');
+    const [newCommissionAmount, setNewCommissionAmount] = useState('');
+    const [newCommissionPercentage, setNewCommissionPercentage] = useState(3);
     const [newCoverImage, setNewCoverImage] = useState('');
+
+    // Commission resolves to a dollar amount either way: manual entry, or percentage of contract price
+    const resolvedNewCommission = newCommissionMode === 'percentage'
+        ? ((parseFloat(newContractPrice) || 0) * newCommissionPercentage) / 100
+        : parseFloat(newCommissionAmount) || 0;
+    const isNewCommissionValid = newCommissionMode === 'percentage'
+        ? !!newContractPrice
+        : !!newCommissionAmount;
 
     // Listing selection for new transaction
     const [selectedNewTransactionListingId, setSelectedNewTransactionListingId] = useState<string | null>(null);
@@ -257,8 +271,12 @@ export default function TransactionsTab({ userProfile }: TransactionsTabProps) {
             setNewPropertyCity('');
             setNewPropertyState('');
             setNewPropertyZip('');
-            setNewPropertyType('single_family_home');
+            setNewPropertyType('residential');
             setNewPrice('');
+            setNewContractPrice('');
+            setNewCommissionMode('manual');
+            setNewCommissionAmount('');
+            setNewCommissionPercentage(3);
             setNewCoverImage('');
             return;
         }
@@ -360,7 +378,7 @@ export default function TransactionsTab({ userProfile }: TransactionsTabProps) {
     };
 
     const handleCreateNewTransaction = async () => {
-        if (!newPropertyAddress || !newPropertyCity || !newPropertyState || !newPropertyZip || !newPrice) {
+        if (!newPropertyAddress || !newPropertyCity || !newPropertyState || !newPropertyZip || !newPrice || !newContractPrice || !isNewCommissionValid) {
             alert('Please fill in all required fields');
             return;
         }
@@ -386,6 +404,9 @@ export default function TransactionsTab({ userProfile }: TransactionsTabProps) {
                 property_state: newPropertyState,
                 property_zip: newPropertyZip,
                 listing_price: parseFloat(newPrice),
+                contract_price: parseFloat(newContractPrice),
+                commission_amount: resolvedNewCommission,
+                commission_percentage: newCommissionMode === 'percentage' ? newCommissionPercentage : null,
                 status: 'pending',
             };
 
@@ -419,8 +440,12 @@ export default function TransactionsTab({ userProfile }: TransactionsTabProps) {
             setNewPropertyCity('');
             setNewPropertyState('');
             setNewPropertyZip('');
-            setNewPropertyType('single_family_home');
+            setNewPropertyType('residential');
             setNewPrice('');
+            setNewContractPrice('');
+            setNewCommissionMode('manual');
+            setNewCommissionAmount('');
+            setNewCommissionPercentage(3);
             setNewCoverImage('');
             setSelectedNewTransactionListingId(null);
             setSelectedNewTransactionListing(null);
@@ -1289,13 +1314,12 @@ export default function TransactionsTab({ userProfile }: TransactionsTabProps) {
                                         },
                                     }}
                                 >
-                                    <MenuItem value="single_family_home">Single Family Home</MenuItem>
-                                    <MenuItem value="apartment">Apartment</MenuItem>
-                                    <MenuItem value="condo">Condo</MenuItem>
-                                    <MenuItem value="villa">Villa</MenuItem>
-                                    <MenuItem value="office">Office</MenuItem>
-                                    <MenuItem value="shop">Shop</MenuItem>
-                                    <MenuItem value="studio">Studio</MenuItem>
+                                    <MenuItem value="residential">Residential</MenuItem>
+                                    <MenuItem value="multifamily">Multifamily</MenuItem>
+                                    <MenuItem value="condo_coop_townhouse">Condo/Coop/Townhouse</MenuItem>
+                                    <MenuItem value="mixed_use">Mixed Use</MenuItem>
+                                    <MenuItem value="land">Land</MenuItem>
+                                    <MenuItem value="commercial">Commercial</MenuItem>
                                 </Select>
                             </FormControl>
 
@@ -1348,6 +1372,107 @@ export default function TransactionsTab({ userProfile }: TransactionsTabProps) {
                                 sx={dashboardStyles.textField}
                                 placeholder="$0"
                             />
+
+                            <TextField
+                                label="Contract Price *"
+                                value={newContractPrice ? `$${parseFloat(newContractPrice).toLocaleString()}` : ''}
+                                onChange={(e) => {
+                                    const value = e.target.value.replace(/[^0-9.]/g, '');
+                                    setNewContractPrice(value);
+                                }}
+                                fullWidth
+                                sx={dashboardStyles.textField}
+                                placeholder="$0"
+                            />
+
+                            <Box
+                                sx={{
+                                    p: 2,
+                                    backgroundColor: '#111111',
+                                    border: '1px solid #2A2A2A',
+                                    borderRadius: '8px',
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    gap: 1.5,
+                                }}
+                            >
+                                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                    <Typography variant="body2" sx={{ color: '#FFFFFF', fontWeight: 600 }}>
+                                        Commission *
+                                    </Typography>
+                                    <ToggleButtonGroup
+                                        value={newCommissionMode}
+                                        exclusive
+                                        size="small"
+                                        onChange={(e, mode) => mode && setNewCommissionMode(mode)}
+                                    >
+                                        {(['manual', 'percentage'] as const).map((mode) => (
+                                            <ToggleButton
+                                                key={mode}
+                                                value={mode}
+                                                sx={{
+                                                    px: 1.5,
+                                                    py: 0.5,
+                                                    fontSize: '0.7rem',
+                                                    textTransform: 'none',
+                                                    color: '#B0B0B0',
+                                                    border: '1px solid #2A2A2A',
+                                                    '&.Mui-selected': {
+                                                        backgroundColor: 'rgba(226, 192, 90, 0.15)',
+                                                        color: '#E2C05A',
+                                                        '&:hover': { backgroundColor: 'rgba(226, 192, 90, 0.25)' },
+                                                    },
+                                                }}
+                                            >
+                                                {mode === 'manual' ? '$ Amount' : 'Calculate Percentage'}
+                                            </ToggleButton>
+                                        ))}
+                                    </ToggleButtonGroup>
+                                </Box>
+
+                                {newCommissionMode === 'manual' ? (
+                                    <TextField
+                                        label="Commission Amount *"
+                                        value={newCommissionAmount ? `$${parseFloat(newCommissionAmount).toLocaleString()}` : ''}
+                                        onChange={(e) => {
+                                            const value = e.target.value.replace(/[^0-9.]/g, '');
+                                            setNewCommissionAmount(value);
+                                        }}
+                                        fullWidth
+                                        sx={dashboardStyles.textField}
+                                        placeholder="$0"
+                                    />
+                                ) : (
+                                    <Box sx={{ px: 1 }}>
+                                        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 0.5 }}>
+                                            <Typography variant="caption" sx={{ color: '#B0B0B0' }}>
+                                                Percentage of Contract Price
+                                            </Typography>
+                                            <Typography variant="body2" sx={{ color: '#E2C05A', fontWeight: 600 }}>
+                                                {newCommissionPercentage}%
+                                            </Typography>
+                                        </Box>
+                                        <Slider
+                                            value={newCommissionPercentage}
+                                            min={0}
+                                            max={10}
+                                            step={0.25}
+                                            onChange={(e, value) => setNewCommissionPercentage(value as number)}
+                                            valueLabelDisplay="auto"
+                                            valueLabelFormat={(value) => `${value}%`}
+                                            sx={{
+                                                color: '#E2C05A',
+                                                '& .MuiSlider-rail': { backgroundColor: '#2A2A2A' },
+                                            }}
+                                        />
+                                        <Typography variant="body2" sx={{ color: newContractPrice ? '#FFFFFF' : '#808080' }}>
+                                            {newContractPrice
+                                                ? `Commission: $${resolvedNewCommission.toLocaleString(undefined, { maximumFractionDigits: 2 })}`
+                                                : 'Enter a contract price to calculate the commission'}
+                                        </Typography>
+                                    </Box>
+                                )}
+                            </Box>
                         </Box>
                     </DialogContent>
                     <DialogActions sx={{ padding: '16px 24px' }}>
@@ -1358,7 +1483,7 @@ export default function TransactionsTab({ userProfile }: TransactionsTabProps) {
                             variant="contained"
                             onClick={handleCreateNewTransaction}
                             sx={dashboardStyles.buttonContained}
-                            disabled={!newPropertyAddress || !newPropertyCity || !newPropertyState || !newPropertyZip || !newPrice || isCreatingTransaction}
+                            disabled={!newPropertyAddress || !newPropertyCity || !newPropertyState || !newPropertyZip || !newPrice || !newContractPrice || !isNewCommissionValid || isCreatingTransaction}
                         >
                             {isCreatingTransaction ? 'Creating...' : 'Create Transaction'}
                         </Button>

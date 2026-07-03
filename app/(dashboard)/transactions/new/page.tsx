@@ -16,6 +16,9 @@ import {
   FormControl,
   InputLabel,
   Select,
+  Slider,
+  ToggleButton,
+  ToggleButtonGroup,
 } from '@mui/material';
 import { dashboardStyles } from '@/lib/theme/dashboardStyles';
 import {
@@ -32,11 +35,13 @@ export default function NewTransactionPage() {
   const [formData, setFormData] = useState({
     transaction_type: 'sale',
     agency_type: 'seller',
+    property_type: 'residential',
     property_address: '',
     property_city: '',
     property_state: '',
     property_zip: '',
     listing_price: '',
+    contract_price: '',
     sale_price: '',
     gci: '',
     agent_split_percentage: '',
@@ -45,6 +50,17 @@ export default function NewTransactionPage() {
     contingency_date: '',
     listing_date: '',
   });
+  const [commissionMode, setCommissionMode] = useState<'manual' | 'percentage'>('manual');
+  const [commissionAmount, setCommissionAmount] = useState('');
+  const [commissionPercentage, setCommissionPercentage] = useState(3);
+
+  // Commission resolves to a dollar amount either way: manual entry, or percentage of contract price
+  const resolvedCommission = commissionMode === 'percentage'
+    ? ((parseFloat(formData.contract_price) || 0) * commissionPercentage) / 100
+    : parseFloat(commissionAmount) || 0;
+  const isCommissionValid = commissionMode === 'percentage'
+    ? !!formData.contract_price
+    : !!commissionAmount;
 
   const createTransactionMutation = useMutation({
     mutationFn: async (data: typeof formData) => {
@@ -55,11 +71,15 @@ export default function NewTransactionPage() {
         agent_id: user.id,
         transaction_type: data.transaction_type,
         agency_type: data.agency_type,
+        property_type: data.property_type,
         property_address: data.property_address,
         property_city: data.property_city,
         property_state: data.property_state,
         property_zip: data.property_zip,
         listing_price: data.listing_price ? parseFloat(data.listing_price) : null,
+        contract_price: data.contract_price ? parseFloat(data.contract_price) : null,
+        commission_amount: resolvedCommission,
+        commission_percentage: commissionMode === 'percentage' ? commissionPercentage : null,
         sale_price: data.sale_price ? parseFloat(data.sale_price) : null,
         gci: parseFloat(data.gci) || 0,
         agent_split_percentage: parseFloat(data.agent_split_percentage) || 0,
@@ -80,6 +100,10 @@ export default function NewTransactionPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!isCommissionValid) {
+      alert('Please enter a commission amount, or a contract price to calculate it from.');
+      return;
+    }
     createTransactionMutation.mutate(formData);
   };
 
@@ -154,6 +178,24 @@ export default function NewTransactionPage() {
               </Typography>
             </Grid>
             <Grid item xs={12}>
+              <FormControl fullWidth sx={dashboardStyles.textField}>
+                <InputLabel>Property Type</InputLabel>
+                <Select
+                  value={formData.property_type}
+                  label="Property Type"
+                  onChange={(e) => setFormData({ ...formData, property_type: e.target.value })}
+                  required
+                >
+                  <MenuItem value="residential">Residential</MenuItem>
+                  <MenuItem value="multifamily">Multifamily</MenuItem>
+                  <MenuItem value="condo_coop_townhouse">Condo/Coop/Townhouse</MenuItem>
+                  <MenuItem value="mixed_use">Mixed Use</MenuItem>
+                  <MenuItem value="land">Land</MenuItem>
+                  <MenuItem value="commercial">Commercial</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={12}>
               <TextField
                 fullWidth
                 label="Property Address"
@@ -218,6 +260,105 @@ export default function NewTransactionPage() {
                 onChange={(e) => setFormData({ ...formData, sale_price: e.target.value })}
                 sx={dashboardStyles.textField}
               />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="Contract Price"
+                type="number"
+                value={formData.contract_price}
+                onChange={(e) => setFormData({ ...formData, contract_price: e.target.value })}
+                required
+                sx={dashboardStyles.textField}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <Box
+                sx={{
+                  p: 2,
+                  backgroundColor: '#111111',
+                  border: '1px solid #2A2A2A',
+                  borderRadius: '8px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 1.5,
+                }}
+              >
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                    Commission *
+                  </Typography>
+                  <ToggleButtonGroup
+                    value={commissionMode}
+                    exclusive
+                    size="small"
+                    onChange={(e, mode) => mode && setCommissionMode(mode)}
+                  >
+                    {(['manual', 'percentage'] as const).map((mode) => (
+                      <ToggleButton
+                        key={mode}
+                        value={mode}
+                        sx={{
+                          px: 1.5,
+                          py: 0.5,
+                          fontSize: '0.7rem',
+                          textTransform: 'none',
+                          color: '#B0B0B0',
+                          border: '1px solid #2A2A2A',
+                          '&.Mui-selected': {
+                            backgroundColor: 'rgba(226, 192, 90, 0.15)',
+                            color: '#E2C05A',
+                            '&:hover': { backgroundColor: 'rgba(226, 192, 90, 0.25)' },
+                          },
+                        }}
+                      >
+                        {mode === 'manual' ? '$ Amount' : 'Calculate Percentage'}
+                      </ToggleButton>
+                    ))}
+                  </ToggleButtonGroup>
+                </Box>
+
+                {commissionMode === 'manual' ? (
+                  <TextField
+                    fullWidth
+                    label="Commission Amount"
+                    type="number"
+                    value={commissionAmount}
+                    onChange={(e) => setCommissionAmount(e.target.value)}
+                    required
+                    sx={dashboardStyles.textField}
+                  />
+                ) : (
+                  <Box sx={{ px: 1 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 0.5 }}>
+                      <Typography variant="caption" sx={{ color: '#B0B0B0' }}>
+                        Percentage of Contract Price
+                      </Typography>
+                      <Typography variant="body2" sx={{ color: '#E2C05A', fontWeight: 600 }}>
+                        {commissionPercentage}%
+                      </Typography>
+                    </Box>
+                    <Slider
+                      value={commissionPercentage}
+                      min={0}
+                      max={10}
+                      step={0.25}
+                      onChange={(e, value) => setCommissionPercentage(value as number)}
+                      valueLabelDisplay="auto"
+                      valueLabelFormat={(value) => `${value}%`}
+                      sx={{
+                        color: '#E2C05A',
+                        '& .MuiSlider-rail': { backgroundColor: '#2A2A2A' },
+                      }}
+                    />
+                    <Typography variant="body2" sx={{ color: formData.contract_price ? '#FFFFFF' : '#808080' }}>
+                      {formData.contract_price
+                        ? `Commission: $${resolvedCommission.toLocaleString(undefined, { maximumFractionDigits: 2 })}`
+                        : 'Enter a contract price to calculate the commission'}
+                    </Typography>
+                  </Box>
+                )}
+              </Box>
             </Grid>
             <Grid item xs={12} sm={6}>
               <TextField

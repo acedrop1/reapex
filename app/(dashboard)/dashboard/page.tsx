@@ -42,6 +42,7 @@ import {
   FileText,
   Check,
   Megaphone,
+  CurrencyDollar,
 } from '@phosphor-icons/react';
 import { createClient } from '@/lib/supabase/client';
 import OnboardingWizard from '@/components/onboarding/OnboardingWizard';
@@ -55,6 +56,51 @@ interface Task {
   priority: 'high' | 'medium' | 'low';
   completed: boolean;
   category: string;
+}
+
+// Single-line text that slides left to reveal the remainder when it overflows its frame
+function MarqueeText({ text, sx }: { text: string; sx?: any }) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const textRef = useRef<HTMLDivElement>(null);
+  const [overflowPx, setOverflowPx] = useState(0);
+
+  useEffect(() => {
+    const measure = () => {
+      if (containerRef.current && textRef.current) {
+        setOverflowPx(Math.max(0, textRef.current.scrollWidth - containerRef.current.clientWidth));
+      }
+    };
+    measure();
+    window.addEventListener('resize', measure);
+    return () => window.removeEventListener('resize', measure);
+  }, [text]);
+
+  return (
+    <Box ref={containerRef} sx={{ overflow: 'hidden', whiteSpace: 'nowrap', width: '100%' }}>
+      <Typography
+        ref={textRef}
+        variant="body2"
+        component="div"
+        sx={{
+          display: 'inline-block',
+          whiteSpace: 'nowrap',
+          ...(overflowPx > 0 && {
+            // Pause at each end, slide across at a constant speed regardless of length
+            animation: `dashboard-announcement-marquee ${Math.max(6, overflowPx / 25)}s linear infinite alternate`,
+            '@keyframes dashboard-announcement-marquee': {
+              '0%': { transform: 'translateX(0)' },
+              '20%': { transform: 'translateX(0)' },
+              '80%': { transform: `translateX(-${overflowPx}px)` },
+              '100%': { transform: `translateX(-${overflowPx}px)` },
+            },
+          }),
+          ...sx,
+        }}
+      >
+        {text}
+      </Typography>
+    </Box>
+  );
 }
 
 export default function DashboardPage() {
@@ -155,14 +201,13 @@ export default function DashboardPage() {
       });
       setListings(resolvedListings);
 
-      // Fetch transactions (3 latest active deals)
+      // Fetch active transactions (list display + pending commission total)
       const { data: transactionsData } = await supabase
         .from('transactions')
-        .select('id, property_address, property_city, sale_price, status, closing_date')
+        .select('id, property_address, property_city, listing_price, contract_price, sale_price, commission_amount, agent_commission, status, closing_date')
         .eq('agent_id', session.user.id)
         .in('status', ['pending', 'under_contract'])
-        .order('updated_at', { ascending: false })
-        .limit(3);
+        .order('updated_at', { ascending: false });
       setTransactions(transactionsData || []);
 
       // Fetch notifications (unread)
@@ -249,12 +294,12 @@ export default function DashboardPage() {
     }
   };
 
-  // Announcements carousel auto-rotation
+  // Announcements carousel auto-rotation (8s per announcement)
   useEffect(() => {
     if (announcements.length <= 1 || announcementPaused) return;
     const timer = setInterval(() => {
       setActiveAnnouncement((prev) => (prev + 1) % announcements.length);
-    }, 3000);
+    }, 8000);
     return () => clearInterval(timer);
   }, [announcements.length, announcementPaused]);
 
@@ -296,6 +341,13 @@ export default function DashboardPage() {
     if (percentage < 75) return '#FFB74D'; // Yellow
     return '#EF5350'; // Red
   };
+
+  // Pending commission: sum across active (pending/under contract) transactions
+  const pendingCommissionTotal = transactions.reduce(
+    (sum, t) => sum + (Number(t.commission_amount ?? t.agent_commission) || 0),
+    0
+  );
+  const pendingCommissionDeals = transactions.length;
 
   const eventsByDate = upcomingEvents.reduce((acc, event) => {
     if (!acc[event.date]) {
@@ -448,10 +500,10 @@ export default function DashboardPage() {
         </Box>
       )}
       <Box sx={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, height: '100%', overflow: 'hidden', gap: 2 }}>
-        {/* ===== TOP ROW: Announcements + Progress to Cap ===== */}
+        {/* ===== TOP ROW: Announcements + Progress to Cap + Pending Commission ===== */}
         <Grid container spacing={2} sx={{ flexShrink: 0 }}>
-          {/* Announcements (left) */}
-          <Grid item xs={12} md={7}>
+          {/* Announcements (left, matches combined width of Transactions + My Listings below) */}
+          <Grid item xs={12} md={8}>
             <StaggerItem>
             <Box
               sx={{
@@ -472,16 +524,17 @@ export default function DashboardPage() {
               </Box>
               {announcements && announcements.length > 0 ? (
                 <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-                  {/* Single announcement display with crossfade */}
-                  <Box sx={{ position: 'relative', minHeight: 70 }}>
+                  {/* Single announcement display with crossfade — fixed one-size frame; overflowing text slides left */}
+                  <Box sx={{ position: 'relative', height: 104, flexShrink: 0 }}>
                     {announcements.map((announcement: any, index: number) => (
                       <Box
                         key={announcement.id}
                         sx={{
-                          position: index === activeAnnouncement ? 'relative' : 'absolute',
+                          position: 'absolute',
                           top: 0,
                           left: 0,
                           right: 0,
+                          bottom: 0,
                           opacity: index === activeAnnouncement ? 1 : 0,
                           transition: 'opacity 0.5s ease-in-out',
                           pointerEvents: index === activeAnnouncement ? 'auto' : 'none',
@@ -492,10 +545,11 @@ export default function DashboardPage() {
                           backgroundColor: '#111111',
                           border: '1px solid rgba(226, 192, 90, 0.08)',
                           borderRadius: '8px',
+                          overflow: 'hidden',
                         }}
                       >
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                          <Typography variant="body2" sx={{ fontWeight: 600, color: '#FFFFFF', fontSize: '0.875rem' }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, minWidth: 0 }}>
+                          <Typography variant="body2" noWrap sx={{ fontWeight: 600, color: '#FFFFFF', fontSize: '0.875rem', minWidth: 0 }}>
                             {announcement.title}
                           </Typography>
                           {announcement.priority === 'high' && (
@@ -504,7 +558,8 @@ export default function DashboardPage() {
                               py: 0.25,
                               backgroundColor: 'rgba(239, 83, 80, 0.15)',
                               borderRadius: '4px',
-                              border: '1px solid rgba(239, 83, 80, 0.3)'
+                              border: '1px solid rgba(239, 83, 80, 0.3)',
+                              flexShrink: 0,
                             }}>
                               <Typography variant="caption" sx={{ color: '#EF5350', fontSize: '0.7rem', fontWeight: 600 }}>
                                 HIGH
@@ -512,22 +567,12 @@ export default function DashboardPage() {
                             </Box>
                           )}
                         </Box>
-                        <Typography
-                          variant="body2"
-                          sx={{
-                            color: '#aaaaaa',
-                            fontSize: '0.8rem',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                            display: '-webkit-box',
-                            WebkitLineClamp: 2,
-                            WebkitBoxOrient: 'vertical',
-                          }}
-                        >
-                          {announcement.content}
-                        </Typography>
+                        <MarqueeText
+                          text={announcement.content}
+                          sx={{ color: '#aaaaaa', fontSize: '0.8rem' }}
+                        />
                         {announcement.related_type && announcement.related_title && (
-                          <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 0.5 }}>
+                          <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 'auto' }}>
                             <Button
                               size="small"
                               variant="outlined"
@@ -611,9 +656,9 @@ export default function DashboardPage() {
             </StaggerItem>
           </Grid>
 
-          {/* Progress to Cap (right) */}
-          <Grid item xs={12} md={5}>
-            <StaggerItem>
+          {/* Progress to Cap */}
+          <Grid item xs={12} sm={6} md={2}>
+            <StaggerItem style={{ height: '100%' }}>
             <Box
               sx={{
                 p: 2,
@@ -624,22 +669,22 @@ export default function DashboardPage() {
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'center',
+                gap: 1,
               }}
             >
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 <TrendUp size={16} color={getProgressColor(capPercentage)} weight="duotone" />
-                <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#FFFFFF', fontSize: '0.85rem' }}>
+                <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#FFFFFF', fontSize: '0.8rem' }}>
                   Progress to Cap
                 </Typography>
-                <Box sx={{ flex: 1 }} />
-                <Typography variant="body2" sx={{ fontWeight: 700, color: '#E2C05A', fontSize: '0.95rem', fontFamily: '"JetBrains Mono", monospace' }}>
-                  {userPlan === 'pro' ? (
-                    `$${(currentProgress / 1000).toFixed(1)}K`
-                  ) : (
-                    `$${(capAmount / 1000).toFixed(1)}K`
-                  )}
-                </Typography>
               </Box>
+              <Typography variant="body2" sx={{ fontWeight: 700, color: '#E2C05A', fontSize: '1rem', fontFamily: '"JetBrains Mono", monospace' }}>
+                {userPlan === 'pro' ? (
+                  `$${(currentProgress / 1000).toFixed(1)}K`
+                ) : (
+                  `$${(currentProgress / 1000).toFixed(1)}K - $${(capAmount / 1000).toFixed(1)}K`
+                )}
+              </Typography>
 
               {userPlan !== 'pro' ? (
                 <Box sx={{ position: 'relative', height: 8, backgroundColor: '#1A1A1A', borderRadius: '4px', overflow: 'hidden' }}>
@@ -665,12 +710,44 @@ export default function DashboardPage() {
             </Box>
             </StaggerItem>
           </Grid>
+
+          {/* Pending Commission */}
+          <Grid item xs={12} sm={6} md={2}>
+            <StaggerItem style={{ height: '100%' }}>
+            <Box
+              sx={{
+                p: 2,
+                backgroundColor: '#000000',
+                borderRadius: '12px',
+                border: '1px solid #3A3A3A',
+                height: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                gap: 1,
+              }}
+            >
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <CurrencyDollar size={16} color="#E2C05A" weight="duotone" />
+                <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#FFFFFF', fontSize: '0.8rem' }}>
+                  Pending Commission
+                </Typography>
+              </Box>
+              <Typography variant="body2" sx={{ fontWeight: 700, color: '#E2C05A', fontSize: '1.1rem', fontFamily: '"JetBrains Mono", monospace' }}>
+                ${pendingCommissionTotal.toLocaleString(undefined, { maximumFractionDigits: 0 })}
+              </Typography>
+              <Typography variant="caption" sx={{ color: '#808080', fontSize: '0.7rem' }}>
+                from {pendingCommissionDeals} {pendingCommissionDeals === 1 ? 'deal' : 'deals'}
+              </Typography>
+            </Box>
+            </StaggerItem>
+          </Grid>
         </Grid>
 
-        {/* ===== BOTTOM ROW: Active Deals + My Listings + Calendar ===== */}
+        {/* ===== BOTTOM ROW: Transactions + My Listings + Calendar ===== */}
         <Grid container spacing={2} sx={{ flex: 1, minHeight: 0 }}>
-          {/* Active Deals (left) */}
-          <Grid item xs={12} md={3} sx={{ height: isMobile ? 'auto' : '100%', display: (isMobile && mobileTab !== 0) ? 'none' : 'flex', flexDirection: 'column' }}>
+          {/* Transactions (left) */}
+          <Grid item xs={12} md={4} sx={{ height: isMobile ? 'auto' : '100%', display: (isMobile && mobileTab !== 0) ? 'none' : 'flex', flexDirection: 'column' }}>
             <StaggerItem style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
             <Box
               sx={{
@@ -688,7 +765,7 @@ export default function DashboardPage() {
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5, flexShrink: 0 }}>
                 <FileText size={18} color="#E2C05A" weight="duotone" />
                 <Typography variant="subtitle1" sx={{ fontWeight: 600, color: '#FFFFFF', fontSize: '1rem' }}>
-                  Active Deals
+                  Transactions
                 </Typography>
                 <Box sx={{ flex: 1 }} />
                 <Button
@@ -753,7 +830,7 @@ export default function DashboardPage() {
 
                       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                         <Typography variant="body2" sx={{ color: '#E2C05A', fontWeight: 600, fontSize: '0.75rem', fontFamily: '"JetBrains Mono", monospace' }}>
-                          ${transaction.sale_price?.toLocaleString()}
+                          ${(transaction.contract_price ?? transaction.sale_price ?? transaction.listing_price)?.toLocaleString()}
                         </Typography>
                         <Chip
                           label={transaction.status === 'pending' ? 'Pending' : 'Under Contract'}
@@ -932,7 +1009,7 @@ export default function DashboardPage() {
           </Grid>
 
           {/* Calendar (right) */}
-          <Grid item xs={12} md={5} sx={{ height: isMobile ? 'auto' : '100%', display: (isMobile && mobileTab !== 2) ? 'none' : 'flex', flexDirection: 'column' }}>
+          <Grid item xs={12} md={4} sx={{ height: isMobile ? 'auto' : '100%', display: (isMobile && mobileTab !== 2) ? 'none' : 'flex', flexDirection: 'column' }}>
             <StaggerItem style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
             <Box
               sx={{
