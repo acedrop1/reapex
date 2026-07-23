@@ -893,7 +893,6 @@ export default function CRMPage() {
 
                   if (response.status === 401) {
                     setCalendarErrorDialogOpen(true);
-                    // window.alert('Your Google Calendar session has expired or is invalid. Please sign out and sign back in with Google to re-enable syncing.');
                     return;
                   }
 

@@ -49,6 +49,7 @@ import EditUserModal from '@/components/modals/EditUserModal';
 import ManageAgreementsModal from '@/components/modals/ManageAgreementsModal';
 import type { User, AccountStatus } from '@/types/database';
 import { isAdmin } from '@/lib/utils/auth';
+import { useError } from '@/contexts/ErrorContext';
 
 const accountStatusOptions = [
   { value: 'all', label: 'All Statuses' },
@@ -69,6 +70,7 @@ const getStatusColor = (status: AccountStatus): 'default' | 'success' | 'warning
 
 export default function AdminUsersPage() {
   const router = useRouter();
+  const { showError } = useError();
   const [users, setUsers] = useState<User[]>([]);
   const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
@@ -201,7 +203,7 @@ export default function AdminUsersPage() {
       await fetchUsers();
     } catch (err: any) {
       console.error('Error updating user status:', err);
-      alert('Failed to update user status: ' + err.message);
+      showError({ title: 'Update Failed', message: 'Failed to update user status: ' + err.message, severity: 'error' });
     }
   };
 
@@ -254,7 +256,7 @@ export default function AdminUsersPage() {
       await fetchUsers();
     } catch (err: any) {
       console.error('Error deleting user:', err);
-      alert('Failed to delete user: ' + err.message);
+      showError({ title: 'Delete Failed', message: 'Failed to delete user: ' + err.message, severity: 'error' });
     }
   };
 

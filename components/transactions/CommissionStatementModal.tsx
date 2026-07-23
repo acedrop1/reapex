@@ -20,6 +20,7 @@ import { dashboardStyles } from '@/lib/theme/dashboardStyles';
 import { generateCommissionStatement } from '@/lib/utils/pdfGenerator';
 import { createClient } from '@/lib/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
+import { useError } from '@/contexts/ErrorContext';
 
 interface Fee {
     type: string;
@@ -41,6 +42,7 @@ export default function CommissionStatementModal({
 }: CommissionStatementModalProps) {
     const supabase = createClient();
     const queryClient = useQueryClient();
+    const { showError } = useError();
 
     // Detect transaction type for conditional rendering
     const isRental = transaction?.transaction_type === 'rental';
@@ -95,7 +97,7 @@ export default function CommissionStatementModal({
 
     const handleGenerateStatement = async () => {
         if (!purchasePrice || !buyerName || !sellerName || !commission) {
-            alert('Please fill in all required fields');
+            showError({ title: 'Missing Information', message: 'Please fill in all required fields', severity: 'warning' });
             return;
         }
 
@@ -161,11 +163,11 @@ export default function CommissionStatementModal({
             queryClient.invalidateQueries({ queryKey: ['documents', transaction.id] });
             queryClient.invalidateQueries({ queryKey: ['transaction-documents', transaction.id] });
 
-            alert('Commission statement generated and attached to transaction!');
+            showError({ title: 'Success', message: 'Commission statement generated and attached to transaction!', severity: 'success' });
             onClose();
         } catch (error: any) {
             console.error('Error generating commission statement:', error);
-            alert(`Failed to generate statement: ${error.message}`);
+            showError({ title: 'Failed to Generate Statement', message: `Failed to generate statement: ${error.message}`, severity: 'error' });
         } finally {
             setUploading(false);
         }

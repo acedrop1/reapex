@@ -46,6 +46,7 @@ import {
   Description, // Added for PDF icon
 } from '@mui/icons-material';
 import { dashboardStyles } from '@/lib/theme/dashboardStyles';
+import { useError } from '@/contexts/ErrorContext';
 
 export interface Fee {
   name: string;
@@ -99,6 +100,7 @@ const FEE_CATEGORIES = [
 ];
 
 export default function CommissionPayoutsPage() {
+  const { showError } = useError();
   const supabase = createClient();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [agents, setAgents] = useState<User[]>([]);
@@ -208,7 +210,7 @@ export default function CommissionPayoutsPage() {
   const handleCreatePayout = async () => {
     try {
       if (!createForm.agent_id || !createForm.property_address || !createForm.gci) {
-        alert('Please fill in all required fields');
+        showError({ title: 'Missing Information', message: 'Please fill in all required fields', severity: 'warning' });
         return;
       }
 
@@ -242,7 +244,7 @@ export default function CommissionPayoutsPage() {
       setCreateDialog(false);
     } catch (error: any) {
       console.error('Error creating payout:', error);
-      alert(`Error creating payout: ${error.message || 'Unknown error'}`);
+      showError({ title: 'Failed to Create Payout', message: `Error creating payout: ${error.message || 'Unknown error'}`, severity: 'error' });
     }
   };
 
@@ -334,7 +336,7 @@ export default function CommissionPayoutsPage() {
       handleCloseApprovalDialog();
     } catch (error) {
       console.error('Error approving commission:', error);
-      alert('Error approving commission');
+      showError({ title: 'Approval Failed', message: 'Error approving commission', severity: 'error' });
     }
   };
 
@@ -382,7 +384,7 @@ export default function CommissionPayoutsPage() {
       await fetchTransactions();
     } catch (error) {
       console.error('Error marking as paid:', error);
-      alert('Error marking as paid');
+      showError({ title: 'Update Failed', message: 'Error marking as paid', severity: 'error' });
     }
   };
 
@@ -434,7 +436,7 @@ export default function CommissionPayoutsPage() {
 
     } catch (error) {
       console.error('Error generating statement:', error);
-      alert('Failed to generate statement. Please try again.');
+      showError({ title: 'Statement Failed', message: 'Failed to generate statement. Please try again.', severity: 'error' });
     } finally {
       setLoading(false);
     }

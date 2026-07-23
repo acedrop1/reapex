@@ -33,6 +33,7 @@ import {
   FormControlLabel,
 } from '@mui/material';
 import { dashboardStyles } from '@/lib/theme/dashboardStyles';
+import { useError } from '@/contexts/ErrorContext';
 import {
   FileText,
   NotePencil,
@@ -105,6 +106,7 @@ const RENTAL_DOCUMENTS = [
 export default function TransactionDetailPage() {
   const params = useParams();
   const router = useRouter();
+  const { showError } = useError();
   const queryClient = useQueryClient();
   const transactionId = params.id as string;
   const [tabValue, setTabValue] = useState(0);
@@ -283,7 +285,7 @@ export default function TransactionDetailPage() {
 
   const handleUploadDocument = async () => {
     if ((!selectedFile && !editingDocumentId) || !documentType) {
-      alert('Please select a file and document type');
+      showError({ title: 'Missing Information', message: 'Please select a file and document type', severity: 'warning' });
       return;
     }
 
@@ -360,7 +362,7 @@ export default function TransactionDetailPage() {
       refetchDocuments(); // Use the refetch function from useQuery
     } catch (error) {
       console.error('Error uploading document:', error);
-      alert('Failed to upload document');
+      showError({ title: 'Upload Failed', message: 'Failed to upload document', severity: 'error' });
     } finally {
       setUploading(false);
     }
@@ -492,7 +494,7 @@ export default function TransactionDetailPage() {
       setEditedTransaction(null);
     } catch (error: any) {
       console.error('Error saving transaction:', error);
-      alert(`Failed to save changes: ${error.message}`);
+      showError({ title: 'Failed to Save', message: `Failed to save changes: ${error.message}`, severity: 'error' });
     } finally {
       setSaving(false);
     }
@@ -531,11 +533,11 @@ export default function TransactionDetailPage() {
 
       setCloseTransactionDialogOpen(false);
       queryClient.invalidateQueries({ queryKey: ['transaction', transactionId] });
-      alert('Transaction closed successfully!');
+      showError({ title: 'Success', message: 'Transaction closed successfully!', severity: 'success' });
     } catch (error: any) {
       console.error('Error closing transaction:', error);
       const errorMessage = error.message || 'An unknown error occurred';
-      alert(`Failed to close transaction:\n\n${errorMessage}\n\nPlease try again or contact support if the problem persists.`);
+      showError({ title: 'Failed to Close Transaction', message: `Failed to close transaction: ${errorMessage} Please try again or contact support if the problem persists.`, severity: 'error' });
     }
   };
 
@@ -557,11 +559,11 @@ export default function TransactionDetailPage() {
 
       setCancelTransactionDialogOpen(false);
       queryClient.invalidateQueries({ queryKey: ['transaction', transactionId] });
-      alert('Transaction cancelled successfully!');
+      showError({ title: 'Success', message: 'Transaction cancelled successfully!', severity: 'success' });
     } catch (error: any) {
       console.error('Error cancelling transaction:', error);
       const errorMessage = error.message || 'An unknown error occurred';
-      alert(`Failed to cancel transaction:\n\n${errorMessage}\n\nPlease try again or contact support if the problem persists.`);
+      showError({ title: 'Failed to Cancel Transaction', message: `Failed to cancel transaction: ${errorMessage} Please try again or contact support if the problem persists.`, severity: 'error' });
     }
   };
 

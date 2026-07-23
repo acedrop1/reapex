@@ -21,6 +21,7 @@ import {
   ToggleButtonGroup,
 } from '@mui/material';
 import { dashboardStyles } from '@/lib/theme/dashboardStyles';
+import { useError } from '@/contexts/ErrorContext';
 import {
   FloppyDisk,
   ArrowLeft,
@@ -29,6 +30,7 @@ import Link from 'next/link';
 
 export default function NewTransactionPage() {
   const router = useRouter();
+  const { showError } = useError();
   const queryClient = useQueryClient();
   const supabase = createClient();
 
@@ -101,7 +103,7 @@ export default function NewTransactionPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!isCommissionValid) {
-      alert('Please enter a commission amount, or a contract price to calculate it from.');
+      showError({ title: 'Missing Information', message: 'Please enter a commission amount, or a contract price to calculate it from.', severity: 'warning' });
       return;
     }
     createTransactionMutation.mutate(formData);

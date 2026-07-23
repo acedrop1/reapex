@@ -5,6 +5,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
 import { isAdmin } from '@/lib/utils/auth';
+import { useError } from '@/contexts/ErrorContext';
 import {
   Typography,
   Box,
@@ -77,6 +78,7 @@ interface Document {
 
 export default function AdminTransactionsPage() {
   const router = useRouter();
+  const { showError } = useError();
   const queryClient = useQueryClient();
   const supabase = createClient();
   const [searchTerm, setSearchTerm] = useState('');
@@ -187,7 +189,7 @@ export default function AdminTransactionsPage() {
       }
     } catch (error: any) {
       console.error('Error downloading document:', error);
-      alert(`Failed to download document: ${error.message}`);
+      showError({ title: 'Download Failed', message: `Failed to download document: ${error.message}`, severity: 'error' });
     }
   };
 

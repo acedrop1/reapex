@@ -19,6 +19,7 @@ import {
 } from '@phosphor-icons/react';
 
 import PaymentMethodManager from '@/components/stripe/PaymentMethodManager';
+import { useError } from '@/contexts/ErrorContext';
 
 interface BillingData {
     plan: string;
@@ -37,6 +38,7 @@ interface BillingSubscriptionTabProps {
 }
 
 export default function BillingSubscriptionTab({ userProfile }: BillingSubscriptionTabProps) {
+    const { showError } = useError();
     const [billingLoading, setBillingLoading] = useState(true);
     const [billingData, setBillingData] = useState<BillingData | null>(null);
     const [portalLoading, setPortalLoading] = useState(false);
@@ -79,11 +81,11 @@ export default function BillingSubscriptionTab({ userProfile }: BillingSubscript
             if (res.ok && data.url) {
                 window.location.href = data.url;
             } else {
-                alert(data.error || 'Failed to redirect to billing portal. Please try again.');
+                showError({ title: 'Billing Portal Error', message: data.error || 'Failed to redirect to billing portal. Please try again.', severity: 'error' });
             }
         } catch (error: any) {
             console.error('Portal redirect error:', error);
-            alert(error.message || 'An error occurred. Please try again.');
+            showError({ title: 'Billing Portal Error', message: error.message || 'An error occurred. Please try again.', severity: 'error' });
         } finally {
             setPortalLoading(false);
         }

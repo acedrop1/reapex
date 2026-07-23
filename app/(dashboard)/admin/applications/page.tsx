@@ -39,6 +39,7 @@ import {
 import { createClient } from '@/lib/supabase/client';
 import { format } from 'date-fns';
 import { dashboardStyles } from '@/lib/theme/dashboardStyles';
+import { useError } from '@/contexts/ErrorContext';
 
 interface Application {
   id: string;
@@ -77,6 +78,7 @@ const planLabels: Record<string, string> = {
 };
 
 export default function ApplicationsPage() {
+  const { showError } = useError();
   const [applications, setApplications] = useState<Application[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -216,7 +218,7 @@ export default function ApplicationsPage() {
       await fetchApplications();
     } catch (err) {
       console.error('Error deleting application:', err);
-      alert('Failed to delete application');
+      showError({ title: 'Delete Failed', message: 'Failed to delete application', severity: 'error' });
     }
   };
 
@@ -239,7 +241,7 @@ export default function ApplicationsPage() {
       await fetchApplications();
     } catch (err) {
       console.error('Error archiving application:', err);
-      alert('Failed to archive application');
+      showError({ title: 'Archive Failed', message: 'Failed to archive application', severity: 'error' });
     }
   };
 

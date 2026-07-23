@@ -29,6 +29,7 @@ import {
 } from '@phosphor-icons/react';
 import { dashboardStyles } from '@/lib/theme/dashboardStyles';
 import ImageCropModal from '@/components/modals/ImageCropModal';
+import { useError } from '@/contexts/ErrorContext';
 
 interface AgentInfoTabProps {
     userProfile: any;
@@ -37,6 +38,7 @@ interface AgentInfoTabProps {
 export default function AgentInfoTab({ userProfile }: AgentInfoTabProps) {
     const supabase = createClient();
     const queryClient = useQueryClient();
+    const { showError } = useError();
 
     const [formData, setFormData] = useState({
         full_name: userProfile?.full_name || '',
@@ -87,13 +89,13 @@ export default function AgentInfoTab({ userProfile }: AgentInfoTabProps) {
 
         // Validate file type
         if (!file.type.startsWith('image/')) {
-            alert('Please upload an image file');
+            showError({ title: 'Invalid File', message: 'Please upload an image file', severity: 'warning' });
             return;
         }
 
         // Validate file size (max 5MB)
         if (file.size > 5 * 1024 * 1024) {
-            alert('File size must be less than 5MB');
+            showError({ title: 'File Too Large', message: 'File size must be less than 5MB', severity: 'warning' });
             return;
         }
 
@@ -141,9 +143,9 @@ export default function AgentInfoTab({ userProfile }: AgentInfoTabProps) {
             if (updateError) throw updateError;
 
             queryClient.invalidateQueries({ queryKey: ['user-profile'] });
-            alert('Profile picture uploaded successfully!');
+            showError({ title: 'Success', message: 'Profile picture uploaded successfully!', severity: 'success' });
         } catch (error: any) {
-            alert(`Failed to upload image: ${error.message}`);
+            showError({ title: 'Upload Failed', message: `Failed to upload image: ${error.message}`, severity: 'error' });
         } finally {
             setUploadingHeadshot(false);
             // Clean up object URL
@@ -199,10 +201,10 @@ export default function AgentInfoTab({ userProfile }: AgentInfoTabProps) {
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['user-profile'] });
-            alert('Profile updated successfully!');
+            showError({ title: 'Success', message: 'Profile updated successfully!', severity: 'success' });
         },
         onError: (error: any) => {
-            alert(`Failed to update profile: ${error.message}`);
+            showError({ title: 'Update Failed', message: `Failed to update profile: ${error.message}`, severity: 'error' });
         },
     });
 

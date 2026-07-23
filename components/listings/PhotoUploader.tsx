@@ -13,6 +13,7 @@ import {
 } from '@mui/material';
 import { UploadSimple, X, Image as ImageIcon } from '@phosphor-icons/react';
 import { dashboardStyles } from '@/lib/theme/dashboardStyles';
+import { useError } from '@/contexts/ErrorContext';
 
 interface PhotoUploaderProps {
   coverImage: string | null;
@@ -29,6 +30,7 @@ export default function PhotoUploader({
   onGalleryImagesChange,
   listingId,
 }: PhotoUploaderProps) {
+  const { showError } = useError();
   const supabase = createClient();
   const coverInputRef = useRef<HTMLInputElement>(null);
   const galleryInputRef = useRef<HTMLInputElement>(null);
@@ -42,13 +44,13 @@ export default function PhotoUploader({
     try {
       // Validate file type
       if (!file.type.startsWith('image/')) {
-        alert('Please upload an image file');
+        showError({ title: 'Invalid File', message: 'Please upload an image file', severity: 'warning' });
         return null;
       }
 
       // Validate file size (max 10MB)
       if (file.size > 10 * 1024 * 1024) {
-        alert('Image must be less than 10MB');
+        showError({ title: 'File Too Large', message: 'Image must be less than 10MB', severity: 'warning' });
         return null;
       }
 
@@ -67,7 +69,7 @@ export default function PhotoUploader({
 
       if (uploadError) {
         console.error('Upload error:', uploadError);
-        alert(`Upload failed: ${uploadError.message}`);
+        showError({ title: 'Upload Failed', message: `Upload failed: ${uploadError.message}`, severity: 'error' });
         return null;
       }
 
@@ -79,7 +81,7 @@ export default function PhotoUploader({
       return publicUrl;
     } catch (error: any) {
       console.error('Error uploading image:', error);
-      alert(`Upload error: ${error.message}`);
+      showError({ title: 'Upload Failed', message: `Upload error: ${error.message}`, severity: 'error' });
       return null;
     }
   };

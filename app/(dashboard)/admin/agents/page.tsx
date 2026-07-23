@@ -42,6 +42,7 @@ import {
 import { createClient } from '@/lib/supabase/client';
 import { format } from 'date-fns';
 import { isAdmin } from '@/lib/utils/auth';
+import { useError } from '@/contexts/ErrorContext';
 
 interface Agent {
   id: string;
@@ -70,6 +71,7 @@ const roleOptions = [
 ];
 
 export default function AdminAgentsPage() {
+  const { showError } = useError();
   const [agents, setAgents] = useState<Agent[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -177,7 +179,7 @@ export default function AdminAgentsPage() {
       handleCloseEdit();
     } catch (err: any) {
       console.error('Error updating agent:', err);
-      alert('Failed to update agent: ' + err.message);
+      showError({ title: 'Update Failed', message: 'Failed to update agent: ' + err.message, severity: 'error' });
     } finally {
       setUpdating(false);
     }
@@ -197,7 +199,7 @@ export default function AdminAgentsPage() {
       await fetchAgents();
     } catch (err: any) {
       console.error('Error deleting agent:', err);
-      alert('Failed to delete agent: ' + err.message);
+      showError({ title: 'Delete Failed', message: 'Failed to delete agent: ' + err.message, severity: 'error' });
     }
   };
 

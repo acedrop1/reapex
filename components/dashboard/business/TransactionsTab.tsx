@@ -50,6 +50,7 @@ import { generateCommissionStatement } from '@/lib/utils/pdfGenerator';
 import Link from 'next/link';
 import { House, Eye, DotsThreeVertical } from '@phosphor-icons/react';
 import { useRouter } from 'next/navigation';
+import { useError } from '@/contexts/ErrorContext';
 
 interface Fee {
     type: string;
@@ -111,6 +112,7 @@ export default function TransactionsTab({ userProfile }: TransactionsTabProps) {
     const supabase = createClient();
     const router = useRouter();
     const queryClient = useQueryClient();
+    const { showError } = useError();
     const [tabValue, setTabValue] = useState(0);
     const [openCommissionModal, setOpenCommissionModal] = useState(false);
     const [openCloseModal, setOpenCloseModal] = useState(false);
@@ -310,7 +312,7 @@ export default function TransactionsTab({ userProfile }: TransactionsTabProps) {
         try {
             const { data: { user } } = await supabase.auth.getUser();
             if (!user) {
-                alert('You must be logged in to close a transaction.');
+                showError({ title: 'Not Logged In', message: 'You must be logged in to close a transaction.', severity: 'error' });
                 return;
             }
 
@@ -322,7 +324,7 @@ export default function TransactionsTab({ userProfile }: TransactionsTabProps) {
             if (!selectedListing.listing_type) missingFields.push('Listing Type');
 
             if (missingFields.length > 0) {
-                alert(`Cannot close transaction. Missing required fields:\n${missingFields.join(', ')}\n\nPlease update the listing with all required information before closing.`);
+                showError({ title: 'Missing Information', message: `Cannot close transaction. Missing required fields: ${missingFields.join(', ')}. Please update the listing with all required information before closing.`, severity: 'warning' });
                 setOpenCloseModal(false);
                 return;
             }
@@ -361,7 +363,7 @@ export default function TransactionsTab({ userProfile }: TransactionsTabProps) {
             if (updateError) {
                 console.error('Error updating listing status:', updateError);
                 // Transaction was created but listing status update failed
-                alert('Transaction was created but listing status could not be updated. Please contact support.');
+                showError({ title: 'Listing Update Failed', message: 'Transaction was created but listing status could not be updated. Please contact support.', severity: 'error' });
                 return;
             }
 
@@ -373,13 +375,13 @@ export default function TransactionsTab({ userProfile }: TransactionsTabProps) {
         } catch (error: any) {
             console.error('Error closing transaction:', error);
             const errorMessage = error.message || 'An unknown error occurred';
-            alert(`Failed to close transaction:\n\n${errorMessage}\n\nPlease try again or contact support if the problem persists.`);
+            showError({ title: 'Failed to Close Transaction', message: `Failed to close transaction: ${errorMessage}. Please try again or contact support if the problem persists.`, severity: 'error' });
         }
     };
 
     const handleCreateNewTransaction = async () => {
         if (!newPropertyAddress || !newPropertyCity || !newPropertyState || !newPropertyZip || !newPrice || !newContractPrice || !isNewCommissionValid) {
-            alert('Please fill in all required fields');
+            showError({ title: 'Missing Information', message: 'Please fill in all required fields', severity: 'warning' });
             return;
         }
 
@@ -388,7 +390,7 @@ export default function TransactionsTab({ userProfile }: TransactionsTabProps) {
         try {
             const { data: { user } } = await supabase.auth.getUser();
             if (!user) {
-                alert('You must be logged in to create a transaction');
+                showError({ title: 'Not Logged In', message: 'You must be logged in to create a transaction', severity: 'error' });
                 setIsCreatingTransaction(false);
                 return;
             }
@@ -456,7 +458,7 @@ export default function TransactionsTab({ userProfile }: TransactionsTabProps) {
             window.location.reload();
         } catch (error: any) {
             console.error('Error creating transaction:', error);
-            alert(`Failed to create transaction: ${error.message || 'Unknown error'}`);
+            showError({ title: 'Failed to Create Transaction', message: `Failed to create transaction: ${error.message || 'Unknown error'}`, severity: 'error' });
             setIsCreatingTransaction(false);
         }
     };
@@ -470,11 +472,11 @@ export default function TransactionsTab({ userProfile }: TransactionsTabProps) {
             if (data?.publicUrl) {
                 window.open(data.publicUrl, '_blank');
             } else {
-                alert('Unable to preview document');
+                showError({ title: 'Preview Failed', message: 'Unable to preview document', severity: 'error' });
             }
         } catch (error: any) {
             console.error('Error previewing document:', error);
-            alert(`Failed to preview document: ${error.message}`);
+            showError({ title: 'Preview Failed', message: `Failed to preview document: ${error.message}`, severity: 'error' });
         }
     };
 
@@ -486,7 +488,7 @@ export default function TransactionsTab({ userProfile }: TransactionsTabProps) {
 
     const handleUploadDocument = async () => {
         if ((!selectedFile && !editingDocumentId) || !documentType) {
-            alert('Please select a file and document type');
+            showError({ title: 'Missing Information', message: 'Please select a file and document type', severity: 'warning' });
             return;
         }
 
@@ -566,7 +568,7 @@ export default function TransactionsTab({ userProfile }: TransactionsTabProps) {
             setEditingDocumentId(null);
         } catch (error: any) {
             console.error('Error uploading document:', error);
-            alert(`Failed to ${editingDocumentId ? 'update' : 'upload'} document: ${error.message}`);
+            showError({ title: 'Upload Failed', message: `Failed to ${editingDocumentId ? 'update' : 'upload'} document: ${error.message}`, severity: 'error' });
         } finally {
             setUploading(false);
         }
@@ -588,7 +590,7 @@ export default function TransactionsTab({ userProfile }: TransactionsTabProps) {
             if (fetchError) throw fetchError;
 
             if (!documents || documents.length === 0) {
-                alert('No commission statement found for this transaction.');
+                showError({ title: 'Not Found', message: 'No commission statement found for this transaction.', severity: 'warning' });
                 return;
             }
 
@@ -606,7 +608,7 @@ export default function TransactionsTab({ userProfile }: TransactionsTabProps) {
             }
         } catch (err: any) {
             console.error('Error viewing commission statement:', err);
-            alert(`Failed to view commission statement: ${err.message}`);
+            showError({ title: 'Failed to View Statement', message: `Failed to view commission statement: ${err.message}`, severity: 'error' });
         }
     };
 

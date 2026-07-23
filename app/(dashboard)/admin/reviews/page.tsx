@@ -35,8 +35,10 @@ import {
   Delete,
 } from '@mui/icons-material';
 import { dashboardStyles } from '@/lib/theme/dashboardStyles';
+import { useError } from '@/contexts/ErrorContext';
 
 export default function ReviewsManagementPage() {
+  const { showError } = useError();
   const supabase = createClient();
   const [reviews, setReviews] = useState<any[]>([]);
   const [agents, setAgents] = useState<any[]>([]);
@@ -130,7 +132,7 @@ export default function ReviewsManagementPage() {
       handleCloseDialog();
     } catch (error) {
       console.error('Error creating review:', error);
-      alert('Error creating review');
+      showError({ title: 'Failed to Create Review', message: 'Error creating review', severity: 'error' });
     }
   };
 
@@ -146,7 +148,7 @@ export default function ReviewsManagementPage() {
       await fetchData();
     } catch (error) {
       console.error('Error approving review:', error);
-      alert('Error approving review');
+      showError({ title: 'Approval Failed', message: 'Error approving review', severity: 'error' });
     }
   };
 
@@ -162,7 +164,7 @@ export default function ReviewsManagementPage() {
       await fetchData();
     } catch (error) {
       console.error('Error rejecting review:', error);
-      alert('Error rejecting review');
+      showError({ title: 'Rejection Failed', message: 'Error rejecting review', severity: 'error' });
     }
   };
 
@@ -180,7 +182,7 @@ export default function ReviewsManagementPage() {
       await fetchData();
     } catch (error) {
       console.error('Error deleting review:', error);
-      alert('Error deleting review');
+      showError({ title: 'Delete Failed', message: 'Error deleting review', severity: 'error' });
     }
   };
 

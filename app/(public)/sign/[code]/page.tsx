@@ -30,7 +30,18 @@ export default async function SignRedirectPage({
     .update({ scan_count: (sign.scan_count || 0) + 1 })
     .eq('id', sign.id);
 
-  // Priority 1: If the sign has a listing_id, redirect to the listing page
+  // Priority 1: a custom redirect URL is an explicit override — it wins even
+  // when the sign is also attached to a listing
+  if (sign.redirect_url) {
+    // Ensure the URL has a protocol so redirect works for external sites
+    let url = sign.redirect_url.trim();
+    if (!/^https?:\/\//i.test(url)) {
+      url = `https://${url}`;
+    }
+    redirect(url);
+  }
+
+  // Priority 2: If the sign has a listing_id, redirect to the listing page
   if (sign.listing_id) {
     const { data: listing } = await supabase
       .from('listings')
@@ -44,16 +55,6 @@ export default async function SignRedirectPage({
         .replace(/\s+/g, '-');
       redirect(`/listings/${city}/${listing.slug}`);
     }
-  }
-
-  // Priority 2: If the sign has a custom redirect URL
-  if (sign.redirect_url) {
-    // Ensure the URL has a protocol so redirect works for external sites
-    let url = sign.redirect_url.trim();
-    if (!/^https?:\/\//i.test(url)) {
-      url = `https://${url}`;
-    }
-    redirect(url);
   }
 
   // Priority 3: If there's an agent_id, redirect to agent page

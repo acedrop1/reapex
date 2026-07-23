@@ -45,6 +45,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { createClient } from '@/lib/supabase/client';
 import { format } from 'date-fns';
 import { dashboardStyles } from '@/lib/theme/dashboardStyles';
+import { useError } from '@/contexts/ErrorContext';
 
 interface BrokerageDocument {
   id: string;
@@ -81,6 +82,7 @@ const CATEGORIES = [
 ];
 
 export default function BrokerageDocumentsPage() {
+  const { showError } = useError();
   const supabase = createClient();
   const queryClient = useQueryClient();
 
@@ -314,7 +316,7 @@ export default function BrokerageDocumentsPage() {
     try {
       await deleteMutation.mutateAsync(doc);
     } catch (err: any) {
-      alert(err.message || 'Failed to delete document');
+      showError({ title: 'Delete Failed', message: err.message || 'Failed to delete document', severity: 'error' });
     }
   };
 

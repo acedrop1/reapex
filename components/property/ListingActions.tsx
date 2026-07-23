@@ -2,8 +2,11 @@
 
 import { Button, Box } from '@mui/material';
 import { ShareNetwork } from '@phosphor-icons/react';
+import { useError } from '@/contexts/ErrorContext';
 
 export default function ListingActions() {
+  const { showError } = useError();
+
   const handleShare = () => {
     if (navigator.share) {
       navigator.share({
@@ -13,7 +16,7 @@ export default function ListingActions() {
     } else {
       // Fallback: copy to clipboard
       navigator.clipboard.writeText(window.location.href);
-      alert('Link copied to clipboard!');
+      showError({ title: 'Success', message: 'Link copied to clipboard!', severity: 'success' });
     }
   };
 

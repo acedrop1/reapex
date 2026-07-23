@@ -32,6 +32,7 @@ import {
 import { Receipt, Eye, DownloadSimple, DotsThreeVertical } from '@phosphor-icons/react';
 import { useState } from 'react';
 import { generatePayoutPDF } from '@/lib/pdf-generator';
+import { useError } from '@/contexts/ErrorContext';
 
 interface Fee {
   name: string;
@@ -65,6 +66,7 @@ interface Transaction {
 
 export default function PayoutsTab() {
   const supabase = createClient();
+  const { showError } = useError();
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
   const [detailsDialog, setDetailsDialog] = useState(false);
 
@@ -126,7 +128,7 @@ export default function PayoutsTab() {
       URL.revokeObjectURL(url);
     } catch (error) {
       console.error('Error generating PDF:', error);
-      alert('Failed to generate payout PDF');
+      showError({ title: 'PDF Generation Failed', message: 'Failed to generate payout PDF', severity: 'error' });
     }
   };
 

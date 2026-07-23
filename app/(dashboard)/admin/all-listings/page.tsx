@@ -44,6 +44,7 @@ import {
 import { createClient } from '@/lib/supabase/client';
 import { format } from 'date-fns';
 import { dashboardStyles } from '@/lib/theme/dashboardStyles';
+import { useError } from '@/contexts/ErrorContext';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import CreateListingModal from '@/components/listings/CreateListingModal';
 import EditListingModal from '@/components/listings/EditListingModal';
@@ -93,6 +94,7 @@ const statusColors: Record<string, 'default' | 'info' | 'success' | 'error' | 'w
 };
 
 export default function AdminListingsPage() {
+  const { showError } = useError();
   const queryClient = useQueryClient();
   const supabase = createClient();
 
@@ -222,7 +224,7 @@ export default function AdminListingsPage() {
       handleCloseDelete();
     } catch (err: any) {
       console.error('Error deleting listing:', err);
-      alert('Failed to delete listing: ' + err.message);
+      showError({ title: 'Delete Failed', message: 'Failed to delete listing: ' + err.message, severity: 'error' });
     } finally {
       setDeleting(false);
     }

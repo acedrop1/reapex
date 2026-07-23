@@ -51,6 +51,7 @@ import { AGENT_SPECIALTIES } from '@/lib/constants';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
 import PaymentForm from './PaymentForm';
+import { useError } from '@/contexts/ErrorContext';
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
@@ -103,6 +104,7 @@ const stepTitles = [
 
 export default function OnboardingWizard({ open, onClose, onComplete }: OnboardingWizardProps) {
   const supabase = createClient();
+  const { showError } = useError();
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState<FormData>({
     headshot_url: null,
@@ -309,8 +311,8 @@ export default function OnboardingWizard({ open, onClose, onComplete }: Onboardi
     } catch (error: any) {
       console.error('Onboarding submission error:', error);
       setErrors({ submit: error.message });
-      // Fallback alert to ensure user sees the error
-      window.alert(`Error: ${error.message}`);
+      // Fallback modal to ensure user sees the error
+      showError({ title: 'Onboarding Error', message: `Error: ${error.message}`, severity: 'error' });
     } finally {
       setSubmitting(false);
     }
