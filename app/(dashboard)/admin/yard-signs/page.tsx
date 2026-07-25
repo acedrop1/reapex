@@ -72,10 +72,11 @@ interface Listing {
 // Helpers
 // ---------------------------------------------------------------------------
 
-const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL ||
-  process.env.NEXT_PUBLIC_BASE_URL ||
-  'https://re-apex.com';
+// Hardcoded on purpose: QR codes get printed on physical signs, so they must
+// always encode the production domain — never a preview URL or a misconfigured
+// env var. (NEXT_PUBLIC_BASE_URL once pointed at reapex.com, an unrelated
+// Italian cleaning company, and every printed QR silently went there.)
+const SITE_URL = 'https://www.re-apex.com';
 
 function generateSignCode(): string {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // no I/O/0/1 to avoid confusion

@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Contact Reapex | Get in Touch with Our Team',
     description: 'Questions about joining Reapex or our services? Reach out to our team. We are here to help agents succeed and homeowners find the right solutions.',
-    url: 'https://reapex.com/contact',
+    url: 'https://www.re-apex.com/contact',
     siteName: 'Reapex',
     images: [
       {

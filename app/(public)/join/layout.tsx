@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Join Reapex | Agent Application & Commission Plans',
     description: 'Ready to keep your hard-earned commission? Apply to Reapex in minutes. 100% commission plans, low caps, and cutting-edge technology.',
-    url: 'https://reapex.com/join',
+    url: 'https://www.re-apex.com/join',
     siteName: 'Reapex',
     images: [
       {

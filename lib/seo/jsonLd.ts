@@ -143,9 +143,9 @@ export function generateOrganizationSchema(): Organization {
     '@context': 'https://schema.org',
     '@type': 'RealEstateAgent',
     name: 'Reapex',
-    url: 'https://reapex.com',
-    logo: 'https://reapex.com/logos/logo.svg',
-    image: 'https://reapex.com/logos/social.png',
+    url: 'https://www.re-apex.com',
+    logo: 'https://www.re-apex.com/logos/logo.svg',
+    image: 'https://www.re-apex.com/logos/social.png',
     description: 'Agent-first real estate platform with 100% commission plans and elite technology. High splits, capped costs, and real wealth building for New Jersey real estate agents.',
     address: {
       '@type': 'PostalAddress',
@@ -172,10 +172,10 @@ export function generateWebSiteSchema(): WebSite {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
     name: 'Reapex',
-    url: 'https://reapex.com',
+    url: 'https://www.re-apex.com',
     potentialAction: {
       '@type': 'SearchAction',
-      target: 'https://reapex.com/listings?search={search_term_string}',
+      target: 'https://www.re-apex.com/listings?search={search_term_string}',
       'query-input': 'required name=search_term_string',
     },
   };
@@ -196,7 +196,7 @@ export function generateAgentSchema(agent: {
     '@context': 'https://schema.org',
     '@type': 'RealEstateAgent',
     name: agent.name,
-    url: `https://reapex.com/agent/${agent.slug}`,
+    url: `https://www.re-apex.com/agent/${agent.slug}`,
     jobTitle: 'Licensed Real Estate Agent',
     memberOf: {
       '@type': 'Organization',
@@ -250,7 +250,7 @@ export function generateListingSchema(listing: {
     '@context': 'https://schema.org',
     '@type': 'RealEstateListing',
     name: listing.title,
-    url: `https://reapex.com/listings/${listing.property_city?.toLowerCase().replace(/\s+/g, '-')}/${listing.slug}`,
+    url: `https://www.re-apex.com/listings/${listing.property_city?.toLowerCase().replace(/\s+/g, '-')}/${listing.slug}`,
     description: listing.description,
     image: listing.images || [],
     address: {

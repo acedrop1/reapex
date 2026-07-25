@@ -15,7 +15,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Reapex | Keep 100% of Your Commission',
     description: 'High splits. Capped costs. Real wealth. Join the agent-first platform with 100% commission plans and elite tech. Stop splitting your profits. Apply in minutes.',
-    url: 'https://reapex.com',
+    url: 'https://www.re-apex.com',
     siteName: 'Reapex',
     images: [
       {

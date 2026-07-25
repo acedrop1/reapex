@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Sell Your Home | Expert Listing Services - Reapex',
     description: 'List your property with Reapex. Connect with experienced agents, get accurate market valuations, and maximize your sale price.',
-    url: 'https://reapex.com/sell',
+    url: 'https://www.re-apex.com/sell',
     siteName: 'Reapex',
     images: [
       {

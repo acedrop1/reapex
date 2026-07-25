@@ -93,9 +93,9 @@ export default async function AgentDetailPage({
   });
 
   const breadcrumbSchema = generateBreadcrumbSchema([
-    { name: 'Home', url: 'https://reapex.com' },
-    { name: 'Agents', url: 'https://reapex.com/agents' },
-    { name: agent.full_name || agent.email, url: `https://reapex.com/agent/${agent.slug}` },
+    { name: 'Home', url: 'https://www.re-apex.com' },
+    { name: 'Agents', url: 'https://www.re-apex.com/agents' },
+    { name: agent.full_name || agent.email, url: `https://www.re-apex.com/agent/${agent.slug}` },
   ]);
 
   return (

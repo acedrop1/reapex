@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Commission Plans | 100% Commission with Low Caps - Reapex',
     description: 'Compare our transparent commission structures. From 80% splits to 100% commission plans with minimal caps. Choose the plan that maximizes your earnings.',
-    url: 'https://reapex.com/plans',
+    url: 'https://www.re-apex.com/plans',
     siteName: 'Reapex',
     images: [
       {

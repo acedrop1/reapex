@@ -93,10 +93,10 @@ export default async function ListingDetailPage({
   });
 
   const breadcrumbSchema = generateBreadcrumbSchema([
-    { name: 'Home', url: 'https://reapex.com' },
-    { name: 'Listings', url: 'https://reapex.com/listings' },
-    { name: displayCity, url: `https://reapex.com/listings/${city}` },
-    { name: listing.listing_title || listing.property_address, url: `https://reapex.com/listings/${city}/${listing.slug}` },
+    { name: 'Home', url: 'https://www.re-apex.com' },
+    { name: 'Listings', url: 'https://www.re-apex.com/listings' },
+    { name: displayCity, url: `https://www.re-apex.com/listings/${city}` },
+    { name: listing.listing_title || listing.property_address, url: `https://www.re-apex.com/listings/${city}/${listing.slug}` },
   ]);
 
   return (

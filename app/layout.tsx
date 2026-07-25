@@ -18,7 +18,7 @@ const dmSans = DM_Sans({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || 'https://reapex.com'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || 'https://www.re-apex.com'),
   title: {
     default: 'Reapex | Keep 100% of Your Commission',
     template: '%s | Reapex',

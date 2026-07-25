@@ -25,7 +25,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Meet Reapex Advisors | Expert Real Estate Agents',
     description: 'Connect with elite real estate advisors. Our expert agents deliver personalized guidance, market insights, and proven results.',
-    url: 'https://reapex.com/agents',
+    url: 'https://www.re-apex.com/agents',
     siteName: 'Reapex',
     images: [
       {
@@ -95,8 +95,8 @@ export default async function AgentsPage() {
 
   const organizationSchema = generateOrganizationSchema();
   const breadcrumbSchema = generateBreadcrumbSchema([
-    { name: 'Home', url: 'https://reapex.com' },
-    { name: 'Agents', url: 'https://reapex.com/agents' },
+    { name: 'Home', url: 'https://www.re-apex.com' },
+    { name: 'Agents', url: 'https://www.re-apex.com/agents' },
   ]);
 
   return (

@@ -167,7 +167,7 @@ export default function SupportPage() {
             <Typography sx={{ fontSize: '13px', color: '#aaaaaa' }}>
               Email: <Box component="a" href="mailto:admin@re-apex.com" sx={{ color: '#FFFFFF', textDecoration: 'none', '&:hover': { color: '#E2C05A' } }}>admin@re-apex.com</Box>
               {' / '}
-              <Box component="a" href="mailto:support@reapex.com" sx={{ color: '#FFFFFF', textDecoration: 'none', '&:hover': { color: '#E2C05A' } }}>support@reapex.com</Box>
+              <Box component="a" href="mailto:support@re-apex.com" sx={{ color: '#FFFFFF', textDecoration: 'none', '&:hover': { color: '#E2C05A' } }}>support@re-apex.com</Box>
             </Typography>
           </Box>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>

@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Property Listings | Homes for Sale - Reapex',
     description: 'Browse active property listings. Find your dream home with detailed photos, pricing, and neighborhood insights.',
-    url: 'https://reapex.com/listings',
+    url: 'https://www.re-apex.com/listings',
     siteName: 'Reapex',
     images: [
       {
