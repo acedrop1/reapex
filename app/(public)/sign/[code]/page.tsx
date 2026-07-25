@@ -24,11 +24,9 @@ export default async function SignRedirectPage({
     return <SignNotFound />;
   }
 
-  // Increment scan count (fire-and-forget, don't block the redirect)
-  await supabase
-    .from('yard_signs')
-    .update({ scan_count: (sign.scan_count || 0) + 1 })
-    .eq('id', sign.id);
+  // Increment scan count via SECURITY DEFINER function — anonymous scanners
+  // have no UPDATE permission on yard_signs, so a direct update silently fails
+  await supabase.rpc('increment_sign_scan', { sign_uuid: sign.id });
 
   // Priority 1: a custom redirect URL is an explicit override — it wins even
   // when the sign is also attached to a listing
